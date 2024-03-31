@@ -1,0 +1,17 @@
+{% extends "layout.html" %} {%block content %} {%from "_macros.html" import
+render_field%}
+<link rel="stylesheet" href="../../static/css/ventas.css" />
+<br /><br />
+<div class="contenedor-con-scroll">
+  {%for product in productos%}
+  <div class="contenedor">
+    <div>
+      <div><h5 class="unidades">{{product.cantidad}}</h5></div>
+      <h4 class="nameProduct">{{product.nombre_producto}}</h4>
+
+      <h4>$ {{product.costo}}</h4>
+    </div>
+  </div>
+  {%endfor%}
+</div>
+{%endblock%}

@@ -1,0 +1,13 @@
+.contaimerImage {
+  background-color: #6e8163;
+}
+
+.container {
+  margin-top: 5%;
+}
+#btnLogin {
+  background-color: #502e1a;
+  border-radius: 20px;
+  width: 60%;
+  color: aliceblue;
+}
