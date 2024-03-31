@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COOKIES</title>
+    <link rel="stylesheet" href="../../static/bootstrap-5.1.3-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../../static/bootstrap-5.1.3-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../static/css/estilosNavbar.css">
+    <link rel="stylesheet" href="../../static/font_awesome_5_15_3/css/all.min.css">
+    <link rel="stylesheet" href="../../static/css/estilosMacros.css">
+    <link rel="stylesheet" href="../../static/css/estilosGenerales.css">
+    <link rel='stylesheet' type='text/css' href='../static/css/styleGabo.css'>
+
+    <link rel="stylesheet" href="../../static/sweetalert2/sweetalert2.min.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg custom-nav">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/dashboard">Cookies</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Ventas</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/inventario">Inventario</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/paquetes">Paquetes</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Compras</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/produccion">Produccion</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Proveedores</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Usuarios</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-5">
+    {% block content %}
+
+    {% endblock %}
+</div>
+
+<script src="../../static/sweetalert2/sweetalert2.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+.custom-nav{
+    background-color: #738063 !important;
+}
+
+.custom-nav .navbar-brand, .custom-nav .nav-link{
+    color: #fff !important;
+}
+
+.navbar-nav {
+    width: 100%;
+    justify-content: space-evenly;
+}

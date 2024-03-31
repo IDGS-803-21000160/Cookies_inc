@@ -1,0 +1,144 @@
+
+{% extends 'ContenedorMain/contenedorMain.html' %}
+
+{% block content %}
+{% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttondelete %}
+
+<div class="container"> <!-- Agregar un contenedor para centrar todo el contenido -->
+
+    <div class="row">
+        <div class="col-md-6">
+            <h1>INVENTARIO DE MATERIALES</h1>
+        </div>
+        <div class="col-md-2">
+            <form action="/inventario/agregarMaterial" method="post">
+                {{ custom_buttongreen("Agregar Material") }}
+            </form>
+        </div>
+        <div class="col-md-2">
+            <form action="/inventario/agregarProducto" method="post">
+                {{ custom_buttongreen("Agregar Producto") }}
+            </form>
+        </div>
+        <div class="col-md-2">
+            <form action="/inventario/seleccionarTipoEntrada" method="post">
+                {{ custom_buttongreen("Entrada a Inventario") }}
+            </form>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10 mb-4 mt-3" style="height: 0.2px; width: 85%; background-color: rgba(0, 0, 0, 0.603);"></div>
+    </div>
+
+    {% from "Macros/inputComponent.html" import search_input, input_custom %}
+    {% from "Macros/tableComponent.html" import custom_table %}
+
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <div class="search-container">
+                <input type="text" placeholder="Buscar Material", id="searchmaterial", oninput="filtrarTabla()">
+                <i class="fas fa-search fa-icon"></i>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <form action="/inventario" method="post">
+                {{ custom_button("General") }}
+            </form>
+        </div>
+        <div class="col-md-2">
+            <form action="/inventario/productos" method="post">
+                {{ custom_button("Productos") }}
+            </form>
+        </div>
+        <div class="col-md-2">
+            <form action="/inventario/mermas" method="post">
+                {{ custom_button("Mermas") }}
+            </form>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    
+    <div class="row mt-5">
+        <div class="col-md-12 text-center">
+
+            <div class="custom-table2">
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Días de Caducidad</th>
+                            <th>Unidad de Medida</th>
+                            <th>Costo</th>
+                            <th>Fecha de Registro</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for material in materiales %}
+                        <tr>
+                            <td>{{ material.nombre_mat }}</td>
+                            <td>{{ material.dias_caducidad }}</td>
+                            <td>{{ material.unidad_medida }}</td>
+                            <td>{{ material.costo_mat }}</td>
+                            <td>{{ material.fecha_registro }}</td>
+                            <td>
+                                <form action="/inventario/editarMaterial" method="POST" style="display: inline;">
+                                    <input type="hidden" name="material_id" value="{{ material.id_material }}">
+                                    {{ custom_button("Editar") }}
+                                </form>
+                            </td>
+                            <td>
+                                <form action="/inventario/eliminarMaterial" method="POST" style="display: inline;">
+                                    <input type="hidden" name="material_id" value="{{ material.id_material }}">
+                                    {{ custom_buttondelete("Eliminar") }}
+                                </form>
+                            </td>   
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div> <!-- Cierre del contenedor -->
+
+<script>
+    function filtrarTabla() {
+        // Obtener el valor del campo de búsqueda
+        var textoBusqueda = document.getElementById("searchmaterial").value.toUpperCase();
+        // Obtener todas las filas de la tabla
+        var filas = document.querySelectorAll(".custom-table2 tbody tr");
+
+        // Iterar sobre todas las filas de la tabla
+        for (var i = 0; i < filas.length; i++) {
+            var fila = filas[i];
+            // Obtener el contenido de la fila y convertirlo a mayúsculas para hacer la comparación sin distinción entre mayúsculas y minúsculas
+            var contenidoFila = fila.innerText.toUpperCase();
+            // Si el contenido de la fila contiene el texto de búsqueda, mostrar la fila; de lo contrario, ocultarla
+            if (contenidoFila.includes(textoBusqueda)) {
+                fila.classList.remove("d-none"); // Mostrar la fila
+            } else {
+                fila.classList.add("d-none"); // Ocultar la fila
+            }
+        }
+    }
+</script>
+
+{% endblock %}

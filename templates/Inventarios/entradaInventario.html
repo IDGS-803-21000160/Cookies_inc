@@ -1,0 +1,66 @@
+
+{% extends 'ContenedorMain/contenedorMain.html' %}
+{% block content %}
+    {% from "Macros/inputComponent.html" import search_input, input_custom %}
+    {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttonsave%}
+
+    <div class="row">
+        <div class="col-md-8">
+            <h1>ENTRADA A MATERIAL</h1>
+        </div>
+        <div class="col-md-4">
+            <form action="/inventario/seleccionarTipoEntrada" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {{ custom_buttongreen("Seleccionar Otra Entrada") }}
+            </form>
+            
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10 mb-4 mt-3" style="height: 2px; background-color: rgba(0, 0, 0, 0.603);"></div>
+    </div>
+
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 60vh;"> <!-- Añade altura mínima del 100% de la altura de la ventana -->
+        <div class="row w-100"> <!-- Puedes ajustar el ancho al 100% si quieres que ocupe todo el ancho del contenedor padre -->
+            <div class="col-md-12 box-form">
+
+                <h4 class="mb-5">Selecciona la entrada e ingresa una cantidad</h4>
+                <form action="/inventario/guardarEntrada" method="post" novalidate>
+                    <input type="hidden" name="tipo" value="{{ tipo }}">
+                    {% if tipo == '1' %}
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            {{ input_custom(form.material) }}
+                        </div>
+
+                        <div class="col-md-2">
+                            {{ input_custom(form.cantidad) }}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="row">
+                        <div class="col-md-8">
+                            {{ input_custom(form.producto) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ input_custom(form.cantidad) }}
+                        </div>
+                    </div>
+                    {% endif %}            
+    
+                    <div class="row justify-content-center">
+                        <div class="col-md-12 text-center">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            {{ custom_button("Guardar Cambios") }}
+                        </div>
+                    </div>
+    
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    
+
+{% endblock %}

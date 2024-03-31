@@ -1,0 +1,54 @@
+{% extends 'ContenedorMain/contenedorMain.html' %}
+{% block content %}
+    {% from "Macros/inputComponent.html" import search_input, input_custom %}
+    {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttonsave%}
+
+    <div class="row">
+        <div class="col-md-8">
+            <h1>AGREGAR MATERIAL</h1>
+        </div>
+        <div class="col-md-4">
+            <form action="/inventario/materiales" method="post">
+                {{ custom_buttongreen("Volver a Materiales") }}
+            </form>
+            
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10 mb-4 mt-3" style="height: 2px; background-color: rgba(0, 0, 0, 0.603);"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 box-form">
+            <form action="/inventario/guardarMaterial" method="post" novalidate>
+
+                <div class="row mb-3">
+                    <div class="col-md-9">
+                        {{ input_custom(form.nombreMaterial) }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ input_custom(form.diasCaducidad) }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        {{ input_custom(form.unidadMedidaAgregar) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ input_custom(form.costoMaterial) }}
+                    </div>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-12 text-center"> <!-- Aquí puedes ajustar el ancho de la columna según sea necesario -->
+                        {{ custom_button("Guardar Material") }}
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

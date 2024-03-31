@@ -1,0 +1,102 @@
+{% extends 'ContenedorMain/contenedorMain.html' %}
+{% block content %}
+    {% from "Macros/inputComponent.html" import search_input, input_custom, input_select %}
+    {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttonsave %}
+
+    <div class="row">
+        <div class="col-md-8">
+            <h1>AGREGAR PRODUCTO</h1>
+        </div>
+        <div class="col-md-4">
+            <form action="/inventario/productos" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {{ custom_buttongreen("Volver a Productos") }}
+            </form>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10 mt-3" style="height: 2px; background-color: rgba(0, 0, 0, 0.603);"></div>
+    </div>
+
+    <form action="/inventario/guardarProducto" method="post" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="row">
+            <div class="col-md-12 box-form3">
+
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        {{ input_custom(form.nombreProducto) }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ input_custom(form.alias) }}
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-md-6">
+                        <div class="col-md-12 mb-3">
+                            {{ input_custom(form.materiales) }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="number" id="cantidad" placeholder="Cantidad" class="input-container" name="cantidad">
+                            </div>
+
+                            <div class="col-md-6">
+                                <button type="submit" name="action" value="agregar_item" class="custom-button">Agregar Ingrediente</button>
+                            </div>
+                        </div>
+
+                        <div class="row text-center mt-3">
+                            <label style="font-weight: bold;">AGREGA LOS INGREDIENTES</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="small-table-container">
+                            <table id="tablaElementos" class="small-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ingrediente</th>
+                                        <th>Cantidad</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for t in tabladatos %}
+                                        <tr>
+                                            <td>{{ t.nombre_material }}</td>
+                                            <td>{{ t.cantidad }}</td>
+                                            <td>
+                                                <input type="hidden" name="id_material" value="{{ t.id_material }}">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <button type="submit" name="action" value="quitar" class="custom-buttondelete">Quitar</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        {{ input_custom(form.diasCaducidad) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ input_custom(form.costoProducto) }}
+                    </div>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-12 text-center">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" name="action" value="guardar_producto" class="custom-buttongreen">Guardar Producto</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

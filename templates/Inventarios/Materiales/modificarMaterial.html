@@ -1,0 +1,51 @@
+{% extends 'ContenedorMain/contenedorMain.html' %}
+{% block content %}
+    {% from "Macros/inputComponent.html" import input_custom %}
+    {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen %}
+
+    <div class="row">
+        <div class="col-md-8">
+            <h1>MODIFICACIÓN DE MATERIAL</h1>
+        </div>
+        <div class="col-md-4">
+            <form action="/inventario/materiales" method="post">
+                {{ custom_buttongreen("Volver a Materiales") }}
+            </form>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10 mb-4 mt-3" style="height: 2px; background-color: rgba(0, 0, 0, 0.603);"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 box-form">
+            <form action="/inventario/actualizarMaterial" method="post" novalidate>
+                <input type="hidden" name="material_id" value="{{ material.id_material }}">
+                <div class="row mb-3">
+                    <div class="col-md-9">
+                        {{ input_custom(form.nombreMaterial, value=material.nombre_mat) }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ input_custom(form.diasCaducidad, value = material.dias_caducidad) }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        {{ input_custom(form.unidadMedidaAgregar, value = material.unidad_medida) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ input_custom(form.costoMaterial, value = material.costo_mat) }}
+                    </div>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-12 text-center">
+                        {{ custom_button("Modificar Material") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

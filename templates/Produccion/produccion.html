@@ -1,0 +1,53 @@
+{%extends 'ContenedorMain/contenedorMain.html' %}
+
+{%block content %}
+
+<div class="row">
+    <div class="col-md-8">
+        <h1>PRODUCTO TERMINADO</h1>
+    </div>
+    <div class="col-4">
+        <form action="/produccionGalleta" method="get">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="custom-buttongreen">Producir Galleta</button>
+        </form>
+    </div>
+</div>
+<div class="row">
+    <form action="/produccionGalleta" method="get">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <table class="table table-bordered table-striped custom-table">
+            <thead class="text-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Galleta</th>
+                    <th>Cantidad en venta</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set counter = namespace(value=1) %}
+                {% for pro in productos %}
+                    {% set color = '' %}
+                    {% if pro.cantidad <= 10 %}
+                        {% set color = '#FEB9B6' %}
+                    {% elif pro.cantidad <= 20 %}
+                        {% set color = '#FAFEB6' %}
+                    {% endif %}
+                    <tr style="background-color: {{ color }};">
+                        <th scope="row">{{ counter.value }}</th>
+                        <td>{{ pro.nombre }}</td>
+                        <td>{{ pro.cantidad }}</td>
+                        <td><button type="button" onclick="solicitarProduccion('button{{ counter.value }}', '{{ pro.idPro }}')" name="action" value="Producir{{ counter.value }}" id="button{{ counter.value }}" class="btn btn-secondary">Producir</button></td>
+                    </tr>
+                    {% set counter.value = counter.value + 1 %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>
+
+
+<script src="../static/js/produccion.js"></script>
+
+{%endblock%}

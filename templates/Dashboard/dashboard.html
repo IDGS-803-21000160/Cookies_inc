@@ -1,0 +1,167 @@
+{% extends 'ContenedorMain/contenedorMain.html' %}
+
+
+{% block content %}
+    
+<!--Main-->
+<div class="main">
+    
+
+    <!--cards-->
+    <div class="cardBox">
+        <div class="card">
+            <div>
+                <div class="numbers">${{totalVentas}}</div>
+                <div class="cardName">Revenue</div>
+            </div>
+            <div class="iconBx">
+                <ion-icon name="cash-outline"></ion-icon>
+            </div>
+        </div>
+        <div class="card">
+            <div>
+                <div class="numbers">{{cantidadVentas}}</div>
+                <div class="cardName">Sales</div>
+            </div>
+            <div class="iconBx">
+                <ion-icon name="cart-outline"></ion-icon>
+            </div>
+        </div>
+        <div class="card">
+            <div>
+                <div class="numbers">{{productoVendido}}</div>
+                <div class="cardName">Selled the most</div>
+            </div>
+            <div class="iconBx">
+                <ion-icon name="analytics-outline"></ion-icon>
+            </div>
+        </div>   
+        <div class="card">
+            <div>
+                <div class="numbers">{{caducidades}}</div>
+                <div class="cardName">Productos en riesgo (caducidad)</div>
+                
+            </div>
+            <div class="iconBx">
+                <!-- <ion-icon name="cash-outline"></ion-icon> -->
+                <ion-icon name="alert-circle-outline"></ion-icon>
+            </div>
+        </div>                                                              
+    </div>
+    <!--Add charts-->
+    <div class="graphBox">
+        
+        <div class="box">
+            <!-- Select element for choosing a month -->
+            <div class="select-wrapper">
+            <select id="monthSelect" class="form-select form-select-sm">
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+            </div>
+            <canvas id="myChart"></canvas>
+        </div>
+        <div class="box">
+            <canvas id="earning"></canvas>
+        </div>
+    </div>
+
+
+    <div class="details">
+        <!-- order details list -->
+        <div class="recentOrders">
+            <div class="cardHeader">
+                <h2>Recent Orders</h2>
+                <!-- <a href="#" class="btn">View All</a> -->
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <td>VentaID</td>
+                        <td>ClienteID</td>
+                        <td>Folio</td>
+                        <td>Fecha</td>
+                        <td>Total</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venta in ventas %}
+                    <tr>
+                        <td>{{ venta.Id_Venta }}</td>
+                        <td>{{ venta.Cliente_ID }}</td>
+                        <td>{{ venta.Folio_Venta }}</td>
+                        <td>{{ venta.Fecha_Venta }}</td>
+                        <td>{{ venta.Total_Venta }}</td>
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- New Customers -->
+        <div class="recentCustomers">
+            <div class="cardHeader">
+                <h2>Caducidades Inventario</h2>
+            </div>
+            <table>
+                {% for cad in caducidadesINV %}
+                <tr>
+                    <td><h4>ID: {{cad.idInventario}}</h4></td>
+                    <!-- <td><div class="imgBx"><img src="Images/User2.png"></div></td> -->
+                    <td><h4>{{cad.Nombre}} <br><span>Caduca el: {{cad.caducidadInventario}}</span></h4></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="details produccion" >
+        <!-- order details list -->
+        <div class="recentOrders">
+            <div class="cardHeader">
+                <h2>En produccion</h2>
+                <!-- <a href="#" class="btn">View All</a> -->
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Nombre Producto</td>
+                        <td>Costo Producto</td>
+                        <td>Fecha de inicio de produccion</td>
+                        <td>Fecha de fin de produccion</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pro in produccion %}
+                        {% set color = '#DDFFC7' %}
+                        {% if pro.estado_fecha == 0 %}
+                            {% set color = '#FFCFC7' %}
+                        {% endif %}
+                        <tr style="background-color: {{ color }};">
+                            <td>{{ pro.nombre }}</td>
+                            <td>{{ pro.costo }}</td>
+                            <td>{{ pro.fechaInicio }}</td>
+                            <td>{{ pro.fechaFin }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>   
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+<script src="../static/js/my_chart.js"></script>
+
+{% endblock %}

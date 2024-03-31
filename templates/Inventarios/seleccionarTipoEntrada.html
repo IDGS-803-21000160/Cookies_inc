@@ -1,0 +1,46 @@
+
+{% extends 'ContenedorMain/contenedorMain.html' %}
+{% block content %}
+    {% from "Macros/inputComponent.html" import search_input, input_custom %}
+    {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttonsave, custom_buttonBig, custom_buttonBigGreen%}
+
+    <div class="row">
+        <div class="col-md-8">
+            <h1>ENTRADA A INVENTARIO</h1>
+        </div>
+        <div class="col-md-4">
+            <form action="/inventario" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {{ custom_buttongreen("Volver a Inventario") }}
+            </form>
+            
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10 mb-4 mt-3" style="height: 2px; background-color: rgba(0, 0, 0, 0.603);"></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5">
+            <form action="/inventario/entradaInventario" method="post" novalidate>
+                <input type="hidden" name="tipo" value="{{ 1 }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {{ custom_buttonBig("MATERIALES") }}
+            </form>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-center justify-content-center">
+            <h5 class="text-center">SELECCIONA EL TIPO DE ENTRADA</h5>
+        </div>        
+
+        <div class="col-md-5">
+            <form action="/inventario/entradaInventario" method="post" novalidate>
+                <input type="hidden" name="tipo" value="{{ 2 }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {{ custom_buttonBigGreen("PRODUCTOS") }}
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
