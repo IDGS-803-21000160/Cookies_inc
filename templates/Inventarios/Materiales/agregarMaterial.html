@@ -9,6 +9,7 @@
         </div>
         <div class="col-md-4">
             <form action="/inventario/materiales" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Volver a Materiales") }}
             </form>
             
@@ -22,7 +23,7 @@
     <div class="row">
         <div class="col-md-12 box-form">
             <form action="/inventario/guardarMaterial" method="post" novalidate>
-
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="row mb-3">
                     <div class="col-md-9">
                         {{ input_custom(form.nombreMaterial) }}

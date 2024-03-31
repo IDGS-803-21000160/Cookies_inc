@@ -12,16 +12,19 @@
         </div>
         <div class="col-md-2">
             <form action="/inventario/agregarMaterial" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Agregar Material") }}
             </form>
         </div>
         <div class="col-md-2">
             <form action="/inventario/agregarProducto" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Agregar Producto") }}
             </form>
         </div>
         <div class="col-md-2">
             <form action="/inventario/seleccionarTipoEntrada" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Entrada a Inventario") }}
             </form>
         </div>
@@ -43,35 +46,24 @@
         </div>
         <div class="col-md-2">
             <form action="/inventario" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_button("General") }}
             </form>
         </div>
         <div class="col-md-2">
             <form action="/inventario/productos" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_button("Productos") }}
             </form>
         </div>
         <div class="col-md-2">
             <form action="/inventario/mermas" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_button("Mermas") }}
             </form>
         </div>
     </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
-
-    
     <div class="row mt-5">
         <div class="col-md-12 text-center">
 
@@ -99,12 +91,14 @@
                             <td>
                                 <form action="/inventario/editarMaterial" method="POST" style="display: inline;">
                                     <input type="hidden" name="material_id" value="{{ material.id_material }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     {{ custom_button("Editar") }}
                                 </form>
                             </td>
                             <td>
                                 <form action="/inventario/eliminarMaterial" method="POST" style="display: inline;">
                                     <input type="hidden" name="material_id" value="{{ material.id_material }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     {{ custom_buttondelete("Eliminar") }}
                                 </form>
                             </td>   
