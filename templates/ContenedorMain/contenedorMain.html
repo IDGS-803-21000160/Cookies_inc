@@ -12,44 +12,119 @@
     <link rel="stylesheet" href="../../static/css/estilosMacros.css">
     <link rel="stylesheet" href="../../static/css/estilosGenerales.css">
     <link rel='stylesheet' type='text/css' href='../static/css/styleGabo.css'>
-
+    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../../static/css/layout.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
     <link rel="stylesheet" href="../../static/sweetalert2/sweetalert2.min.css">
 </head>
 <body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/dashboard" style="color: black">Cookies</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNavDropdown"
+        aria-controls="navbarNavDropdown"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          
+          <li class="nav-item">
+            <a
+              id="users"
+              class="nav-link active"
+              aria-current="page"
+              style="color: aliceblue"
+              href="/pagePrincipal/user"
+              >Usuarios
+            </a>
+            <span class="material-symbols-outlined"> group_add </span>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              style="color: aliceblue"
+              href="/pagePrincipal/proveedor"
+              >Proveedores</a
+            >
+            <span class="material-symbols-outlined">
+              supervisor_account
+            </span>
+          </li>
 
-<nav class="navbar navbar-expand-lg custom-nav">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/dashboard">Cookies</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Ventas</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/inventario">Inventario</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/paquetes">Paquetes</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Compras</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/produccion">Produccion</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Proveedores</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Usuarios</a>
-        </li>
-      </ul>
+          <li class="nav-item">
+            <a class="nav-link" style="color: aliceblue" href="#">Compras</a>
+            <span class="material-symbols-outlined">
+              shopping_cart_checkout
+            </span>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" style="color: aliceblue" href="#/inventario"
+              >Inventario</a
+            >
+            <span class="material-symbols-outlined"> inventory </span>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" style="color: aliceblue" href="#">Recetas</a>
+            <span class="material-symbols-outlined"> description </span>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" style="color: aliceblue" href="/produccion"
+              >Producción</a
+            >
+            <span class="material-symbols-outlined">
+              precision_manufacturing
+            </span>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" style="color: aliceblue" href="#"
+              >Inventario Produc.Terminado</a
+            >
+            <span class="material-symbols-outlined"> inventory_2 </span>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style="color: aliceblue"
+            >
+              Ventas
+            </a>
+            <span class="material-symbols-outlined"> currency_exchange </span>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="/pagePrincipal/ventas"
+                  >Venta</a
+                >
+              </li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item logout">
+            <a
+              class="nav-link"
+              style="color: aliceblue"
+              href=""
+              >Salir</a
+            >
+            <span class="material-symbols-outlined"> logout </span>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
 <div class="container mt-5">
     {% block content %}
@@ -58,5 +133,7 @@
 </div>
 
 <script src="../../static/sweetalert2/sweetalert2.min.js"></script>
+<script src="https://kit.fontawesome.com/b526ea65d4.js" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </body>
 </html>
