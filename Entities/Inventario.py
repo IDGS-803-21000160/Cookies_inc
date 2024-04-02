@@ -3,7 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy  # Importar desde flask_sqlalchemy
 from datetime import datetime
 from sqlalchemy import Boolean
-from flask_Login import UserMixin
+from flask_login import UserMixin
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'  # Puedes cambiar la URI según tu base de datos
@@ -107,4 +107,14 @@ class Usuario(db.Model,UserMixin):
 
     def get_id(self):
         return str(self.id_us)
-    
+
+class LoginLog(db.Model):
+    __tablename__ = 'login_logs'
+
+    log_id = db.Column(db.Integer, primary_key=True)
+    id_us = db.Column(db.Integer, db.ForeignKey('usuario.id_us'))
+    user = db.Column(db.String(100))
+    login_time = db.Column(db.DateTime, default=datetime.now)
+    ip_address = db.Column(db.String(45))
+    user_agent = db.Column(db.String(255))
+    login_successful = db.Column(db.Boolean, default=True)

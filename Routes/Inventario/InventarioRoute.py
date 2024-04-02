@@ -1,6 +1,7 @@
 
 from flask import  render_template, request, redirect, url_for, flash, current_app, Blueprint
 from sqlalchemy import text
+from flask_login import login_required
 
 # from Entities.InventarioForm import InventarioForm
 from Entities.InventarioForm import InventarioForm
@@ -22,6 +23,7 @@ modulo_inventario = Blueprint('modulo_inventario', __name__)
 # csrf=CSRFProtect()
 
 @modulo_inventario.route('/inventario',methods=["GET","POST"])
+@login_required
 def inventarios():
     #Cambia a stock caducado lo que no esta en merma
     update_query = "UPDATE inventario SET tipostock_inv = 3 WHERE fecha_caducidad <= CAST(NOW() AS DATE) AND tipostock_inv not in (3,4);"
