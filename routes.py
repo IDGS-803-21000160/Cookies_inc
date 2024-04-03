@@ -8,7 +8,7 @@ from Entities.Inventario import db,Usuario
 from datetime import datetime
 from Routes.Inventario.InventarioRoute import modulo_inventario
 from Routes.Produccion.ProducionRoute import modulo_produccion
-from Routes.Dashboard.DashboardRoutes import modulo_dashboard
+# from Routes.Dashboard.DashboardRoutes import modulo_dashboard
 from Routes.Login.LoginRoute import modulo_login
 from Routes.Usuarios.UsuariosRoute import modulo_usuarios
 from flask_mysqldb import MySQL

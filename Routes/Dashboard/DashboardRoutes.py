@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, Flask
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_modulo_dashboard, Flask
 from Entities.Inventario import db
+from sqlalchemy import text
 from config import DevelopmentConfig
 from flask_wtf.csrf import CSRFProtect
 import datetime
@@ -14,55 +15,77 @@ def dashboard():
     caducidadesINV = getCaducidades()
     cardData = getCards()
 
-
     for item in cardData:
         caducidades = item['Caducidades']
         cantidadVentas = item['cantidadVentas']
         totalVentas = item['totalVentas']
         productoVendido = item['productoVendido']
 
-    return render_template("Dashboard/dashboard.html",produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
+    #----- CHARTS ------
+    ventasAnio = getVentasAnio2()
+    ventasPr = get_ventasPr()
 
-@modulo_dashboard.route('/get_ventasPr', methods=['GET'])
+    return render_template("Dashboard/dashboard.html",ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
+
 def get_ventasPr():
-    # Get the week number from the request parameters
-    week_number = request.args.get('week_number')
 
     # Prepare the SQL query to filter by week and sum quantities
-    query = """
-        SELECT paquete.nombre_paq as nombre, sum(ventaitem.cantidad) as cantidad, month(ventaitem.fecha_registro) as mes 
+    query = text("""
+        SELECT paquete.nombre_paq as nombre, sum(ventaitem.cantidad) as cantidad, month(venta.fecha_venta) as mes 
 	    FROM ventaitem
         JOIN venta ON venta.id_venta = ventaitem.ventaid_itm
         join paquete on ventaitem.paqueteid_itm = paquete.id_paquete
-        WHERE month(ventaitem.fecha_registro) = %s
-        GROUP BY venta.fecha_venta, paquete.nombre_paq;
-    """
+        GROUP BY month(venta.fecha_venta), paquete.nombre_paq;
+    """)
 
     # Execute the query with the week number parameter
-    cur = current_app.current_app.mysql.connection.cursor(current_app.MySQLdb.cursors.DictCursor)
-    cur.execute(query, (week_number,))
-    data = cur.fetchall()
-    cur.close()
 
-    return current_app.jsonify(data)
+    data = db.session.execute(query)
 
-@modulo_dashboard.route('/getVentasAnio', methods=['GET'])
-def getVentasAnio():
-    query = """
-        SELECT sum(ventaitem.cantidad) as cantidad, month(ventaitem.fecha_registro) as mes
-        FROM ventaitem
-        GROUP BY month(ventaitem.fecha_registro);
-    """
+    # Estructura para almacenar los resultados por mes
+    resultados_por_mes = {}
+
+    # Iterar sobre los resultados y almacenarlos en la estructura
+    for row in data:
+        mes = row['mes']
+        if mes not in resultados_por_mes:
+            resultados_por_mes[mes] = []
+        resultados_por_mes[mes].modulo_dashboardend(row)
+
+    return resultados_por_mes
+
+def getVentasAnio2():
+    query = text("""
+        SELECT COALESCE(SUM(ventaitem.cantidad), 0) AS cantidad, months.mes
+        FROM (
+            SELECT 1 AS mes
+            UNION SELECT 2 AS mes
+            UNION SELECT 3 AS mes
+            UNION SELECT 4 AS mes
+            UNION SELECT 5 AS mes
+            UNION SELECT 6 AS mes
+            UNION SELECT 7 AS mes
+            UNION SELECT 8 AS mes
+            UNION SELECT 9 AS mes
+            UNION SELECT 10 AS mes
+            UNION SELECT 11 AS mes
+            UNION SELECT 12 AS mes
+        ) AS months
+        LEFT JOIN ventaitem ON MONTH(ventaitem.fecha_registro) = months.mes
+        GROUP BY months.mes;
+    """)
     # Ejecutar la consulta
-    cur = current_app.mysql.connection.cursor(current_app.MySQLdb.cursors.DictCursor)
-    cur.execute(query)
-    data = cur.fetchall()
-    cur.close()
 
-    return current_app.jsonify(data)
+    data = db.session.execute(query)
+
+    # Format the data as list of dictionaries
+    formatted_data = [{'cantidad': row['cantidad'], 'mes': row['mes']} for row in data]
+
+    # Return JSON response
+    return formatted_data
 
 def getVentasAnio():
-    query = """
+    query = text("""
         SELECT cliente_venta AS Cliente_ID,
             folio_venta AS Folio_Venta,
             fecha_venta AS Fecha_Venta,
@@ -71,16 +94,14 @@ def getVentasAnio():
         FROM venta
         ORDER BY fecha_registro DESC
         LIMIT 6;
-    """
+    """)
     # Ejecutar la consulta
-    cur = current_app.mysql.connection.cursor(current_app.MySQLdb.cursors.DictCursor)
-    cur.execute(query)
-    data = cur.fetchall()
-    cur.close()
+
+    data = db.session.execute(query)
     return data
 
 def getCaducidades():
-    query = """
+    query = text("""
     SELECT 
     inv.fecha_caducidad AS caducidadInventario,
     COALESCE(p.nombre_producto, m.nombre_mat) AS nombre,
@@ -92,32 +113,23 @@ def getCaducidades():
     left JOIN 
     producto p ON inv.producto_inv = p.id_producto
     ORDER BY inv.fecha_caducidad ASC limit 6;
-    """
+    """)
     # Ejecutar la consulta
-    cur = current_app.mysql.connection.cursor(current_app.MySQLdb.cursors.DictCursor)
-    cur.execute(query)
-    data = cur.fetchall()
-    cur.close()
+    data = db.session.execute(query)
+
     return data
 
 def getCards():
     data = []
 
-    query = """ SELECT COUNT(*) AS cuenta FROM inventario WHERE DATEDIFF(fecha_caducidad, CURDATE()) <= 20;"""
-    cur = current_app.mysql.connection.cursor(current_app.MySQLdb.cursors.DictCursor)
-    cur.execute(query)
-    caducidades = cur.fetchone()
+    query = text(""" SELECT COUNT(*) AS cuenta FROM inventario WHERE DATEDIFF(fecha_caducidad, CURDATE()) <= 20;""")
+    caducidades = db.execute(query).fetchone()
 
     query = """ SELECT count(*) as cantidadVentas FROM venta; """
-    cur = current_app.mysql.connection.cursor(current_app.MySQLdb.cursors.DictCursor)
-    cur.execute(query)
-    cantidadVentas = cur.fetchone()
+    cantidadVentas = db.execute(text(query)).fetchone()
 
     query = """ SELECT sum(total_ventas) as totalVentas FROM venta; """
-    cur = current_app.mysql.connection.cursor(current_app.MySQLdb.cursors.DictCursor)
-    cur.execute(query)
-    totalVentas = cur.fetchone()
-    cur.close()
+    totalVentas = db.execute(text(query)).fetchone()
 
     query = """SELECT p.nombre_paq AS productoVendido, COUNT(vi.id_ventaitem) AS cantidad_ventas 
     FROM ventaitem vi 
@@ -125,10 +137,8 @@ def getCards():
     join paquete p on p.id_paquete = pi.paqueteid_itm
     GROUP BY p.nombre_paq
     ORDER BY cantidad_ventas DESC LIMIT 1; """
-    cur = current_app.mysql.connection.cursor(current_app.MySQLdb.cursors.DictCursor)
-    cur.execute(query)
-    productoVendido = cur.fetchone()
-    cur.close()
+
+    productoVendido = db.execute(text(query)).fetchone()
 
     # Append the results to the data list
     data.append({
@@ -151,8 +161,6 @@ def getProduccion():
     join producto prod on prod.id_producto = pi.productoid_itm
     WHERE p.fecha_inicio IS NOT NULL order by  p.fecha_inicio asc limit 6;"""
     # Ejecutar la consulta
-    cur = current_app.mysql.connection.cursor(current_app.MySQLdb.cursors.DictCursor)
-    cur.execute(query)
-    data = cur.fetchall()
-    cur.close()
+    data = db.execute(text(query))
     return data
+# '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

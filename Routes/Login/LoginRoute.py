@@ -39,7 +39,7 @@ def index():
 
         # Verifica si el usuario existe
         if user:
-            user_id = user.id_us
+            user_id = user.id_usuario
             # Verifica el estado del usuario
             if user.estatus == '0':
                 log_attempt(user_id, False)
@@ -73,6 +73,7 @@ def index():
     return render_template("Login/login.html", form=user_form)
 
 @modulo_login.route("/pagePrincipal")
+@login_required
 def pagePrincipal():
     return render_template('ContenedorMain/contenedorMain.html')
 

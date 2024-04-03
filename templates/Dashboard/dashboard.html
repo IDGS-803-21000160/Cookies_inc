@@ -54,23 +54,16 @@
         <div class="box">
             <!-- Select element for choosing a month -->
             <div class="select-wrapper">
-            <select id="monthSelect" class="form-select form-select-sm">
-                <option value="1">January</option>
-                <option value="2">February</option>
-                <option value="3">March</option>
-                <option value="4">April</option>
-                <option value="5">May</option>
-                <option value="6">June</option>
-                <option value="7">July</option>
-                <option value="8">August</option>
-                <option value="9">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
-            </select>
+                <select id="monthSelect">
+                    <option value="all">All Months</option>
+                    {% for month, data in ventasPr.items() %}
+                        <option value="{{ month }}">{{ month }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <canvas id="myChart"></canvas>
         </div>
+        
         <div class="box">
             <canvas id="earning"></canvas>
         </div>
@@ -159,9 +152,108 @@
     </div>
 </div>
 
+
+
+
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>   
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
-<script src="../static/js/my_chart.js"></script>
+
+<!-- <script type="module" src="../static/js/my_chart.js"></script> -->
+<script>
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var earning = document.getElementById('earning').getContext('2d');
+
+    const allColors = [
+    // 'rgba(153, 102, 255, 1)',
+    // 'rgba(255, 159, 64, 1)',
+    // 'rgba(75, 192, 192, 1)',
+    // 'rgba(255, 0, 0, 1)',     // Red
+    // 'rgba(0, 255, 0, 1)',     // Green
+    // 'rgba(0, 0, 255, 1)',     // Blue
+    // 'rgba(255, 255, 0, 1)',   // Yellow
+    // 'rgba(255, 0, 255, 1)',   // Magenta
+    // 'rgba(0, 255, 255, 1)'
+    'rgba(255, 206, 86, 1)',
+    'rgba(75, 192, 192, 1)',
+    'rgba(153, 102, 255, 1)',
+    'rgba(255, 159, 64, 1)',
+    'rgba(255, 99, 132, 1)',
+    'rgba(54, 162, 235, 1)',
+    'rgba(255, 206, 86, 1)',
+    'rgba(75, 192, 192, 1)',
+    'rgba(153, 102, 255, 1)',
+    'rgba(255, 159, 64, 1)'
+];
+
+    var ventasAnioData = {{ ventasAnio | tojson | safe }};
+    // Extract the 'cantidad' values from each object in ventasAnioData2
+    var cantidadData = ventasAnioData.map(item => item.cantidad);
+    
+    console.log(ventasAnioData);
+    var earning = new Chart(earning, {
+        type: 'line',
+        data: {
+            labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'], // Use the keys as labels
+            datasets: [{
+                label: 'Distribucion de ventas',
+                backgroundColor:  allColors,
+                data: cantidadData // Use the values as data points
+            }]
+        },
+        options: {
+            responsive: true, 
+        }
+    });
+    
+    
+    var myChart = new Chart(ctx, {
+        type: 'polarArea',
+        data: {
+            datasets: [{
+                backgroundColor: allColors
+            }]
+
+        },
+        options: {
+            responsive: true, 
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Ventas Producto Mensual'
+                }
+            }
+        }
+    });
+
+    // Function to load the chart based on the selected month
+    function productChart() {
+        const ventasPr = {{ ventasPr | tojson | safe }};
+        console.log(ventasPr);
+        const month = document.getElementById('monthSelect').value;
+        const chartData = ventasPr[month] || [];
+
+        // Extract the 'cantidad' values from each object in chartData
+        const cantidadData = chartData.map(item => ({
+            label: item.nombre,
+            value: item.cantidad
+        }));
+
+        // Update the chart with the new data
+        myChart.data.labels = cantidadData.map(item => item.label);
+        myChart.data.datasets[0].data = cantidadData.map(item => item.value);
+        myChart.update();
+        
+    }
+
+    // Call productChart initially to load the chart for all months
+    productChart();
+
+    // Add event listener to the select element
+    document.getElementById('monthSelect').addEventListener('change', function() {
+        productChart();
+    });
+</script>
 
 {% endblock %}

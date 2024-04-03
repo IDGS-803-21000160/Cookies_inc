@@ -93,7 +93,7 @@ class PaqueteItem(db.Model):
 class Usuario(db.Model,UserMixin):
     __tablename__ = 'usuario'
 
-    id_us = db.Column(db.Integer, primary_key=True)  # Auto increment se maneja automáticamente
+    id_usuario = db.Column(db.Integer, primary_key=True)  # Auto increment se maneja automáticamente
     tipousuario = db.Column(db.String(50), nullable=False)
     nombrecompleto = db.Column(db.String(70), nullable=False)
     estatus = db.Column(db.String(1), default='1')  # BIT en MySQL se maneja como Boolean en SQLAlchemy
@@ -106,13 +106,13 @@ class Usuario(db.Model,UserMixin):
     failed_attempts = db.Column(db.Integer, default=0)
 
     def get_id(self):
-        return str(self.id_us)
+        return str(self.id_usuario)
 
 class LoginLog(db.Model):
     __tablename__ = 'login_logs'
 
     log_id = db.Column(db.Integer, primary_key=True)
-    id_us = db.Column(db.Integer, db.ForeignKey('usuario.id_us'))
+    id_us = db.Column(db.Integer, db.ForeignKey('usuario.id_usuario'))
     user = db.Column(db.String(100))
     login_time = db.Column(db.DateTime, default=datetime.now)
     ip_address = db.Column(db.String(45))
