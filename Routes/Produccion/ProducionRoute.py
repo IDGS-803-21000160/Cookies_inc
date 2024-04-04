@@ -7,7 +7,7 @@ modulo_produccion = Blueprint('modulo_produccion', __name__)
 # '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # ''''''''''''''''''''''''''PRODUCCION'''''''''''''''''''''''''''''''''''''''
 
-@modulo_produccion.route('/produccion')
+@modulo_produccion.route('/produccion', methods=['GET','POST'])
 def produccion():
     if request.method == 'POST':
         idPro = request.form.get('idPro')  # Obtener el idPro enviado en la solicitud POST
@@ -18,10 +18,12 @@ def produccion():
 
 def getProductos():
     query = """
-    select inv.id_inventario as idInv, p.id_producto as idPro, p.nombre_producto as nombre, inv.cantidad_inv as cantidad
+    select inv.id_inventario as idInv, p.id_producto as idPro, p.nombre_producto as nombre, sum(inv.cantidad_inv) as cantidad
     from inventario inv join producto p on inv.producto_inv = p.id_producto 
     where p.id_producto not in 
-        (select pi.productoid_itm from produccionitem pi join produccion p ON p.id_produccionitem = pi.id_produccionitem where p.fecha_fin is null);
+        (select pi.productoid_itm from produccionitem pi join produccion p ON p.id_produccionitem = pi.id_produccionitem where p.fecha_fin is null)
+        and inv.tipostock_inv = 1
+	group by p.id_producto;
     """
     # Ejecutar la consulta
     data = db.session.execute(text(query))
@@ -35,7 +37,7 @@ def agregarProduccion(idProducto):
     db.session.commit()
     return {'response':'success'}
 
-@modulo_produccion.route('/produccionGalleta', methods=['GET'])
+@modulo_produccion.route('/produccionGalleta', methods=['GET','POST'])
 def produccionGalleta():
     if request.method == 'POST':
         idProducto = request.form.get('idProducto')
