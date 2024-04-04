@@ -72,10 +72,10 @@ def index():
 
     return render_template("Login/login.html", form=user_form)
 
-@modulo_login.route("/pagePrincipal")
+@modulo_login.route("/dashboard")
 @login_required
 def pagePrincipal():
-    return render_template('/dashboard.html')
+    return redirect(url_for('modulo_dashboard.dashboard'))
 
 @modulo_login.route('/logout')
 def logout():

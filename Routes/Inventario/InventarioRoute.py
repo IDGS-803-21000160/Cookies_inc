@@ -26,6 +26,16 @@ modulo_inventario = Blueprint('modulo_inventario', __name__)
 @modulo_inventario.route('/inventario',methods=["GET","POST"])
 @login_required
 def inventarios():
+    id_inv = 0
+    isLote = 0 #1 es que mostrara los lotes
+    try:
+        id_inv = int(request.form['id_inv'])
+        isLote = int(request.form['isLote'])
+    except:
+        id_inv = 0
+        isLote = 0
+
+    resultados = ''
     #Cambia a stock caducado lo que no esta en merma
     update_query = "UPDATE inventario SET tipostock_inv = 3 WHERE fecha_caducidad <= CAST(NOW() AS DATE) AND tipostock_inv not in (3,4);"
     db.session.execute(text(update_query))
@@ -35,27 +45,50 @@ def inventarios():
     db.session.execute(text(update_query))
     db.session.commit()
 
-    consulta = text("""
-    SELECT 
+    if isLote == 0:
+
+        consulta = text("""
+        SELECT 
+        IFNULL(producto_inv, material_inv) id_inv,
+        tipostock_inv,
+        nombre_stock tipo_stock, 
+        IFNULL(nombre_producto, nombre_mat) nombre, 
+        COUNT(DISTINCT id_inventario) lotes,
+        nombre_tipoInv tipo_inv,
+        SUM(IFNULL(costoproducto, costo_mat)) costo,
+        ROUND(SUM(cantidad_inv), 2) cantidad_inv
+        FROM inventario
+            INNER JOIN tipostock ON id_tipostock = tipostock_inv
+            LEFT JOIN producto ON id_producto = producto_inv
+            LEFT JOIN material ON id_material = material_inv
+            INNER JOIN tipoinventario ON id_tipoInventario = tipo_inv
+        WHERE cantidad_inv > 0 and tipostock_inv not in (2, 4)
+        GROUP BY id_inv, tipostock_inv, tipo_stock, nombre, tipo_inv
+        ORDER BY lotes desc;
+        """)
+        resultados = db.session.execute(consulta)
+    else:
+        consulta = text("""
+        SELECT 
         id_inventario,
         tipostock_inv,
         nombre_stock tipo_stock, 
         IFNULL(nombre_producto, nombre_mat) nombre, 
         nombre_tipoInv tipo_inv,
         IFNULL(costoproducto, costo_mat) costo,
-        fecha_caducidad,
-        ROUND(cantidad_inv, 2) cantidad_inv
-    FROM inventario
-        INNER JOIN tipostock ON id_tipostock = tipostock_inv
-        LEFT JOIN producto ON id_producto = producto_inv
-        LEFT JOIN material ON id_material = material_inv
-        INNER JOIN tipoinventario ON id_tipoInventario = tipo_inv
-    WHERE cantidad_inv > 0 and tipostock_inv not in (2, 4)
-    ORDER BY 6, 3;
-    """)
-    resultados = db.session.execute(consulta)
+        ROUND(cantidad_inv, 2) cantidad_inv,
+        fecha_caducidad
+        FROM inventario
+            INNER JOIN tipostock ON id_tipostock = tipostock_inv
+            LEFT JOIN producto ON id_producto = producto_inv
+            LEFT JOIN material ON id_material = material_inv
+            INNER JOIN tipoinventario ON id_tipoInventario = tipo_inv
+        WHERE (producto_inv = :id_inv or material_inv = :id_inv) and tipostock_inv = 1
+        ORDER BY fecha_caducidad;
+        """)
+        resultados = db.session.execute(consulta, {"id_inv": id_inv})
 
-    return render_template('Inventarios/inventario.html', inventario = resultados)
+    return render_template('Inventarios/inventario.html', inventario = resultados, isLote = isLote)
 
 
 @modulo_inventario.route('/inventario/seleccionarTipoEntrada',methods=["GET","POST"])
@@ -391,12 +424,12 @@ def inventariosGuardarProducto():
 def productos():
     # productos = Producto.query.join(RecetaItem, Producto.id_producto == RecetaItem.productoid_itm).filter(Producto.estatus == 1 and RecetaItem.estatus == 1).all()
     consulta = text("""
-    SELECT id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto costoventa, ROUND(SUM(costo_mat) * cantidad, 2) costoproduccion,  CONCAT(ROUND(SUM(cantidad), 2), ' g') peso
+    SELECT id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto costoventa, ROUND(SUM(costo_mat) * SUM(cantidad), 2) costoproduccion,  CONCAT(ROUND(SUM(cantidad), 2), ' g') peso
     FROM producto p
         inner join recetaitem on productoid_itm = id_producto
         inner join material on materialid_itm = id_material
     WHERE p.estatus = 1 and recetaitem.estatus = 1
-    GROUP BY nombre_producto, alias, dias_caducidadpd, costoproducto;
+    GROUP BY id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto, costoventa;
     """)
     productos = db.session.execute(consulta)
     return render_template('Inventarios/Producto/productos.html', productos=productos)

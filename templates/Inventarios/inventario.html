@@ -3,7 +3,7 @@
 {% block content %}
 {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttondelete %}
 
-<div class="container"> <!-- Agregar un contenedor para centrar todo el contenido -->
+<div class="ms-5 me-5"> <!-- Agregar un contenedor para centrar todo el contenido -->
 
     <div class="row">
         <div class="col-md-3">
@@ -74,8 +74,9 @@
                             <th>Nombre</th>
                             <th>Tipo de Inventario</th>
                             <th>Costo</th>
-                            <th>Fecha Caducidad</th>
+                            <th>Numero de Lotes</th>
                             <th>Cantidad</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,22 +86,16 @@
                             <td>{{ inv.nombre }}</td>
                             <td>{{ inv.tipo_inv }}</td>
                             <td>{{ inv.costo }}</td>
-                            <td>{{ inv.fecha_caducidad }}</td>
+                            <td>{{ inv.lotes }}</td>
                             <td>{{ inv.cantidad_inv }}</td>
                             <td>
-                                <form action="/inventario/confirmarMermas" method="POST" style="display: inline;">
+                                <form action="/inventario/lotes" method="POST" style="display: inline;">
                                     <input type="hidden" name="id_inv" value="{{ inv.id_inventario }}">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    {{ custom_button("Merma") }}
+                                    {{ custom_button("Ver Lotes") }}
                                 </form>
                             </td>
-                            <td>
-                                <form action="/inventario/salidaInventario" method="POST" style="display: inline;">
-                                    <input type="hidden" name="id_inv" value="{{ inv.id_inventario }}">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    {{ custom_buttondelete("Salida") }}
-                                </form>
-                            </td>   
+
                         </tr>
                         {% endfor %}
                     </tbody>
