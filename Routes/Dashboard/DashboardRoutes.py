@@ -1,9 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_modulo_dashboard, Flask
+from flask import  render_template, request, redirect, url_for, flash, current_app, Blueprint
+from sqlalchemy import text
 from Entities.Inventario import db
 from sqlalchemy import text
-from config import DevelopmentConfig
 from flask_wtf.csrf import CSRFProtect
-import datetime
 
 modulo_dashboard = Blueprint('modulo_dashboard', __name__)
 csrf=CSRFProtect()
@@ -47,10 +46,10 @@ def get_ventasPr():
 
     # Iterar sobre los resultados y almacenarlos en la estructura
     for row in data:
-        mes = row['mes']
+        mes = row.mes
         if mes not in resultados_por_mes:
             resultados_por_mes[mes] = []
-        resultados_por_mes[mes].modulo_dashboardend(row)
+        resultados_por_mes[mes]
 
     return resultados_por_mes
 
@@ -79,7 +78,7 @@ def getVentasAnio2():
     data = db.session.execute(query)
 
     # Format the data as list of dictionaries
-    formatted_data = [{'cantidad': row['cantidad'], 'mes': row['mes']} for row in data]
+    formatted_data = [{'cantidad': row.cantidad, 'mes': row.mes} for row in data]
 
     # Return JSON response
     return formatted_data
@@ -123,13 +122,13 @@ def getCards():
     data = []
 
     query = text(""" SELECT COUNT(*) AS cuenta FROM inventario WHERE DATEDIFF(fecha_caducidad, CURDATE()) <= 20;""")
-    caducidades = db.execute(query).fetchone()
+    caducidades = db.session.execute(query).fetchone()
 
     query = """ SELECT count(*) as cantidadVentas FROM venta; """
-    cantidadVentas = db.execute(text(query)).fetchone()
+    cantidadVentas = db.session.execute(text(query)).fetchone()
 
     query = """ SELECT sum(total_ventas) as totalVentas FROM venta; """
-    totalVentas = db.execute(text(query)).fetchone()
+    totalVentas = db.session.execute(text(query)).fetchone()
 
     query = """SELECT p.nombre_paq AS productoVendido, COUNT(vi.id_ventaitem) AS cantidad_ventas 
     FROM ventaitem vi 
@@ -138,14 +137,14 @@ def getCards():
     GROUP BY p.nombre_paq
     ORDER BY cantidad_ventas DESC LIMIT 1; """
 
-    productoVendido = db.execute(text(query)).fetchone()
+    productoVendido = db.session.execute(text(query)).fetchone()
 
     # Append the results to the data list
     data.append({
-        "Caducidades": caducidades['cuenta'],
-        "cantidadVentas": cantidadVentas['cantidadVentas'],
-        "totalVentas": totalVentas['totalVentas'],
-        "productoVendido": productoVendido['productoVendido']
+        "Caducidades": caducidades.cuenta,
+        "cantidadVentas": cantidadVentas.cantidadVentas,
+        "totalVentas": totalVentas.totalVentas,
+        "productoVendido": productoVendido.productoVendido
 
     })
 
@@ -161,6 +160,7 @@ def getProduccion():
     join producto prod on prod.id_producto = pi.productoid_itm
     WHERE p.fecha_inicio IS NOT NULL order by  p.fecha_inicio asc limit 6;"""
     # Ejecutar la consulta
-    data = db.execute(text(query))
+    data = db.session.execute(text(query))
+    db.session.commit()
     return data
 # '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

@@ -13,7 +13,11 @@
 {% set counter = namespace(value=1) %}
 {% for receta in recetas %}
 <div class="row">
-    <div>
+    <form id="produccionForm{{ counter.value }}" action="/produccionGalleta" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="idProducto" value="{{ receta.idProducto }}"> <!-- Campo oculto para almacenar idProducto -->
+        <input type="hidden" name="idProduccionitem" value="{{ receta.idProduccionitem }}">
+        <input type="hidden" name="counter" value="{{ counter.value }}">
         <div class="card">
             <div class="card-header text-center">
                 <div class="row">
@@ -34,12 +38,10 @@
             </div>
         </div>
         <div class="col-3">
-            <form action="/produccionGalleta">
-                <button type="button" class="mt-3 custom-buttongreen" value="Producir{{ counter.value }}" id="button{{ counter.value }}" onclick="producir('button{{ counter.value }}', {{ receta.idProducto }}, {{ counter.value }}, {{ receta.idProduccionitem }})">Producir</button>
-            </form>
+            <button type="button" class="mt-3 custom-buttongreen" onclick="producir('{{ counter.value }}')">Producir</button>
         </div>
         <!-- el boton tendra la funcionalidad de agregar al inventario la cantidad de galleta a producir -->
-    </div>
+    </form>
 </div>
 <br><br>
 {% set counter.value = counter.value + 1 %}
@@ -73,6 +75,13 @@
             }
         });
     });
+
+    function producir(counter){
+        console.log('produccionForm'+counter)
+
+        document.getElementById('produccionForm'+counter).submit();
+    }
+
 </script>
 
 

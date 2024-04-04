@@ -10,6 +10,7 @@ from Entities.InventarioProductoForm import InventarioProductoForm
 from Entities.Inventario import Material, TipoStock, Inventario, TipoInventario, RecetaItem, Paquete, PaqueteItem
 from Entities.Inventario import Producto
 from Entities.PaqueteForm import PaqueteForm
+from datetime import datetime
 
 
 

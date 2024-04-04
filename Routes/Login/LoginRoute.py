@@ -75,7 +75,7 @@ def index():
 @modulo_login.route("/pagePrincipal")
 @login_required
 def pagePrincipal():
-    return render_template('ContenedorMain/contenedorMain.html')
+    return render_template('/dashboard.html')
 
 @modulo_login.route('/logout')
 def logout():
