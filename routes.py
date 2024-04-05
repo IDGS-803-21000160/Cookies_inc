@@ -45,7 +45,7 @@ def bad_request(e):
 
 @login_manager_app.user_loader
 def load_user(user_id):
-    return Usuario.query.get(int(user_id))
+    return db.session.get(Usuario, int(user_id))
 
 
 if __name__ == "__main__":

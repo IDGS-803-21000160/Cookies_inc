@@ -53,6 +53,7 @@ class RecetaItem(db.Model):
     estatus = db.Column(Boolean, default=1)
     usuario_registro = db.Column(db.Integer)
     fecha_registro = db.Column(db.DateTime, default=datetime.now)
+    cantidad_merma = db.Column(db.Float, nullable=False)
 
 class TipoStock(db.Model):
     __tablename__ = 'tipostock'
