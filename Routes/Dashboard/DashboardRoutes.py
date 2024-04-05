@@ -112,6 +112,7 @@ def getCaducidades():
     material m ON inv.material_inv = m.id_material 
     left JOIN 
     producto p ON inv.producto_inv = p.id_producto
+    WHERE inv.fecha_caducidad > CURDATE()
     ORDER BY inv.fecha_caducidad ASC limit 6;
     """)
     # Ejecutar la consulta
@@ -122,7 +123,7 @@ def getCaducidades():
 def getCards():
     data = []
 
-    query = text(""" SELECT COUNT(*) AS cuenta FROM inventario WHERE DATEDIFF(fecha_caducidad, CURDATE()) <= 20;""")
+    query = text(""" SELECT COUNT(*) AS cuenta FROM inventario WHERE DATEDIFF(fecha_caducidad, CURDATE()) <= 7;""")
     caducidades = db.session.execute(query).fetchone()
 
     query = """ SELECT count(*) as cantidadVentas FROM venta; """

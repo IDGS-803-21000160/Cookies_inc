@@ -104,14 +104,14 @@
         <!-- New Customers -->
         <div class="recentCustomers">
             <div class="cardHeader">
-                <h2>Caducidades Inventario</h2>
+                <h2>Caducidades Proximas</h2>
             </div>
             <table>
                 {% for cad in caducidadesINV %}
                 <tr>
                     <td><h4>ID: {{cad.idInventario}}</h4></td>
                     <!-- <td><div class="imgBx"><img src="Images/User2.png"></div></td> -->
-                    <td><h4>{{cad.Nombre}} <br><span>Caduca el: {{cad.caducidadInventario}}</span></h4></td>
+                    <td><h4>{{cad.nombre}} <br><span>Caduca el: {{cad.caducidadInventario}}</span></h4></td>
                 </tr>
                 {% endfor %}
             </table>
