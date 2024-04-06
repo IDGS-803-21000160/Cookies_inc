@@ -23,6 +23,7 @@ def dashboard():
     #----- CHARTS ------
     ventasAnio = getVentasAnio2()
     ventasPr = get_ventasPr()
+    print(ventasPr)
 
     return render_template("Dashboard/dashboard.html",ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
 
@@ -38,19 +39,21 @@ def get_ventasPr():
     """)
 
     # Execute the query with the week number parameter
-
     data = db.session.execute(query)
-
     # Estructura para almacenar los resultados por mes
     resultados_por_mes = {}
-
     # Iterar sobre los resultados y almacenarlos en la estructura
     for row in data:
-        mes = row.mes
+        nombre = row[0]
+        cantidad = row[1]
+        mes = row[2]
+        # Create a dictionary for each row
+        row_dict = {'nombre': nombre, 'cantidad': cantidad, 'mes': mes}
+        # Append the dictionary to the corresponding month list
         if mes not in resultados_por_mes:
             resultados_por_mes[mes] = []
-        resultados_por_mes[mes]
-
+        resultados_por_mes[mes].append(row_dict)
+        
     return resultados_por_mes
 
 def getVentasAnio2():
@@ -76,10 +79,8 @@ def getVentasAnio2():
     # Ejecutar la consulta
 
     data = db.session.execute(query)
-
     # Format the data as list of dictionaries
     formatted_data = [{'cantidad': row.cantidad, 'mes': row.mes} for row in data]
-
     # Return JSON response
     return formatted_data
 
@@ -111,6 +112,7 @@ def getCaducidades():
     material m ON inv.material_inv = m.id_material 
     left JOIN 
     producto p ON inv.producto_inv = p.id_producto
+    WHERE inv.fecha_caducidad > CURDATE()
     ORDER BY inv.fecha_caducidad ASC limit 6;
     """)
     # Ejecutar la consulta
@@ -121,7 +123,7 @@ def getCaducidades():
 def getCards():
     data = []
 
-    query = text(""" SELECT COUNT(*) AS cuenta FROM inventario WHERE DATEDIFF(fecha_caducidad, CURDATE()) <= 20;""")
+    query = text(""" SELECT COUNT(*) AS cuenta FROM inventario WHERE DATEDIFF(fecha_caducidad, CURDATE()) <= 7;""")
     caducidades = db.session.execute(query).fetchone()
 
     query = """ SELECT count(*) as cantidadVentas FROM venta; """
