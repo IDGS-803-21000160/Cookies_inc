@@ -12,7 +12,7 @@
         <div class="card">
             <div>
                 <div class="numbers">${{totalVentas}}</div>
-                <div class="cardName">Revenue</div>
+                <div class="cardName">Ingresos</div>
             </div>
             <div class="iconBx">
                 <ion-icon name="cash-outline"></ion-icon>
@@ -21,7 +21,7 @@
         <div class="card">
             <div>
                 <div class="numbers">{{cantidadVentas}}</div>
-                <div class="cardName">Sales</div>
+                <div class="cardName">Ventas</div>
             </div>
             <div class="iconBx">
                 <ion-icon name="cart-outline"></ion-icon>
@@ -30,7 +30,7 @@
         <div class="card">
             <div>
                 <div class="numbers">{{productoVendido}}</div>
-                <div class="cardName">Selled the most</div>
+                <div class="cardName">Mas vendida</div>
             </div>
             <div class="iconBx">
                 <ion-icon name="analytics-outline"></ion-icon>
@@ -55,7 +55,7 @@
             <!-- Select element for choosing a month -->
             <div class="select-wrapper">
                 <select id="monthSelect">
-                    <option value="all">All Months</option>
+                    <option value="all">Meses</option>
                     {% for month, data in ventasPr.items() %}
                         <option value="{{ month }}">{{ month }}</option>
                     {% endfor %}
@@ -74,7 +74,7 @@
         <!-- order details list -->
         <div class="recentOrders">
             <div class="cardHeader">
-                <h2>Recent Orders</h2>
+                <h2>Ordenes recientes</h2>
                 <!-- <a href="#" class="btn">View All</a> -->
             </div>
             <table>
@@ -104,14 +104,14 @@
         <!-- New Customers -->
         <div class="recentCustomers">
             <div class="cardHeader">
-                <h2>Caducidades Inventario</h2>
+                <h2>Caducidades Proximas</h2>
             </div>
             <table>
                 {% for cad in caducidadesINV %}
                 <tr>
                     <td><h4>ID: {{cad.idInventario}}</h4></td>
                     <!-- <td><div class="imgBx"><img src="Images/User2.png"></div></td> -->
-                    <td><h4>{{cad.Nombre}} <br><span>Caduca el: {{cad.caducidadInventario}}</span></h4></td>
+                    <td><h4>{{cad.nombre}} <br><span>Caduca el: {{cad.caducidadInventario}}</span></h4></td>
                 </tr>
                 {% endfor %}
             </table>
@@ -229,23 +229,31 @@
 
     // Function to load the chart based on the selected month
     function productChart() {
-        const ventasPr = {{ ventasPr | tojson | safe }};
-        console.log(ventasPr);
-        const month = document.getElementById('monthSelect').value;
-        const chartData = ventasPr[month] || [];
+    // Get the ventasPr data from the HTML template
+    const ventasPr = {{ ventasPr | tojson | safe }};
+    console.log(ventasPr)
+    // Get the selected month from the HTML element
+    const month = document.getElementById('monthSelect').value;
+    
+    // Retrieve the chart data for the selected month
+    const chartData = ventasPr[month] || [];
 
-        // Extract the 'cantidad' values from each object in chartData
-        const cantidadData = chartData.map(item => ({
-            label: item.nombre,
-            value: item.cantidad
-        }));
+    // Extract the 'cantidad' values from each item in chartData
+    const cantidadData = chartData.map(item => ({
+        label: item['nombre'],  // Assuming the name is the first element of each tuple
+        value: item['cantidad']   // Assuming the quantity is the second element of each tuple
+    }));
 
-        // Update the chart with the new data
-        myChart.data.labels = cantidadData.map(item => item.label);
-        myChart.data.datasets[0].data = cantidadData.map(item => item.value);
-        myChart.update();
-        
-    }
+    // Update the chart with the new data
+    const labels = cantidadData.map(item => item.label);
+    const values = cantidadData.map(item => item.value);
+
+    // Assuming myChart is already defined somewhere in your code
+    myChart.data.labels = labels;
+    myChart.data.datasets[0].data = values;
+    myChart.update();
+}
+
 
     // Call productChart initially to load the chart for all months
     productChart();

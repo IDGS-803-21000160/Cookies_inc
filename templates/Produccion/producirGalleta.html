@@ -4,7 +4,7 @@
 
 <div class="row m-5">
     <div class="col-md-8">
-        <h1>PRODUCTO TERMINADO</h1>
+        <h1>SOLICITUD DE PRODUCCION</h1>
     </div>
     <div class="col-4">
         <a href="/produccion" class="custom-buttongreen" style="text-decoration: none;">Volver a Produccion</a>
@@ -27,7 +27,7 @@
                     <div class="col-6">
                         <div class="input-group mb-3">
                             <span class="input-group-text" id="basic-addon1">Maximo: {{receta.cuantas}}</span>
-                            <input type="number" id="cuantas_{{ counter.value }}" class="form-control cantidad" placeholder="Cantidad" name="cantidad" min="0" max="{{receta.cuantas}}">
+                            <input type="number" id="cuantas_{{ counter.value }}" class="form-control cantidad" placeholder="Cantidad" name="cuantas_{{ counter.value }}" min="0" max="{{receta.cuantas}}">
                         </div>
                     </div>
                 </div>
@@ -58,9 +58,10 @@
             var enteredValue = parseInt(event.target.value);
             // Get the maximum allowed value from the corresponding "cuantas" attribute
             var maxAllowedValue = parseInt(event.target.getAttribute('max'));
+            var minAllowedValue = parseInt(event.target.getAttribute('min'));
 
             // If the entered value is greater than the maximum allowed value
-            if (enteredValue > maxAllowedValue) {
+            if (enteredValue > maxAllowedValue || enteredValue < minAllowedValue) {
                 // Prevent the default behavior of input event (don't update the input value)
                 event.preventDefault();
                 // Display a Swal alert

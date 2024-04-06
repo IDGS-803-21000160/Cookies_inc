@@ -3,12 +3,13 @@
     {% from "Macros/inputComponent.html" import search_input, input_custom, input_select %}
     {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttonsave %}
 
-    <div class="row">
-        <div class="col-md-8">
+    <div class="row" style="justify-content: space-evenly;">
+        <div class="col-md-7">
             <h1>MODIFICAR PRODUCTO</h1>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <form action="/inventario/productos" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Volver a Inventario") }}
             </form>
         </div>
@@ -19,8 +20,8 @@
     </div>
 
     <!-- Sección de la tabla de ingredientes -->
-    <div class="row">
-        <div class="col-md-12">
+    <div class="row mt-3" style="justify-content: space-evenly;">
+        <div class="col-md-11">
             <div class="small-table-container">
                 <table id="tablaElementos" class="small-table">
                     <thead>
@@ -39,6 +40,7 @@
                                     <form action="/inventario/eliminarIngrediente" method="post">
                                         <input type="hidden" name="id_material" value="{{ t.id_material }}">
                                         <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                         <button type="submit" class="custom-buttondelete">Quitar</button>
                                     </form>
                                 </td>
@@ -51,8 +53,8 @@
     </div>
 
     <!-- Formulario para agregar ingredientes -->
-    <div class="row">
-        <div class="col-md-12 box-form3">
+    <div class="row" style="justify-content: space-evenly;">
+        <div class="col-md-11 box-form3">
             <form action="/inventario/actualizarProducto" method="post" novalidate>
 
                 <div class="row mb-3 justify-content-center">
@@ -63,7 +65,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <input type="number" id="cantidad" placeholder="Cantidad" class="input-container" name="cantidad">
+                                <input type="number" id="cantidad" placeholder="Cantidad" class="input-container" name="cantidad" style="text-align: center;">
                             </div>
 
                             <div class="col-md-6">
@@ -76,7 +78,7 @@
                         </div>
                     </div>
                 </div>
-
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
             </form>
         </div>
@@ -84,8 +86,8 @@
 
     <!-- Formulario para actualizar el producto -->
     <form action="/inventario/actualizarProducto" method="post" novalidate>
-        <div class="row">
-            <div class="col-md-12 box-form3">
+        <div class="row" style="justify-content: space-evenly;">
+            <div class="col-md-11 box-form3">
 
                 <div class="row mb-3">
                     <div class="col-md-8">
@@ -107,6 +109,7 @@
 
                 <div class="row justify-content-center">
                     <div class="col-md-12 text-center">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
                         <button type="submit" name="action" value="guardar_producto" class="custom-buttongreen">Guardar Cambios</button>
                     </div>

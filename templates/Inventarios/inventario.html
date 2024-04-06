@@ -43,6 +43,7 @@
                 <i class="fas fa-search fa-icon"></i>
             </div>
         </div>
+        
         <div class="col-md-2">
             <form action="/inventario/mermas" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -65,12 +66,11 @@
 
     <div class="row mt-5">
         <div class="col-md-12 text-center">
-            
+        
             <div class="custom-table2">
                 <table class="table">
                     <thead class="table-light">
                         <tr>
-                            <th>Tipo de Stock</th>
                             <th>Nombre</th>
                             <th>Tipo de Inventario</th>
                             <th>Costo</th>
@@ -81,16 +81,16 @@
                     </thead>
                     <tbody>
                         {% for inv in inventario %}
-                        <tr {% if inv.tipostock_inv == 3 %} style="background-color: rgb(160, 3, 3); color: white;" {% endif %}>
-                            <td>{{ inv.tipo_stock }}</td>
-                            <td>{{ inv.nombre }}</td>
+                        <tr>
+                            <td style="text-align: start; font-weight: bold;">{{ inv.nombre }}</td>
                             <td>{{ inv.tipo_inv }}</td>
                             <td>{{ inv.costo }}</td>
                             <td>{{ inv.lotes }}</td>
                             <td>{{ inv.cantidad_inv }}</td>
                             <td>
-                                <form action="/inventario/lotes" method="POST" style="display: inline;">
-                                    <input type="hidden" name="id_inv" value="{{ inv.id_inventario }}">
+                                <form action="/inventario/lotes" method="get" style="display: inline;">
+                                    <input type="hidden" name="id_inv" value="{{ inv.id_inv }}">
+                                    <input type="hidden" name="id_tipoinv" value="{{ inv.id_tipoInv }}">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     {{ custom_button("Ver Lotes") }}
                                 </form>
@@ -105,7 +105,7 @@
         </div>
     </div>
 
-</div> <!-- Cierre del contenedor -->
+</div> 
 
 <script>
     function filtrarTabla() {
