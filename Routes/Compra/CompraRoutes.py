@@ -78,7 +78,7 @@ def compra():
             #print(listaCompra)
             
             listaCompra_insertar.extend(listaCompra)
-            listaCompra.clear()
+            listaCompra = []
             
             return render_template('Compra/compra.html', prodct = productos, form = ventaForm, listaCompra = listaCompra_insertar, total = total)
         

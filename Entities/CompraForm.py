@@ -41,3 +41,11 @@ class CompraForm (Form):
     cantidad_producto_33 =  IntegerField('Cantidad', default=0, render_kw={"class": "input-container"}, validators=[NumberRange(min=0)])
     cantidad_producto_34 =  IntegerField('Cantidad', default=0, render_kw={"class": "input-container"}, validators=[NumberRange(min=0)])
     cantidad_producto_35 =  IntegerField('Cantidad', default=0, render_kw={"class": "input-container"}, validators=[NumberRange(min=0)])
+    cantidad_producto_36 =  IntegerField('Cantidad', default=0, render_kw={"class": "input-container"}, validators=[NumberRange(min=0)])
+    cantidad_producto_37 =  IntegerField('Cantidad', default=0, render_kw={"class": "input-container"}, validators=[NumberRange(min=0)])
+    cantidad_producto_38 =  IntegerField('Cantidad', default=0, render_kw={"class": "input-container"}, validators=[NumberRange(min=0)])
+    cantidad_producto_39 =  IntegerField('Cantidad', default=0, render_kw={"class": "input-container"}, validators=[NumberRange(min=0)])
+    
+    def limpiar_campos(self):
+        for i in range(1, 36):  # Itera sobre los campos de cantidad_producto_1 a cantidad_producto_35
+            setattr(self, f'cantidad_producto_{i}', 0)
