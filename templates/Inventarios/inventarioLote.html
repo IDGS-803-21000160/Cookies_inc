@@ -6,22 +6,22 @@
 <div class="ms-5 me-5"> <!-- Agregar un contenedor para centrar todo el contenido -->
 
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-6">
             <h1>INVENTARIO POR LOTES</h1>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <form action="/inventario/agregarMaterial" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Agregar Material") }}
             </form>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <form action="/inventario/agregarProducto" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Agregar Producto") }}
             </form>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <form action="/inventario/seleccionarTipoEntrada" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Entrada a Inventario") }}
@@ -39,7 +39,7 @@
     <div class="row mb-5" style="justify-content: space-evenly;">
         <div class="col-md-6">
             <div class="search-container">
-                <input type="text" placeholder="Buscar Inventario", id="searchInventario", oninput="filtrarTabla()">
+                <input type="text" placeholder="Buscar Fecha", id="searchInventario", oninput="filtrarTabla()">
                 <i class="fas fa-search fa-icon"></i>
             </div>
         </div>
