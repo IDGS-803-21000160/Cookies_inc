@@ -1,18 +1,20 @@
-{% extends "layout.html" %}{%block content %} {%from "_macros.html" import
-render_field%}
+{% extends 'ContenedorMain/contenedorMain.html' %} {%block content %} {%from
+  "Macros/_macros.html" import render_field%}
 
 <link
   rel="stylesheet"
-  href="../node_modules/bootstrap/dist/css/bootstrap.min.css"
+  href="../../node_modules/bootstrap/dist/css/bootstrap.min.css"
 />
 <link rel="stylesheet" href="../../static/css/proveedores.css" />
+<link rel="stylesheet" href="../../static/css/buttons.css" />
+
 <link
   rel="stylesheet"
   type="text/css"
-  href="../static/bootstrap-5.1.3-dist/css/bootstrap.css"
+  href="../../static/bootstrap-5.1.3-dist/css/bootstrap.css"
 />
-<script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../../static/js/proveedores.js"></script>
 <script src="../../static/sweetalert2/sweetalert2.min.js"></script>
 <link rel="stylesheet" href="../../static/sweetalert2/sweetalert2.min.css" />
@@ -38,35 +40,39 @@ render_field%}
   <input type="hidden" name="action" id="form-action" value="" />
 
   <div class="container">
+    <h2>Módulo de gestión de Proveedores.</h2>
+    <hr />
+    <br />
     <div class="row">
       <div class="col-md-6">
         {{ render_field(form.nombre,
-        class="form-control",id="form-nombre") }} {% if
+        class="form-control",id="form-nombre",placeholder="ej. Lacteos ...") }} {% if
         form.nombre.errors %} {% for error in form.nombre.errors %}
         <p style="color: red">*{{ error }}</p>
         {% endfor %} {% endif %}
       </div>
       <div class="col-md-6">
         {{ render_field(form.telefono,
-        class="form-control",id="form-telefono") }} {% if
+        class="form-control",id="form-telefono",placeholder="ej. 477900223") }} {% if
         form.telefono.errors %} {% for error in form.telefono.errors %}
         <p style="color: red">*{{ error }}</p>
         {% endfor %} {% endif %}
       </div>
       <div class="col-md-6">
-        {{ render_field(form.correo, class="form-control",id="form-correo") }}
+        {{ render_field(form.correo, class="form-control",id="form-correo",placeholder="ej. lacteosJ@gmail.com") }}
         {% if form.correo.errors %} {% for error in form.correo.errors %}
         <p style="color: red">*{{ error }}</p>
         {% endfor %} {% endif %}
       </div>
       <div class="col-md-6">
         {{ render_field(form.dias_visita,
-        class="form-control",id="form-diasVisita") }} {% if
+        class="form-control",id="form-diasVisita",placeholder="ej. Lunes, Martes y Viernes") }} {% if
         form.dias_visita.errors %} {% for error in form.dias_visita.errors %}
         <p style="color: red">*{{ error }}</p>
         {% endfor %} {% endif %}
       </div>
     </div>
+    <br />
     <button
       id="registrar"
       class="btn btn-dark"
@@ -86,9 +92,19 @@ render_field%}
     >
       Guardar Cambios
     </button>
+    <button
+      id="limpiar"
+      class="btn"
+      type="submit"
+      name="limpiar"
+      value="Limpiar"
+      onclick="limpiarFormulario()"
+    >
+      Limpiar Formulario
+    </button>
   </div>
   <br /><br />
-  <table class="table">
+  <table class="table table-striped">
     <thead class="thead-dark">
       <tr>
         <th scope="col"></th>
@@ -117,7 +133,7 @@ render_field%}
         <td>
           <button
             id="eliminar"
-            class="btn btn-warning"
+            class="btn btn-outline-danger"
             name="eliminar"
             value="Eliminar"
             type="submit"
@@ -130,7 +146,7 @@ render_field%}
           <button
             id="editarS"
             name="editarS"
-            class="btn btn-dark"
+            class="btn btn-outline-secondary"
             onclick="editarProveedor('{{prove.id_proveedor}}','{{prove.nombre}}',
                                         '{{prove.telefono}}','{{prove.correo}}',
                                         '{{prove.dias_visita}}',event)"

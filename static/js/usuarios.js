@@ -138,3 +138,16 @@ function eliminarUsuari(id, event) {
     }
   });
 }
+
+function limpiarFormulario() {
+  document.getElementById("form-nombrecompleto").value = "";
+  document.getElementById("form-tipousuario").value = "";
+  document.getElementById("form-username").value = "";
+  document.getElementById("form-password").value = "";
+
+  let buttonEditar = document.getElementById("editar");
+  buttonEditar.setAttribute("disabled", "");
+
+  let buttonAdd = document.getElementById("registrar");
+  buttonAdd.removeAttribute("disabled", "");
+}

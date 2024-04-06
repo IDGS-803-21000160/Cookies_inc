@@ -2,9 +2,10 @@
 "Macros/_macros.html" import render_field%}
 <link
   rel="stylesheet"
-  href="../node_modules/bootstrap/dist/css/bootstrap.min.css"
+  href="../../node_modules/bootstrap/dist/css/bootstrap.min.css"
 />
 <link rel="stylesheet" href="../static/css/login.css" />
+<link rel="stylesheet" href="../../static/css/buttons.css" />
 <link
   rel="stylesheet"
   type="text/css"
@@ -37,12 +38,15 @@
   <input type="hidden" name="action" id="form-action" value="" />
 
   <div class="container">
+    <h2>Módulo de gestión de Usuarios.</h2>
+    <hr />
+    <br />
     <div class="row">
       <div class="col-md-6">
         {{ render_field(form.nombrecompleto,
-        class="form-control",id="form-nombrecompleto") }} {% if
-        form.nombrecompleto.errors %} {% for error in form.nombrecompleto.errors
-        %}
+        class="form-control",id="form-nombrecompleto", placeholder="Iván Aguayo"
+        ) }} {% if form.nombrecompleto.errors %} {% for error in
+        form.nombrecompleto.errors %}
         <p style="color: red">*{{ error }}</p>
         {% endfor %} {% endif %}
       </div>
@@ -54,21 +58,24 @@
         {% endfor %} {% endif %}
       </div>
       <div class="col-md-6">
-        {{ render_field(form.username, class="form-control",id="form-username")
-        }} {% if form.username.errors %} {% for error in form.username.errors %}
+        {{ render_field(form.username,
+        class="form-control",id="form-username",placeholder="ej. IvanBlan27") }}
+        {% if form.username.errors %} {% for error in form.username.errors %}
         <p style="color: red">*{{ error }}</p>
         {% endfor %} {% endif %}
       </div>
       <div class="col-md-6">
-        {{ render_field(form.password, class="form-control",id="form-password")
-        }} {% if form.password.errors %} {% for error in form.password.errors %}
+        {{ render_field(form.password,
+        class="form-control",id="form-password",placeholder="ej. ivan5$B") }} {%
+        if form.password.errors %} {% for error in form.password.errors %}
         <p style="color: red">*{{ error }}</p>
         {% endfor %} {% endif %}
       </div>
     </div>
+    <br />
     <button
       id="registrar"
-      class="btn btn-dark"
+      class="btn"
       type="submit"
       name="registrar"
       value="Registrar"
@@ -77,7 +84,7 @@
     </button>
     <button
       id="editar"
-      class="btn btn-warning"
+      class="btn"
       type="submit"
       name="editar"
       value="Editar"
@@ -85,9 +92,19 @@
     >
       Guardar Cambios
     </button>
+    <button
+      id="limpiar"
+      class="btn"
+      type="submit"
+      name="limpiar"
+      value="Limpiar"
+      onclick="limpiarFormulario()"
+    >
+      Limpiar Formulario
+    </button>
   </div>
   <br /><br />
-  <table class="table">
+  <table class="table table-striped">
     <thead class="thead-dark">
       <tr>
         <th scope="col"></th>
@@ -117,7 +134,7 @@
         <td>
           <button
             id="eliminar"
-            class="btn btn-warning"
+            class="btn btn-outline-danger"
             name="eliminar"
             value="Eliminar"
             type="submit"
@@ -130,7 +147,7 @@
           <button
             id="editarS"
             name="editarS"
-            class="btn btn-dark"
+            class="btn btn-outline-secondary"
             onclick="editarUsuario('{{user.id_us}}','{{user.nombrecompleto}}',
                                         '{{user.tipousuario}}','{{user.user}}',
                                         '{{user.password}}',event)"
