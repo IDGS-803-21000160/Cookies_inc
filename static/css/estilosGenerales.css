@@ -178,3 +178,14 @@
     cursor: not-allowed; /* Cursor no permitido */
     pointer-events: none; /* No responder a eventos de puntero */
 }
+
+.seccion-con-scroll {
+    height: 300px; 
+    overflow-y: auto; 
+}
+
+.contenido-seccion {
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+}
