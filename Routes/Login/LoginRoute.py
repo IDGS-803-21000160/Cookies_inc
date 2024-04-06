@@ -54,7 +54,7 @@ def index():
                     log_attempt(user_id, True)
                     db.session.commit()
                     login_user(user)
-                    return redirect(url_for('modulo_login.pagePrincipal'))
+                    return redirect(url_for('modulo_dashboard.dashboard'))
             else:
                 user.failed_attempts += 1  # Aumenta el contador de intentos fallidos
                 log_attempt(user_id, False)

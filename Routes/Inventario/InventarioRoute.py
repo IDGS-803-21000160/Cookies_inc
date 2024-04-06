@@ -363,9 +363,12 @@ def inventariosAddProducto():
     productoForm.materiales.choices = opciones
     return render_template('Inventarios/Producto/agregarProducto.html', form = productoForm, tabladatos = tabladatos, costoProduccion = 0)
 
+
 @modulo_inventario.route('/inventario/guardarProducto', methods=["POST"])
 def inventariosGuardarProducto():
     productoF = InventarioProductoForm(request.form)
+      # Indica que no ha sido asignado aún.
+        
     costoProduccion = 0
     ingredientes = Material.query.all()
     opciones = [
@@ -389,7 +392,9 @@ def inventariosGuardarProducto():
         if nombre_material and nombre_material not in [item['nombre_material'] for item in tabladatos]:
             costo = Material.query.get(id_material)
             tabladatos.append({"id_material": id_material, "nombre_material": nombre_material, "cantidad": cantidad, "merma" : merma, "costo": costo.costo_mat})
-            costoProduccion = round(sum([float(item['costo']) * (float(item['cantidad']) + float(item['merma'])) for item in tabladatos]), 2)
+
+            costoProduccion = round(sum([float(item['costo']) * ((float(item['cantidad']) + float(item['merma'])) / 50)  for item in tabladatos]), 2)
+            
         return render_template('Inventarios/Producto/agregarProducto.html', form=productoF, tabladatos=tabladatos, costoProduccion = costoProduccion)  # Mantén al usuario en la misma página
 
     elif request.form['action'] == 'guardar_producto':
@@ -416,17 +421,17 @@ def inventariosGuardarProducto():
                 addItem = RecetaItem(
                     productoid_itm=id_producto,
                     materialid_itm=item['id_material'],
-                    cantidad=item['cantidad'],
+                    cantidad= float(item['cantidad']) / 50,
                     estatus=1,
                     usuario_registro=1,
                     fecha_registro=datetime.now(),
-                    cantidad_merma = item['merma']
+                    cantidad_merma = float(item['merma']) / 50
                 )
                 db.session.add(addItem)
                 db.session.commit()
             tabladatos.clear()
 
-            return redirect(url_for('productos'))  # Redirige después de guardar
+            return redirect(url_for('modulo_inventario.productos'))  # Redirige después de guardar
     elif request.form['action'] == 'quitar':
         # Lógica para quitar ingredientes de la lista
         id_material = request.form['id_material']
@@ -440,7 +445,7 @@ def inventariosGuardarProducto():
 def productos():
     # productos = Producto.query.join(RecetaItem, Producto.id_producto == RecetaItem.productoid_itm).filter(Producto.estatus == 1 and RecetaItem.estatus == 1).all()
     consulta = text("""
-    SELECT id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto costoventa, ROUND(SUM(costo_mat) * SUM(cantidad), 2) costoproduccion,  CONCAT(ROUND(SUM(cantidad), 2), ' g') peso
+    SELECT id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto costoventa, ROUND(sum((costo_mat * (cantidad + cantidad_merma))), 3) costoproduccion,  CONCAT(ROUND(SUM(cantidad), 2), ' g') peso
     FROM producto p
         inner join recetaitem on productoid_itm = id_producto
         inner join material on materialid_itm = id_material
@@ -605,7 +610,15 @@ productosPaquete = []
 def inventariosAddPaquete():
     productosPaquete.clear()
     paqueteForm  = PaqueteForm(request.form)
-    productos = Producto.query.all()
+    consulta = text("""
+    SELECT id_producto, CONCAT( nombre_producto, '  |     peso de    ',  ROUND(SUM(cantidad), 3), '  g', '     | costo de    $', costoproducto ) nombre_producto
+    FROM producto
+        inner join recetaitem on id_producto = productoid_itm
+        inner join material on id_material = materialid_itm
+    where producto.estatus = 1
+    group by id_producto, nombre_producto;
+    """)
+    productos = db.session.execute(consulta)
     opciones = [(producto.id_producto, producto.nombre_producto) for producto in productos]
     paqueteForm.productos.choices = opciones
     return render_template('Paquetes/agregarPaquete.html', form = paqueteForm, productosPaquete = productosPaquete)
@@ -658,7 +671,7 @@ def inventariosGuardarPaquete():
                 db.session.commit()
             productosPaquete.clear()
 
-            return redirect(url_for('paquetes'))
+            return redirect(url_for('modulo_inventario.paquetes'))
     else:
         return render_template('Paquetes/agregarPaquete.html', form=paqueteF, productosPaquete=productosPaquete)
 
@@ -734,7 +747,7 @@ def actualizarPaquete():
             productosPaquete.clear()
 
             flash('Paquete actualizado correctamente', 'success')
-            return redirect(url_for('paquetes'))
+            return redirect(url_for('modulo_inventario.paquetes'))
 
 @modulo_inventario.route('/paquetes/eliminarProducto', methods=["POST"])
 def eliminarProductoPaquete():
@@ -760,4 +773,4 @@ def eliminarPaquete():
         db.session.commit()
     
 
-    return redirect(url_for('paquetes'))
+    return redirect(url_for('modulo_inventario.paquetes'))
