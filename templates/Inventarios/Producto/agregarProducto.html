@@ -1,6 +1,6 @@
 {% extends 'ContenedorMain/contenedorMain.html' %}
 {% block content %}
-    {% from "Macros/inputComponent.html" import search_input, input_custom, input_select %}
+    {% from "Macros/inputComponent.html" import search_input, input_custom, input_select, input_customWithPlaceholder %}
     {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttonsave %}
 
     <div class="row" style="justify-content: space-evenly;">
@@ -35,28 +35,29 @@
 
                 <div class="row mb-5">
                     <div class="col-md-6">
+
                         <div class="col-md-12 mb-3">
                             {{ input_custom(form.materiales) }}
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-3">
+                        <div class="row" style="justify-content: space-evenly;">
+                            <div class="col-md-6">
                                 <input type="number" id="cantidad" placeholder="Cantidad" class="input-container" name="cantidad" style="text-align: center;">
                             </div>
 
-                            <div class="col-md-3">
-                                <input type="number" id="merma" placeholder="Merma" class="input-container" name="merma" style="text-align: center;">
-                            </div>
-
                             <div class="col-md-6">
-                                <button type="submit" name="action" value="agregar_item" class="custom-button">Agregar Ingrediente</button>
+                                <input type="number" id="merma" placeholder="Merma" class="input-container" name="merma" style="text-align: center;">
                             </div>
                         </div>
 
-                        <div class="row mt-5" style="justify-content: center;">
-                            <div class="col-md-6">
-                                <input type="number" id="merma" placeholder="Ingresa para cuantas galletas es la receta" class="input-container" name="merma" style="text-align: center;">
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <label style="text-align: center;"> La cantidades de los ingredientes ingresados deben ser equivalentes a la producción de 50 galletas </label>
                             </div>
+                        </div>
+
+                        <div class="row mt-2" style="justify-content: center;">
+                            <button type="submit" name="action" value="agregar_item" class="custom-button">Agregar Ingrediente</button>
                         </div>
 
                         <div class="row text-center mt-3">
@@ -96,10 +97,10 @@
 
                 <div class="row mb-4" style="justify-content: end;">
                     <div class="col-md-4" style="justify-content: space-between;">
-                        <h4>COSTO DE PRODUCCIÓN INDIVIDUAL:</h4>
+                        <h5>COSTO DE PRODUCCIÓN INDIVIDUAL:</h5>
                     </div>
                     <div class="col-md-1" style="justify-content: space-between;">
-                        <h3 style="color: green;">$ {{costoProduccion}}</h3>
+                        <h5 style="color: green;">$ {{costoProduccion}}</h5>
                     </div>
                 </div>
                 

@@ -1,6 +1,8 @@
 from flask import Flask,render_template
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import text, create_engine
+from flask_cors import CORS, cross_origin
+
 
 #Impiortacion del modelo de formulario de material
 
@@ -9,9 +11,11 @@ from datetime import datetime
 from Routes.Inventario.InventarioRoute import modulo_inventario
 from Routes.Produccion.ProducionRoute import modulo_produccion
 from Routes.Dashboard.DashboardRoutes import modulo_dashboard
+from Routes.Proveedores.ProveedoresRoute import moodulo_proveedor
 from Routes.Login.LoginRoute import modulo_login
 from Routes.Usuarios.UsuariosRoute import modulo_usuarios
 from Routes.Compra.CompraRoutes import modulo_compras
+from Routes.Ventas.VentasRoute import modulo_ventas
 from flask_mysqldb import MySQL
 from config import DevelopmentConfig
 from flask_login import LoginManager
@@ -22,12 +26,21 @@ mysql = MySQL(app)
 
 login_manager_app=LoginManager(app)
 
+# DESBLOQUEAR CIERTOS ORIGENES
+CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5000"]}})
+#CORS(app, resources={r"/*": {"origins": ["http://192.168.111.246.*", "http://192.168.111.86:8080","http://192.168.111.127.*"]}})
+
+
 
 # csrf=CSRFProtect()
 app.config.from_object(DevelopmentConfig)
 app.register_blueprint(modulo_login)
 app.register_blueprint(modulo_usuarios)
 app.register_blueprint(modulo_inventario)
+app.register_blueprint(moodulo_proveedor)
+app.register_blueprint(modulo_ventas)
+# app.register_blueprint(modulo_produccion)
+# app.register_blueprint(modulo_dashboard)
 app.register_blueprint(modulo_produccion)
 app.register_blueprint(modulo_dashboard)
 app.register_blueprint(modulo_compras)
@@ -47,7 +60,7 @@ def bad_request(e):
 
 @login_manager_app.user_loader
 def load_user(user_id):
-    return db.session.get(Usuario, int(user_id))
+    return Usuario.query.get(int(user_id))
 
 
 if __name__ == "__main__":

@@ -153,13 +153,27 @@ class CompraItem(db.Model):
     compra = db.relationship('Compra', backref='compraitems')
     material = db.relationship('Material', backref='compraitems')
     
+
 class Proveedor(db.Model):
     __tablename__ = 'proveedor'
-    id_proveedor = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    nombre = db.Column(db.String(50))
-    telefono = db.Column(db.String(20))
-    correo = db.Column(db.String(20))
-    dias_visita = db.Column(db.String(50))
-    estatus = db.Column(Boolean, nullable=False, default=True)
-    usuario_registro = db.Column(db.Integer)
-    fecha_registro = db.Column(db.DateTime, default=datetime.now)
+
+    id_proveedor = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(50), nullable=True)
+    telefono = db.Column(db.Numeric(13, 0), nullable=True)
+    correo = db.Column(db.String(50), nullable=True)
+    dias_visita = db.Column(db.String(50), nullable=True)
+    db.Column(db.String(1), default='1')   # BIT se maneja como Boolean en SQLAlchemy
+    usuario_registro = db.Column(db.Integer, nullable=True)
+    fecha_registro = db.Column(db.DateTime, nullable=True, default=datetime.now)
+    estatus = db.Column(db.String(1), default='1')
+
+class VistaDetalleProducto(db.Model):
+    __tablename__ = 'vista_detalle_producto'
+
+    # Asumiendo que nombre_producto puede actuar como una clave única para la vista
+    nombre_producto = db.Column(db.String, primary_key=True)
+    idProducto = db.Column(db.Integer)
+    costo = db.Column(db.Float)
+    cantidad = db.Column(db.Integer)
+    idInventario = db.Column(db.Integer)
+    IdProductoInv = db.Column(db.Integer)

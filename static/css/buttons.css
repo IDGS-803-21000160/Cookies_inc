@@ -1,0 +1,26 @@
+#registrar {
+  background-color: #4a6142;
+  color: white;
+  width: 15rem;
+}
+
+#editar {
+  background-color: #725849;
+  color: white;
+  width: 15rem;
+}
+
+#limpiar {
+  background-color: #e4e0dd;
+  color: black;
+  width: 15rem;
+}
+
+.btnAgregar {
+  background-color: #725849;
+}
+
+#ingresar {
+  background-color: #4a6142;
+  color: white;
+}

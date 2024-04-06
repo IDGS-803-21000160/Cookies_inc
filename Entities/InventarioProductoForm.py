@@ -17,5 +17,8 @@ class InventarioProductoForm (Form):
     
     costoProducto = DecimalField("Costo del Producto", [validators.DataRequired(message= 'Debes ingresar el costo del producto'),
                                         validators.number_range(min=1, message='El producto debe tener un costo mayor a 0')]) 
+    
+    galletasReceta = DecimalField("Galletas por Receta", [validators.DataRequired(message= 'Debes ingresar el costo del producto'),
+                                        validators.number_range(min=1, message='El producto debe tener un costo mayor a 0')]) 
 
     materiales = SelectField("Ingredientes", coerce=int)
