@@ -7,7 +7,7 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://admincookies:Karelyruiz123@cookies.mysql.database.azure.com/cookiesInc'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:root@127.0.0.1/cookiesinc'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     port = 5000
     SECRET_KEY = "miLlave"

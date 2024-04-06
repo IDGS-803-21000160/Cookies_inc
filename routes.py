@@ -11,6 +11,7 @@ from Routes.Produccion.ProducionRoute import modulo_produccion
 from Routes.Dashboard.DashboardRoutes import modulo_dashboard
 from Routes.Login.LoginRoute import modulo_login
 from Routes.Usuarios.UsuariosRoute import modulo_usuarios
+from Routes.Compra.CompraRoutes import modulo_compras
 from flask_mysqldb import MySQL
 from config import DevelopmentConfig
 from flask_login import LoginManager
@@ -29,6 +30,7 @@ app.register_blueprint(modulo_usuarios)
 app.register_blueprint(modulo_inventario)
 app.register_blueprint(modulo_produccion)
 app.register_blueprint(modulo_dashboard)
+app.register_blueprint(modulo_compras)
 
 @app.errorhandler(404)
 def page_not_found(e):
