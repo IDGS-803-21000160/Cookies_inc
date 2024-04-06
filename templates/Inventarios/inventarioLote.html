@@ -1,4 +1,3 @@
-
 {% extends 'ContenedorMain/contenedorMain.html' %}
 
 {% block content %}
@@ -7,22 +6,22 @@
 <div class="ms-5 me-5"> <!-- Agregar un contenedor para centrar todo el contenido -->
 
     <div class="row">
-        <div class="col-md-6">
-            <h1>INVENTARIO DE PRODUCTOS</h1>
+        <div class="col-md-3">
+            <h1>INVENTARIO POR LOTES</h1>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             <form action="/inventario/agregarMaterial" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Agregar Material") }}
             </form>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             <form action="/inventario/agregarProducto" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Agregar Producto") }}
             </form>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-3">
             <form action="/inventario/seleccionarTipoEntrada" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Entrada a Inventario") }}
@@ -37,29 +36,18 @@
     {% from "Macros/inputComponent.html" import search_input, input_custom %}
     {% from "Macros/tableComponent.html" import custom_table %}
 
-    <div class="row mb-5">
-            <div class="col-md-6">
-                <div class="search-container">
-                    <input type="text" placeholder="Buscar Producto", id="searchproducto", oninput="filtrarTabla()">
-                    <i class="fas fa-search fa-icon"></i>
-                </div>
+    <div class="row mb-5" style="justify-content: space-evenly;">
+        <div class="col-md-6">
+            <div class="search-container">
+                <input type="text" placeholder="Buscar Inventario", id="searchInventario", oninput="filtrarTabla()">
+                <i class="fas fa-search fa-icon"></i>
             </div>
+        </div>
+        
         <div class="col-md-2">
             <form action="/inventario" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {{ custom_button("General") }}
-            </form>
-        </div>
-        <div class="col-md-2">
-            <form action="/inventario/materiales" method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {{ custom_button("Materiales") }}
-            </form>
-        </div>
-        <div class="col-md-2">
-            <form action="/inventario/mermas" method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {{ custom_button("Mermas") }}
+                {{ custom_button("Regresar") }}
             </form>
         </div>
     </div>
@@ -71,45 +59,39 @@
                 <table class="table">
                     <thead class="table-light">
                         <tr>
+                            <th>Tipo de Stock</th>
                             <th>Nombre</th>
-                            <th>Alias</th>
-                            <th>Dias de Caducidad</th>
-                            <th>Costo de Produccion</th>
-                            <th>Costo de Venta</th>
-                            <th>Peso</th>
-                            <th></th>
+                            <th>Tipo de Inventario</th>
+                            <th>Costo</th>
+                            <th>Cantidad</th>
+                            <th>Fecha de Caducidad</th>
+                            <th>N° Lote</th>
                             <th></th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for producto in productos %}
-                        <tr>
-                            <td>{{ producto.nombre_producto }}</td>
-                            <td>{{ producto.alias }}</td>
-                            <td>{{ producto.dias_caducidadpd }}</td>
-                            <td>{{ producto.costoproduccion }}</td>
-                            <td>{{ producto.costoventa }}</td>
-                            <td>{{ producto.peso }}</td>
+                        {% for inv in inventario %}
+                        <tr {% if inv.tipostock_inv == 3 %} style="background-color: rgb(160, 3, 3); color: white;" {% endif %}>
+                            <td>{{ inv.tipo_stock }}</td>
+                            <td>{{ inv.nombre }}</td>
+                            <td>{{ inv.tipo_inv }}</td>
+                            <td>{{ inv.costo }}</td>
+                            <td>{{ inv.cantidad_inv }}</td>
+                            <td>{{ inv.fecha_caducidad }}</td>
+                            <td>{{ inv.numeroLote }}</td>
                             <td>
-                                <form action="/inventario/detalle" method="POST" style="display: inline;">
-                                    <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
+                                <form action="/inventario/confirmarMermas" method="POST" style="display: inline;">
+                                    <input type="hidden" name="id_inv" value="{{ inv.id_inventario }}">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    {{ custom_button("Detalle") }}
+                                    {{ custom_button("Merma") }}
                                 </form>
                             </td>
                             <td>
-                                <form action="/inventario/editarProducto" method="POST" style="display: inline;">
-                                    <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
+                                <form action="/inventario/salidaInventario" method="POST" style="display: inline;">
+                                    <input type="hidden" name="id_inv" value="{{ inv.id_inventario }}">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    {{ custom_button("Editar") }}
-                                </form>
-                            </td>
-                            <td>
-                                <form action="/inventario/eliminarProducto" method="POST" style="display: inline;">
-                                    <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    {{ custom_buttondelete("Eliminar") }}
+                                    {{ custom_buttondelete("Salida") }}
                                 </form>
                             </td>   
                         </tr>
@@ -121,12 +103,11 @@
         </div>
     </div>
 
-</div> <!-- Cierre del contenedor -->
-
+</div> 
 <script>
     function filtrarTabla() {
         // Obtener el valor del campo de búsqueda
-        var textoBusqueda = document.getElementById("searchproducto").value.toUpperCase();
+        var textoBusqueda = document.getElementById("searchInventario").value.toUpperCase();
         // Obtener todas las filas de la tabla
         var filas = document.querySelectorAll(".custom-table2 tbody tr");
 
@@ -146,3 +127,5 @@
 </script>
 
 {% endblock %}
+
+

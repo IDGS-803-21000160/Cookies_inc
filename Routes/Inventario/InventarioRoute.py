@@ -10,13 +10,13 @@ from Entities.InventarioProductoForm import InventarioProductoForm
 from Entities.Inventario import Material, TipoStock, Inventario, TipoInventario, RecetaItem, Paquete, PaqueteItem
 from Entities.Inventario import Producto
 from Entities.PaqueteForm import PaqueteForm
+from datetime import datetime
 
 
 
 
 from Entities.InventarioMermaSalida import InventarioMerma, InventarioSalida
 from Entities.Inventario import db
-import datetime
 
 modulo_inventario = Blueprint('modulo_inventario', __name__)
 
@@ -36,25 +36,52 @@ def inventarios():
 
     consulta = text("""
     SELECT 
-        id_inventario,
-        tipostock_inv,
-        nombre_stock tipo_stock, 
-        IFNULL(nombre_producto, nombre_mat) nombre, 
-        nombre_tipoInv tipo_inv,
-        IFNULL(costoproducto, costo_mat) costo,
-        fecha_caducidad,
-        ROUND(cantidad_inv, 2) cantidad_inv
+    IFNULL(producto_inv, material_inv) id_inv,
+    IFNULL(nombre_producto, nombre_mat) nombre, 
+    COUNT(DISTINCT id_inventario) lotes,
+    nombre_tipoInv tipo_inv,
+    SUM(IFNULL(costoproducto, costo_mat)) costo,
+    ROUND(SUM(cantidad_inv), 2) cantidad_inv,
+    tipo_inv id_tipoInv
     FROM inventario
         INNER JOIN tipostock ON id_tipostock = tipostock_inv
         LEFT JOIN producto ON id_producto = producto_inv
         LEFT JOIN material ON id_material = material_inv
         INNER JOIN tipoinventario ON id_tipoInventario = tipo_inv
     WHERE cantidad_inv > 0 and tipostock_inv not in (2, 4)
-    ORDER BY 6, 3;
+    GROUP BY id_inv, nombre, tipo_inv, id_tipoInv
+    ORDER BY lotes desc;
     """)
     resultados = db.session.execute(consulta)
-
     return render_template('Inventarios/inventario.html', inventario = resultados)
+
+@modulo_inventario.route('/inventario/lotes',methods=["GET"])
+def lotes():
+    id_inv = request.args.get('id_inv')
+    id_tipoInv = request.args.get('id_tipoinv')
+    print(id_tipoInv)
+    consulta = text("""
+        SELECT 
+        id_inventario,
+        tipostock_inv,
+        nombre_stock tipo_stock, 
+        IFNULL(nombre_producto, nombre_mat) nombre, 
+        nombre_tipoInv tipo_inv,
+        IFNULL(costoproducto, costo_mat) costo,
+        ROUND(cantidad_inv, 2) cantidad_inv,
+        fecha_caducidad,
+        row_number() over(order by fecha_caducidad desc) as numeroLote
+        FROM inventario
+            INNER JOIN tipostock ON id_tipostock = tipostock_inv
+            LEFT JOIN producto ON id_producto = producto_inv
+            LEFT JOIN material ON id_material = material_inv
+            INNER JOIN tipoinventario ON id_tipoInventario = tipo_inv
+        WHERE (producto_inv = :id_inv or material_inv = :id_inv)  and tipo_inv = :tipo_inv and tipostock_inv in (1,3)
+        ORDER BY fecha_caducidad desc;
+        """)
+    resultados = db.session.execute(consulta, {'id_inv': id_inv, 'tipo_inv': id_tipoInv}).fetchall()
+    print(resultados)
+    return render_template('Inventarios/inventarioLote.html', inventario = resultados)
 
 
 @modulo_inventario.route('/inventario/seleccionarTipoEntrada',methods=["GET","POST"])
@@ -172,6 +199,7 @@ def inventariosSalida():
     resultados = db.session.execute(consulta.params(id_inv=id_inv)).fetchone()
     return render_template('Inventarios/confirmarSalida.html', form = inventarioForm, resultados = resultados)
 
+
 @modulo_inventario.route('/inventario/guardarSalida', methods=["POST"])
 def inventariosGuardarSalida():
     inventarioF = InventarioSalida(request.form)
@@ -184,9 +212,10 @@ def inventariosGuardarSalida():
         if inventario.tipostock_inv == 2 or inventario.tipostock_inv == 4:
             return redirect(url_for('mermas'))
         else:
-            return redirect(url_for('inventarios'))
+            return redirect(url_for('modulo_inventario.inventarios'))
     
     return render_template('Inventarios/confirmarSalida.html', form=inventarioF, resultados=inventario)
+
 
 @modulo_inventario.route('/inventario/mermas',methods=["GET","POST"])
 def mermas():
@@ -323,32 +352,51 @@ def inventariosAddProducto():
     tabladatos.clear()
     productoForm  = InventarioProductoForm(request.form)
     ingredientes = Material.query.all()
-    opciones = [(receta.id_material, receta.nombre_mat) for receta in ingredientes]
+    opciones = [
+    (
+        receta.id_material,
+        receta.nombre_mat + ' en ' +
+        ('gramos' if receta.unidad_medida == 'g' else 'mililitros' if receta.unidad_medida == 'ml' else receta.unidad_medida)
+    ) 
+    for receta in ingredientes
+    ]
     productoForm.materiales.choices = opciones
-    return render_template('Inventarios/Producto/agregarProducto.html', form = productoForm, tabladatos = tabladatos)
+    return render_template('Inventarios/Producto/agregarProducto.html', form = productoForm, tabladatos = tabladatos, costoProduccion = 0)
 
 @modulo_inventario.route('/inventario/guardarProducto', methods=["POST"])
 def inventariosGuardarProducto():
     productoF = InventarioProductoForm(request.form)
+    costoProduccion = 0
     ingredientes = Material.query.all()
-    opciones = [(receta.id_material, receta.nombre_mat) for receta in ingredientes]
+    opciones = [
+    (
+        receta.id_material,
+        receta.nombre_mat + ' en ' +
+        ('gramos' if receta.unidad_medida == 'g' else 'mililitros' if receta.unidad_medida == 'ml' else receta.unidad_medida)
+    ) 
+    for receta in ingredientes
+    ]
     productoF.materiales.choices = opciones
 
     # Verifica qué botón se presionó
     if request.form['action'] == 'agregar_item':
         # Lógica para agregar ingredientes a la lista
-        cantidad = request.form.get("cantidad", type=int)
+        cantidad = request.form.get("cantidad", type=float)
+        merma = request.form.get("merma", type=float)
         id_material = productoF.materiales.data
         nombre_material = next((nombre_mat for id_mat, nombre_mat in opciones if id_mat == id_material), None)
+        
         if nombre_material and nombre_material not in [item['nombre_material'] for item in tabladatos]:
-            tabladatos.append({"id_material": id_material, "nombre_material": nombre_material, "cantidad": cantidad})
-        return render_template('Inventarios/Producto/agregarProducto.html', form=productoF, tabladatos=tabladatos)  # Mantén al usuario en la misma página
+            costo = Material.query.get(id_material)
+            tabladatos.append({"id_material": id_material, "nombre_material": nombre_material, "cantidad": cantidad, "merma" : merma, "costo": costo.costo_mat})
+            costoProduccion = round(sum([float(item['costo']) * (float(item['cantidad']) + float(item['merma'])) for item in tabladatos]), 2)
+        return render_template('Inventarios/Producto/agregarProducto.html', form=productoF, tabladatos=tabladatos, costoProduccion = costoProduccion)  # Mantén al usuario en la misma página
 
     elif request.form['action'] == 'guardar_producto':
         # Lógica para guardar el producto completo
         if tabladatos == []:
             flash('No se han agregado ingredientes al producto', 'danger')
-            return render_template('Inventarios/Producto/agregarProducto.html', form=productoF, tabladatos=tabladatos)
+            return render_template('Inventarios/Producto/agregarProducto.html', form=productoF, tabladatos=tabladatos, costoProduccion = 0)
         else: 
             nuevo_producto = Producto(
                 nombre_producto=productoF.nombreProducto.data,
@@ -371,7 +419,8 @@ def inventariosGuardarProducto():
                     cantidad=item['cantidad'],
                     estatus=1,
                     usuario_registro=1,
-                    fecha_registro=datetime.now()
+                    fecha_registro=datetime.now(),
+                    cantidad_merma = item['merma']
                 )
                 db.session.add(addItem)
                 db.session.commit()
@@ -382,20 +431,21 @@ def inventariosGuardarProducto():
         # Lógica para quitar ingredientes de la lista
         id_material = request.form['id_material']
         tabladatos[:] = [item for item in tabladatos if item['id_material'] != int(id_material)]
-        return render_template('Inventarios/Producto/agregarProducto.html', form=productoF, tabladatos=tabladatos)
+        costoProduccion = round(sum([float(item['costo']) * (float(item['cantidad']) + float(item['merma'])) for item in tabladatos]), 2)
+        return render_template('Inventarios/Producto/agregarProducto.html', form=productoF, tabladatos=tabladatos, costoProduccion = costoProduccion)
 
-    return render_template('Inventarios/Producto/agregarProducto.html', form=productoF, tabladatos=tabladatos)
+    return render_template('Inventarios/Producto/agregarProducto.html', form=productoF, tabladatos=tabladatos, costoProduccion = costoProduccion)
 
 @modulo_inventario.route('/inventario/productos',methods=["GET","POST"])
 def productos():
     # productos = Producto.query.join(RecetaItem, Producto.id_producto == RecetaItem.productoid_itm).filter(Producto.estatus == 1 and RecetaItem.estatus == 1).all()
     consulta = text("""
-    SELECT id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto costoventa, ROUND(SUM(costo_mat) * cantidad, 2) costoproduccion,  CONCAT(ROUND(SUM(cantidad), 2), ' g') peso
+    SELECT id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto costoventa, ROUND(SUM(costo_mat) * SUM(cantidad), 2) costoproduccion,  CONCAT(ROUND(SUM(cantidad), 2), ' g') peso
     FROM producto p
         inner join recetaitem on productoid_itm = id_producto
         inner join material on materialid_itm = id_material
     WHERE p.estatus = 1 and recetaitem.estatus = 1
-    GROUP BY nombre_producto, alias, dias_caducidadpd, costoproducto;
+    GROUP BY id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto, costoventa;
     """)
     productos = db.session.execute(consulta)
     return render_template('Inventarios/Producto/productos.html', productos=productos)
@@ -469,7 +519,7 @@ def actualizarProducto():
         nombre_material = next((nombre_mat for id_mat, nombre_mat in opciones if id_mat == id_material), None)
         if nombre_material and nombre_material not in [item['nombre_material'] for item in tabladatos]:
             tabladatos.append({"id_material": id_material, "nombre_material": nombre_material, "cantidad": cantidad})
-        redirect(url_for('editarProducto', id_producto=id_producto))  # Mantén al usuario en la misma página
+        redirect(url_for('modulo_inventario.editarProducto', id_producto=id_producto))  # Mantén al usuario en la misma página
         # return render_template('Inventarios/Producto/modificarProducto.html', form=productoF, tabladatos=tabladatos, producto=producto)
     # elif request.form['action'] == 'quitar':
     #     # Lógica para quitar ingredientes de la lista
@@ -506,7 +556,7 @@ def actualizarProducto():
         tabladatos.clear()
 
         flash('Producto actualizado correctamente', 'success')
-        return redirect(url_for('productos'))
+        return redirect(url_for('modulo_inventario.productos'))
     return render_template('Inventarios/Producto/modificarProducto.html', form=productoF, tabladatos=tabladatos, producto=producto)
 
 @modulo_inventario.route('/inventario/eliminarIngrediente', methods=["POST"])

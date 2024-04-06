@@ -1,21 +1,18 @@
 {%extends 'ContenedorMain/contenedorMain.html' %}
 
 {%block content %}
-
-<div class="row">
-    <div class="col-md-8">
-        <h1>PRODUCTO TERMINADO</h1>
+<form id="produccionForm" action="/produccion" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" id="idProHidden" name="idPro" value="">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>PRODUCTO TERMINADO</h1>
+        </div>
+        <div class="col-4">
+            <a href="/produccionGalleta" class="custom-buttongreen" style="text-decoration: none;">Ir a producir galleta</a>
+        </div>
     </div>
-    <div class="col-4">
-        <form action="/produccionGalleta" method="get">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="custom-buttongreen">Producir Galleta</button>
-        </form>
-    </div>
-</div>
-<div class="row">
-    <form action="/produccionGalleta" method="get">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="row">
         <table class="table table-bordered table-striped custom-table">
             <thead class="text-dark">
                 <tr>
@@ -38,16 +35,25 @@
                         <th scope="row">{{ counter.value }}</th>
                         <td>{{ pro.nombre }}</td>
                         <td>{{ pro.cantidad }}</td>
-                        <td><button type="button" onclick="solicitarProduccion('button{{ counter.value }}', '{{ pro.idPro }}')" name="action" value="Producir{{ counter.value }}" id="button{{ counter.value }}" class="btn btn-secondary">Producir</button></td>
-                    </tr>
+                        <td><button type="button" onclick="solicitarProduccion('button{{ counter.value }}', '{{ pro.idPro }}')" name="action" value="Producir{{ counter.value }}" id="button{{ counter.value }}" class="btn btn-secondary">Producir</button></td>                    </tr>
                     {% set counter.value = counter.value + 1 %}
                 {% endfor %}
             </tbody>
         </table>
-    </form>
-</div>
+    </div>
+</form>
 
+<!-- <script src="../static/js/produccion.js"></script> -->
+<script>
+    function solicitarProduccion(idButton, idProducto) {
+        //Desactivar el boton
+        document.getElementById(idButton).disabled = true
 
-<script src="../static/js/produccion.js"></script>
+        document.getElementById('idProHidden').value = idProducto; // Establecer el valor del campo oculto con idPro
+        document.getElementById('produccionForm').submit(); // Enviar el formulario
+    }
+
+</script>
+
 
 {%endblock%}

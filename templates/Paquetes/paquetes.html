@@ -11,6 +11,7 @@
         </div>
         <div class="col-md-4">
             <form action="/paquetes/agregarPaquete" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Crear Nuevo Paquete") }}
             </form>
         </div>
@@ -55,18 +56,21 @@
                             <td>{{ paquete.cantidadproductos_paq }}</td>
                             <td>
                                 <form action="/paquetes/detalle" method="POST" style="display: inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="id_paquete" value="{{ paquete.id_paquete }}">
                                     {{ custom_buttongreen("Detalle") }}
                                 </form>
                             </td> 
                             <td>
                                 <form action="/paquetes/editarPaquete" method="POST" style="display: inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="id_paquete" value="{{ paquete.id_paquete }}">
                                     {{ custom_button("Editar") }}
                                 </form>
                             </td> 
                             <td>
                                 <form action="/paquetes/eliminarPaquete" method="POST" style="display: inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <input type="hidden" name="id_paquete" value="{{ paquete.id_paquete }}">
                                     {{ custom_buttondelete("Borrar Paquete") }}
                                 </form>

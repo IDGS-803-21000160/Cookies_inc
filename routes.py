@@ -40,6 +40,8 @@ app.register_blueprint(moodulo_proveedor)
 app.register_blueprint(modulo_ventas)
 # app.register_blueprint(modulo_produccion)
 # app.register_blueprint(modulo_dashboard)
+app.register_blueprint(modulo_produccion)
+app.register_blueprint(modulo_dashboard)
 
 @app.errorhandler(404)
 def page_not_found(e):

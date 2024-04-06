@@ -15,6 +15,7 @@
         </div>
         <div class="col-md-4">
             <form action="/paquetes">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Volver a Paquetes") }}
             </form>
             

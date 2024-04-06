@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from sqlalchemy import text
 from datetime import datetime
-from flask_login import login_required
+from flask_login import login_required,current_user
 
 from Entities.Inventario import Usuario
 from Entities.UsuarioForm import UserFormReg
@@ -19,6 +19,7 @@ common_passwords = ['123456', 'password', '12345678', 'qwerty', '123456789']
 @modulo_usuarios.route("/pagePrincipal/user", methods=["GET", "POST"])
 @login_required
 def user():
+    print(current_user.id_usuario)
     user_formreg = UserFormReg(request.form)
     allUsuarios=Usuario.query.all()
     alert=''
@@ -39,7 +40,7 @@ def user():
                 try:
                     newUser=Usuario(tipousuario=user_formreg.tipousuario.data,
                                 nombrecompleto=user_formreg.nombrecompleto.data,
-                                usuario_registro=request.form.get('idUser'),
+                                usuario_registro=current_user.id_usuario,
                                 user = user_formreg.username.data,
                                 password = generate_password_hash(user_formreg.password.data)
                                 )

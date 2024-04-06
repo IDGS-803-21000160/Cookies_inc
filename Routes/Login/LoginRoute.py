@@ -9,6 +9,7 @@ from Entities.Inventario import Usuario,LoginLog
 from Entities.UsuarioForm import UsersForm
 from Entities.Inventario import db
 from Routes.Inventario.InventarioRoute import modulo_inventario
+from Routes.Dashboard.DashboardRoutes import modulo_dashboard
 
 
 modulo_login=Blueprint('modulo_login',__name__)
@@ -39,7 +40,7 @@ def index():
 
         # Verifica si el usuario existe
         if user:
-            user_id = user.id_us
+            user_id = user.id_usuario
             # Verifica el estado del usuario
             if user.estatus == '0':
                 log_attempt(user_id, False)
@@ -74,7 +75,7 @@ def index():
 
 @modulo_login.route("/pagePrincipal")
 def pagePrincipal():
-    return render_template('ContenedorMain/contenedorMain.html')
+    return redirect(url_for('modulo_dashboard.dashboard'))
 
 @modulo_login.route('/logout')
 def logout():

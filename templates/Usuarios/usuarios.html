@@ -4,7 +4,7 @@
   rel="stylesheet"
   href="../../node_modules/bootstrap/dist/css/bootstrap.min.css"
 />
-<link rel="stylesheet" href="../static/css/login.css" />
+<link rel="stylesheet" href="../../static/css/usarios.css" />
 <link rel="stylesheet" href="../../static/css/buttons.css" />
 <link
   rel="stylesheet"
@@ -104,60 +104,62 @@
     </button>
   </div>
   <br /><br />
-  <table class="table table-striped">
-    <thead class="thead-dark">
-      <tr>
-        <th scope="col"></th>
-        <th scope="col">Tipo de Usuario</th>
-        <th scope="col">Nombre completo</th>
-        <th scope="col">Usuario que reguistro</th>
-        <th scope="col">Usuario</th>
-        <th scope="col"></th>
-        <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for user in users %} {% if user.estatus =='1'%}
-      <tr>
-        <td>
-          <input
-            type="hidden"
-            name="idUserDelete"
-            id="form-id"
-            value="{{user.id_us}}"
-          />
-        </td>
-        <td>{{ user.tipousuario }}</td>
-        <td>{{ user.nombrecompleto }}</td>
-        <td>{{ user.usuario_registro }}</td>
-        <td>{{ user.user }}</td>
-        <td>
-          <button
-            id="eliminar"
-            class="btn btn-outline-danger"
-            name="eliminar"
-            value="Eliminar"
-            type="submit"
-            onclick="eliminarUsuari('{{user.id_us}}',event)"
-          >
-            Eliminar
-          </button>
-        </td>
-        <td>
-          <button
-            id="editarS"
-            name="editarS"
-            class="btn btn-outline-secondary"
-            onclick="editarUsuario('{{user.id_us}}','{{user.nombrecompleto}}',
+  <div class="tableContainer">
+    <table class="table table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Tipo de Usuario</th>
+          <th scope="col">Nombre completo</th>
+          <th scope="col">Usuario que reguistro</th>
+          <th scope="col">Usuario</th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %} {% if user.estatus =='1'%}
+        <tr>
+          <td>
+            <input
+              type="hidden"
+              name="idUserDelete"
+              id="form-id"
+              value="{{user.id_usuario}}"
+            />
+          </td>
+          <td>{{ user.tipousuario }}</td>
+          <td>{{ user.nombrecompleto }}</td>
+          <td>{{ user.usuario_registro }}</td>
+          <td>{{ user.user }}</td>
+          <td>
+            <button
+              id="eliminar"
+              class="btn btn-outline-danger"
+              name="eliminar"
+              value="Eliminar"
+              type="submit"
+              onclick="eliminarUsuari('{{user.id_usuario}}',event)"
+            >
+              Eliminar
+            </button>
+          </td>
+          <td>
+            <button
+              id="editarS"
+              name="editarS"
+              class="btn btn-outline-secondary"
+              onclick="editarUsuario('{{user.id_usuario}}','{{user.nombrecompleto}}',
                                         '{{user.tipousuario}}','{{user.user}}',
                                         '{{user.password}}',event)"
-          >
-            Editar
-          </button>
-        </td>
-      </tr>
-      {% endif %} {% endfor %}
-    </tbody>
-  </table>
+            >
+              Editar
+            </button>
+          </td>
+        </tr>
+        {% endif %} {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </form>
 {%endblock%}
