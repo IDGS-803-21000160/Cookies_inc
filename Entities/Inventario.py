@@ -175,5 +175,12 @@ class VistaDetalleProducto(db.Model):
     idProducto = db.Column(db.Integer)
     costo = db.Column(db.Float)
     cantidad = db.Column(db.Integer)
-    idInventario = db.Column(db.Integer)
-    IdProductoInv = db.Column(db.Integer)
+
+class VistaDetallePaquete(db.Model):
+    __tablename__ = 'vista_detalle_paquetes'
+
+    id_paquete = db.Column(db.Integer, primary_key=True)
+    nombre_paq = db.Column(db.String)
+    costopaquete_paq = db.Column(db.Float)
+    cantidadproductos_paq = db.Column(db.Integer)
+    productos = db.Column(db.JSON) 
