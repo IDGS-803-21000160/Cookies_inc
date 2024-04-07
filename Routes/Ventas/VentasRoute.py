@@ -11,7 +11,7 @@ import datetime
 
 
 from sqlalchemy import text
-from Entities.Inventario import VistaDetalleProducto
+from Entities.Inventario import VistaDetalleProducto,VistaDetallePaquete
 from Entities.ClienteForm import ClienteFormReg
 from Entities.Inventario import db
 
@@ -24,6 +24,8 @@ idGalletas=[]
 def ventas():
     cliente_form=ClienteFormReg(request.form)
     productos=VistaDetalleProducto.query.all()
+    paquete=VistaDetallePaquete.query.all()
+    alert=''
     if request.method == 'POST':
         if request.form.get('registrar'):
             datos_producto = request.form['registrar']
@@ -33,15 +35,13 @@ def ventas():
             costo_total = cantidad_galletas * float(precio_galleta)
             
             galletas.append((nombre_galleta,cantidad_galletas,costo_total) )
-            print(galletas)
-            print(costo_total)
+            for paq in paquete:
+                print(paq.productos)
             
             # Definir la lista de diccionarios
             product = {"producto_id": int(producto_id), "cantidad": cantidad_galletas, "descuento":0.00}
                 
-            
             idGalletas.append(product)
-            print(idGalletas)
             
         elif 'quitarProducto' in request.form:
             index_to_remove = int(request.form['quitarProducto'])
@@ -51,16 +51,43 @@ def ventas():
                 print('Producto eliminado', galletas)
                 print(galletas)
                 print(idGalletas)
+                
         elif 'ingresar' in request.form and cliente_form.validate_on_submit():
+            productos_ids = [producto['producto_id'] for producto in idGalletas]
+            productos_disponibles = VistaDetalleProducto.query.filter(VistaDetalleProducto.idProducto.in_(productos_ids)).all()
+            
+            todo_disponible = True
+            for producto_venta in idGalletas:
+                producto_disponible = next((prod for prod in productos_disponibles if prod.idProducto == producto_venta["producto_id"]), None)
+                
+                if not producto_disponible or producto_venta["cantidad"] > producto_disponible.cantidad:
+                    # Utilizar el nombre del producto en el mensaje
+                    nombre_producto = producto_disponible.nombre_producto if producto_disponible else "Desconocido"
+                    alert='alert-danger'
+                    flash(f"Cantidad no disponible para el producto {nombre_producto}", "error")
+                    todo_disponible = False
+                    break
+
+            if not todo_disponible:
+                return render_template('Ventas/Ventas/ventaGalletas.html', productos=productos, galletas=galletas, form=cliente_form,alert=alert)
+            
+            if not galletas or not idGalletas:
+                alert='alert-danger'
+                flash("No hay productos seleccionados para la venta.", "error")
+                return render_template('Ventas/Ventas/ventaGalletas.html', productos=productos, galletas=galletas, form=cliente_form,alert=alert)
+            
+            # Si todo está disponible, proceder con la venta
             try:
                 nombre_cliente=cliente_form.nombreCliente.data
                 correo=cliente_form.correo.data
-                usuario_venta=current_user.id_us
-                usuario_registro=current_user.id_us
+                usuario_venta=current_user.id_usuario
+                usuario_registro=current_user.id_usuario
                 folio_venta = str(random.randint(1000000, 9999999)) 
                 
                 print(folio_venta)
                 print(idGalletas)
+                
+                
                 # Preparar la llamada al procedimiento almacenado
                 sql = text(f"CALL GenerarVentaNuevaKev(:nombre_cliente, :correo, :usuario_venta, :folio_venta, :productos, :usuario_registro)")
         
@@ -74,6 +101,7 @@ def ventas():
                 })
                 
                 db.session.commit()
+                
                 print('Venta Realizada con Exito')
                 
                 # Inicializar un buffer y el objeto canvas
@@ -122,11 +150,96 @@ def ventas():
                 cliente_form.nombreCliente.data = ''
                 cliente_form.correo.data = ''
 
+                alert='alert-success'
+                flash("Venta realizada con Éxito...")
                 return response
-
+                
             except Exception as e:
                 db.session.rollback()
                 print(f"Error al agregar el usuario: {e}")
         
     
-    return render_template('Ventas/Ventas/ventaGalletas.html',productos=productos,galletas=galletas,form=cliente_form)
+    return render_template('Ventas/Ventas/ventaGalletas.html',productos=productos,galletas=galletas,form=cliente_form,alert=alert)
+
+
+paquetes=[]
+galletasVent=[]
+@modulo_ventas.route("/pagePrincipal/ventaPaquetes",methods=["GET", "POST"])
+def ventasPaq():
+    cliente_form=ClienteFormReg(request.form)
+    paquete=VistaDetallePaquete.query.all()
+    if request.method == 'POST':
+        if request.form.get('registrar'):
+            datos_producto = request.form['registrar']
+            producto_id, nombre_galleta, precio_galleta = datos_producto.split('-', 2)
+    
+            cantidad_galletas = int(request.form[f'numero_{producto_id}'])
+            costo_total = cantidad_galletas * precio_galleta
+        
+            paquetes.append((nombre_galleta,cantidad_galletas,costo_total) )
+            
+                        
+            paquete_seleccionado = VistaDetallePaquete.query.filter_by(id_paquete=producto_id).first()
+            
+            if paquete_seleccionado:
+                galletasVent.extend(paquete_seleccionado.productos)              
+            print(galletasVent)
+        elif 'quitarProducto' in request.form:
+                paquetes.clear()
+                galletasVent.clear()
+                print('Producto eliminado', paquetes)
+                print(paquetes)
+                print(galletasVent)
+        elif 'ingresar' in request.form and cliente_form.validate_on_submit():
+            productos_ids = [producto['producto_id'] for producto in galletasVent]
+            productos_disponibles = VistaDetalleProducto.query.filter(VistaDetalleProducto.idProducto.in_(productos_ids)).all()
+            
+            todo_disponible = True
+            for producto_venta in galletasVent:
+                producto_disponible = next((prod for prod in productos_disponibles if prod.idProducto == producto_venta["producto_id"]), None)
+                
+                if not producto_disponible or producto_venta["cantidad"] > producto_disponible.cantidad:
+                    # Utilizar el nombre del producto en el mensaje
+                    nombre_producto = producto_disponible.nombre_producto if producto_disponible else "Desconocido"
+                    alert='alert-danger'
+                    flash(f"El paquete no cuenta con la cantidad no disponible del producto {nombre_producto}", "error")
+                    todo_disponible = False
+                    break
+
+            if not todo_disponible:
+                return render_template('Ventas/Ventaspaq/ventasPaquetes.html', productos=paquete, galletas=paquetes, form=cliente_form,alert=alert)
+            
+            if not paquetes or not galletasVent:
+                alert='alert-danger'
+                flash("No hay productos seleccionados para la venta.", "error")
+                return render_template('Ventas/Ventaspaq/ventasPaquetes.html',productos=paquete,galletas=paquetes,form=cliente_form)
+            
+            try:
+                nombre_cliente=cliente_form.nombreCliente.data
+                correo=cliente_form.correo.data
+                usuario_venta=current_user.id_usuario
+                usuario_registro=current_user.id_usuario
+                folio_venta = str(random.randint(1000000, 9999999)) 
+                
+                print(folio_venta)
+                print(idGalletas)
+                # Preparar la llamada al procedimiento almacenado
+                sql = text(f"CALL GenerarVentaNuevaKev(:nombre_cliente, :correo, :usuario_venta, :folio_venta, :productos, :usuario_registro)")
+        
+                result = db.session.execute(sql, {
+                    'nombre_cliente': nombre_cliente,
+                    'correo': correo,
+                    'usuario_venta': usuario_venta,
+                    'folio_venta': folio_venta,
+                    'productos': json.dumps(galletasVent),
+                    'usuario_registro': usuario_registro
+                })
+                
+                db.session.commit()
+                print('Venta Realizada con Exito')
+            except Exception as e:
+                db.session.rollback()
+                print(f"Error al agregar el usuario: {e}")
+        
+    
+    return render_template('Ventas/Ventaspaq/ventasPaquetes.html',productos=paquete,galletas=paquetes,form=cliente_form)
