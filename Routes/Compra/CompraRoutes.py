@@ -1,4 +1,4 @@
-from flask import  render_template, request, redirect, url_for, flash, current_app, Blueprint
+from flask import  render_template, request, Blueprint
 from sqlalchemy import text
 from Entities.Inventario import db, Proveedor, Compra, CompraItem, Material
 from sqlalchemy import text
@@ -23,10 +23,13 @@ def compra():
     global listaCompra_insertar
     
     productos = []
+    compras = []
     listaProveedor = []
-    ventaForm = CompraForm(request.form)
+    ventaForm = CompraForm()
         
     productos = cargarProducto()
+    compras = loadComprasRealizadas()
+    
         
     proveedores = Proveedor.query.all()
 
@@ -69,14 +72,14 @@ def compra():
                             'nombre_producto': request.form[f'nombre_producto_{index}'],
                             'unidad_medida': request.form[f'unidad_medida_{index}'],
                             'cantidad_producto': valor*1000,
-                            'subtotal': subtotal
+                            'subtotal': round(subtotal, 2)
                         })
                     productos_a_comprar = productos_a_comprar + 1
             
             for i in listaCompra:
                 total = total + float(i['subtotal'])
             #print(listaCompra)
-            
+            total = round(total, 2)
             listaCompra_insertar.extend(listaCompra)
             listaCompra = []
             
@@ -144,12 +147,14 @@ def compra():
             # for row in resultado:
             #     print(row)
                 
+            compras = loadComprasRealizadas()    
+            
             productos_a_comprar = 0
             subtotal = 0
             total = 0
             listaCompra_insertar = []
                          
-    return render_template('Compra/compra.html', prodct = productos, form = ventaForm)
+    return render_template('Compra/compra.html', prodct = productos, form = ventaForm, compra = compras)
 
 
 def cargarProducto():
@@ -166,3 +171,22 @@ def cargarProducto():
             'unidad_medida': material.unidad_medida
         })
     return productos
+
+def loadComprasRealizadas():
+    compras = []
+
+    materiales = db.session.query(Compra).all()
+
+    for material in materiales:
+        # print(material.id_compra, material.proveedorid_comp, material.usuario_comp)
+        compras.append({
+            'id_compra': material.id_compra,
+            'proveedorid_comp': material.proveedorid_comp,
+            'usuario_comp': material.usuario_comp,
+            'folio_comp': material.folio_comp,
+            'fecha_comp':material.fecha_comp,
+            'cantidad_productos':material.cantidad,
+            'total_compra': material.total
+        })
+        
+    return compras
