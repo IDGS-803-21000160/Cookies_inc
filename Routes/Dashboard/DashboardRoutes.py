@@ -3,14 +3,11 @@ from sqlalchemy import text
 from Entities.Inventario import db
 from sqlalchemy import text
 from flask_wtf.csrf import CSRFProtect
-from flask_login import login_required
-from datetime import datetime
 
 modulo_dashboard = Blueprint('modulo_dashboard', __name__)
 csrf=CSRFProtect()
 # ''''''''''''''''''''''''''DASHBOARD'''''''''''''''''''''''''''''''''''''''
 @modulo_dashboard.route('/dashboard')
-@login_required
 def dashboard():    
     ventas = getVentasAnio()
     produccion = getProduccion()
@@ -65,7 +62,6 @@ def get_ventasPr():
         resultados_por_mes[mes_nombre].append(row_dict)
 
     return resultados_por_mes
-
 
 def getVentasAnio2():
     query = text("""
@@ -140,18 +136,17 @@ def getCards():
     query = """ SELECT count(*) as cantidadVentas FROM venta; """
     cantidadVentas = db.session.execute(text(query)).fetchone()
 
-    query = """ SELECT ROUND(sum(total_ventas), 3) as totalVentas FROM venta; """
+    query = """ SELECT sum(total_ventas) as totalVentas FROM venta; """
     totalVentas = db.session.execute(text(query)).fetchone()
 
-    query3 = """SELECT p.nombre_paq AS productoVendido, COUNT(vi.id_ventaitem) AS cantidad_ventas 
+    query = """SELECT p.nombre_paq AS productoVendido, COUNT(vi.id_ventaitem) AS cantidad_ventas 
     FROM ventaitem vi 
     JOIN paqueteitem pi ON vi.paqueteid_itm = pi.id_paqueteitem
     join paquete p on p.id_paquete = pi.paqueteid_itm
     GROUP BY p.nombre_paq
     ORDER BY cantidad_ventas DESC LIMIT 1; """
 
-    productoVendido = db.session.execute(text(query3)).fetchone()
-    
+    productoVendido = db.session.execute(text(query)).fetchone()
 
     # Append the results to the data list
     data.append({
@@ -165,14 +160,19 @@ def getCards():
     return data
 
 def getProduccion():
-    query = """  SELECT prod.nombre_producto as nombre, ROUND(pi.costo, 3) as costo, ROUND(pi.costo, 3) as costo, p.fecha_inicio as fechaInicio, coalesce(p.fecha_fin, 'En espera') as fechaFin, 
+    query = """  SELECT prod.nombre_producto as nombre, pi.costo as costo, pi.costo as costo, p.fecha_inicio as fechaInicio,
     CASE 
+        WHEN pi.estatus = 0 THEN 'Cancelado'
+        ELSE COALESCE(p.fecha_fin, 'En espera')
+    END AS fechaFin,  
+    CASE 
+        WHEN pi.estatus = 0 THEN 2
         WHEN p.fecha_fin IS NULL THEN 0 
         ELSE 1 
     END AS estado_fecha
     FROM produccion p JOIN produccionitem pi ON p.id_produccionitem = pi.id_produccionitem
     join producto prod on prod.id_producto = pi.productoid_itm
-    WHERE p.fecha_inicio IS NOT NULL order by  p.fecha_inicio asc limit 6;"""
+    WHERE p.fecha_inicio IS NOT NULL order by  p.fecha_inicio desc limit 6;"""
     # Ejecutar la consulta
     data = db.session.execute(text(query))
     db.session.commit()

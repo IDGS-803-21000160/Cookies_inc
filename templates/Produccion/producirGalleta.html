@@ -18,6 +18,7 @@
         <input type="hidden" name="idProducto" value="{{ receta.idProducto }}"> <!-- Campo oculto para almacenar idProducto -->
         <input type="hidden" name="idProduccionitem" value="{{ receta.idProduccionitem }}">
         <input type="hidden" name="counter" value="{{ counter.value }}">
+        <input type="hidden" id="idProHidden" name="idPro" value="">
         <div class="card">
             <div class="card-header text-center">
                 <div class="row">
@@ -26,8 +27,9 @@
                     </div>
                     <div class="col-6">
                         <div class="input-group mb-3">
-                            <span class="input-group-text" id="basic-addon1">Maximo: {{receta.cuantas}}</span>
-                            <input type="number" id="cuantas_{{ counter.value }}" class="form-control cantidad" placeholder="Cantidad" name="cuantas_{{ counter.value }}" min="0" max="{{receta.cuantas}}">
+                            <span class="input-group-text" id="basic-addon1">Cantidad Solicitada: {{receta.cuantas}}</span>
+                            <span class="input-group-text" id="basic-addon1">Fecha de la Solicitud: {{receta.fechaSolicitud}} </span>
+                            <input type="hidden" id="cuantas_{{ counter.value }}" class="form-control cantidad" placeholder="Cantidad" name="cuantas_{{ counter.value }}" min="0" max="{{receta.cuantas}}" value="{{receta.cuantas}}">
                         </div>
                     </div>
                 </div>
@@ -37,8 +39,13 @@
                 {{receta.materiales}}
             </div>
         </div>
-        <div class="col-3">
-            <button type="button" class="mt-3 custom-buttongreen" onclick="producir('{{ counter.value }}')">Producir</button>
+        <div class="row">
+            <div class="col-3">
+                <button type="button" class="mt-3 custom-buttongreen" onclick="producir('{{ counter.value }}','1')">Producir</button>
+            </div>
+            <div class="col-3">
+                <button type="button" class="mt-3 custom-buttondelete" onclick="producir('{{ counter.value }}','0')">Rechazar</button>
+            </div>
         </div>
         <!-- el boton tendra la funcionalidad de agregar al inventario la cantidad de galleta a producir -->
     </form>
@@ -46,40 +53,12 @@
 <br><br>
 {% set counter.value = counter.value + 1 %}
 {% endfor %}
-<script src="../static/js/produccion.js"></script>
 
 <script>
-    // Get all input elements with class "cantidad"
-    var cantidadInputs = document.querySelectorAll('.cantidad');
-    // Add event listener for input event to each input element
-    cantidadInputs.forEach(function(cantidadInput) {
-        cantidadInput.addEventListener('input', function(event) {
-            // Get the entered value
-            var enteredValue = parseInt(event.target.value);
-            // Get the maximum allowed value from the corresponding "cuantas" attribute
-            var maxAllowedValue = parseInt(event.target.getAttribute('max'));
-            var minAllowedValue = parseInt(event.target.getAttribute('min'));
 
-            // If the entered value is greater than the maximum allowed value
-            if (enteredValue > maxAllowedValue || enteredValue < minAllowedValue) {
-                // Prevent the default behavior of input event (don't update the input value)
-                event.preventDefault();
-                // Display a Swal alert
-                event.target.value = '';
-                Swal.fire({
-                    title: "Error",
-                    text: "La cantidad debe ser menor o igual a " + maxAllowedValue,
-                    icon: "error",
-                    button: "Aceptar"
-                });
-                
-            }
-        });
-    });
 
-    function producir(counter){
-        console.log('produccionForm'+counter)
-
+    function producir(counter,valor){
+        document.getElementById('idProHidden').value = valor; 
         document.getElementById('produccionForm'+counter).submit();
     }
 
