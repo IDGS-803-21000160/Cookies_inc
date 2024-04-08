@@ -118,7 +118,7 @@ def ventas():
                 c.drawString(30, height - 30, "Tinda de Galletas Cookies")
                 c.setFont("Helvetica", 10)
                 c.drawString(30, height - 50, "Dirección de la Empresa")
-                c.drawString(30, height - 70, f"Fecha y Hora: { datetime.datetime.now()}")
+                c.drawString(30, height - 70, f"Fecha y Hora: { datetime.now()}")
                 c.drawString(30, height - 90, f"Folio: {folio_venta}")
 
 

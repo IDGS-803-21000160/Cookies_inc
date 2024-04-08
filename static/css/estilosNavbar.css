@@ -10,3 +10,19 @@
     width: 100%;
     justify-content: space-evenly;
 }
+
+.nav-link{
+    color: #fff !important;
+    font-size: small;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.material-symbols-outlined{
+    font-size: 1.5em;
+}
+
+.navbar{
+    height: 60px;
+}

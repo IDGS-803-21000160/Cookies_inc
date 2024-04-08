@@ -9,6 +9,10 @@ from flask_cors import CORS, cross_origin
 from Entities.Inventario import db,Usuario
 from datetime import datetime
 from Routes.Inventario.InventarioRoute import modulo_inventario
+from Routes.Paquetes.PaquetesRoute import modulo_paquetes
+from Routes.Materiales.MaterialesRoute import modulo_materiales
+from Routes.Productos.ProductosRoute import modulo_producto
+
 from Routes.Produccion.ProducionRoute import modulo_produccion
 from Routes.Dashboard.DashboardRoutes import modulo_dashboard
 from Routes.Proveedores.ProveedoresRoute import moodulo_proveedor
@@ -32,7 +36,6 @@ CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5000"]}})
 
 
 
-# csrf=CSRFProtect()
 app.config.from_object(DevelopmentConfig)
 app.register_blueprint(modulo_login)
 app.register_blueprint(modulo_usuarios)
@@ -44,6 +47,9 @@ app.register_blueprint(modulo_ventas)
 app.register_blueprint(modulo_produccion)
 app.register_blueprint(modulo_dashboard)
 app.register_blueprint(modulo_compras)
+app.register_blueprint(modulo_paquetes)
+app.register_blueprint(modulo_materiales)
+app.register_blueprint(modulo_producto)
 
 @app.errorhandler(404)
 def page_not_found(e):

@@ -7,8 +7,8 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    DB_USER = os.environ.get('DB_USER', 'adminCookiesIc')
-    DB_PASS = os.environ.get('DB_PASS', 'g@llet@sCook2024')
+    DB_USER = os.environ.get('DB_USER', 'root')
+    DB_PASS = os.environ.get('DB_PASS', 'root1234')
     DB_HOST = os.environ.get('DB_HOST', '127.0.0.1')
     DB_NAME = os.environ.get('DB_NAME', 'cookiesIncF')
     
