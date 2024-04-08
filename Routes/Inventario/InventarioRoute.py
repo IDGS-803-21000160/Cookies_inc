@@ -90,7 +90,15 @@ def tipoEntrada():
 @modulo_inventario.route('/inventario/entradaInventario',methods=["GET","POST"])
 @login_required
 def inventariosEntrada():
-    tipo = request.form['tipo']
+
+    alerta = ''
+    tipo = ''
+
+    if request.args.get('alerta'):
+        alerta = request.args.get('alerta')
+        tipo = request.args.get('tipo')
+    else:
+        tipo = request.form['tipo']
     inventarioForm  = InventarioForm(request.form)
 
     query =  text("""
@@ -108,15 +116,20 @@ def inventariosEntrada():
     opcionesProducto = [(producto.id_producto, producto.nombre_producto) for producto in productos]
     inventarioForm.producto.choices = opcionesProducto
 
-    return render_template('Inventarios/entradaInventario.html', form = inventarioForm, tipo = tipo)
+    return render_template('Inventarios/entradaInventario.html', form = inventarioForm, tipo = tipo, alerta = alerta)
 
 
-@modulo_inventario.route('/inventario/guardarEntrada', methods=["POST"])
+@modulo_inventario.route('/inventario/guardarEntrada', methods=["POST", "GET"])
 @login_required
 def inventariosGuardarEntrada():
 
-    tipo = request.form['tipo']
     entrada = InventarioForm(request.form)
+    tipo = request.form['tipo']
+
+    if (entrada.material.data == None and entrada.producto.data == None) or entrada.cantidad.data == None: 
+        return redirect(url_for('modulo_inventario.inventariosEntrada', alerta = 'No has ingresado ninguna cantidad', tipo = tipo))
+
+   
     inv = ""
     if tipo == '1':
         materiales = Material.query.all() 

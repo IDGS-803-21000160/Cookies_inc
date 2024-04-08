@@ -48,6 +48,12 @@ def verDetalle():
 
 @modulo_paquetes.route('/paquetes/agregarPaquete',methods=["GET","POST"])
 def inventariosAddPaquete():
+
+    alerta = ''
+
+    if request.args.get('alerta'):
+        alerta = request.args.get('alerta')
+
     productosPaquete.clear()
     paqueteForm  = PaqueteForm(request.form)
     consulta = text("""
@@ -61,7 +67,7 @@ def inventariosAddPaquete():
     productos = db.session.execute(consulta)
     opciones = [(producto.id_producto, producto.nombre_producto) for producto in productos]
     paqueteForm.productos.choices = opciones
-    return render_template('Paquetes/agregarPaquete.html', form = paqueteForm, productosPaquete = productosPaquete, precio = 0, peso = 0)
+    return render_template('Paquetes/agregarPaquete.html', form = paqueteForm, productosPaquete = productosPaquete, precio = 0, peso = 0, alerta = alerta)
 
 @modulo_paquetes.route('/paquetes/guardarPaquete', methods=["POST"])
 def inventariosGuardarPaquete():
@@ -78,10 +84,21 @@ def inventariosGuardarPaquete():
     opciones = [(producto.id_producto, producto.nombre_producto) for producto in productos]
     paqueteF.productos.choices = opciones
 
+    precioSugerido = 0
+    pesoTotal = 0
+
+    if productosPaquete != []:
+        precioSugerido = sum([item['costo'] for item in productosPaquete])
+        pesoTotal = sum([item['peso'] for item in productosPaquete])
+
     # Verifica qué botón se presionó
     if request.form['action'] == 'agregar_item':
         # Lógica para agregar ingredientes a la lista
         cantidad = request.form.get("cantidad", type=int)
+
+        if cantidad == None:
+            return render_template('Paquetes/agregarPaquete.html', form=paqueteF, productosPaquete=productosPaquete, alerta = 'La cantidad debe ser mayor a 0')
+
         id_producto = paqueteF.productos.data
         nombre_producto = next((nombre_pd for id_pd, nombre_pd in opciones if id_pd == id_producto), None)
         
@@ -96,17 +113,19 @@ def inventariosGuardarPaquete():
             group by id_producto, nombre_producto;
             """)
             precioPeso = db.session.execute(consulta2.params(id_producto=id_producto)).fetchone()
-
-            productosPaquete.append({"id_producto": id_producto, "nombre_producto": nombre_producto, "cantidad": cantidad, "costo" : precioPeso.costoproducto * cantidad, "peso" : precioPeso.peso * cantidad})
             precioSugerido = round(sum([float(item['costo']) for item in productosPaquete]), 3)
             pesoTotal = round( sum( [ float(item['peso']) for item in productosPaquete ] ), 3 )
-            print(productosPaquete)
+            productosPaquete.append({"id_producto": id_producto, "nombre_producto": nombre_producto, "cantidad": cantidad, "costo" : precioPeso.costoproducto * cantidad, "peso" : precioPeso.peso * cantidad})
+            
+
             return render_template('Paquetes/agregarPaquete.html', form=paqueteF, productosPaquete=productosPaquete, precio = precioSugerido, peso = pesoTotal)
     
     elif request.form['action'] == 'guardar_paquete':
 
         if productosPaquete == []:
-            return render_template('Paquetes/agregarPaquete.html', form=paqueteF, productosPaquete=productosPaquete)
+            return render_template('Paquetes/agregarPaquete.html', form=paqueteF, productosPaquete=productosPaquete, alerta = 'Debe agregar al menos un producto al paquete', precio = precioSugerido, peso = pesoTotal)
+        elif paqueteF.nombrePaquete.data == '' or paqueteF.costoPaquete.data == '':
+            return render_template('Paquetes/agregarPaquete.html', form=paqueteF, productosPaquete=productosPaquete, alerta = 'Debe llenar todos los campos', precio = precioSugerido, peso = pesoTotal)
         else: 
             nuevo_paquete = Paquete(
                 nombre_paq=paqueteF.nombrePaquete.data,
@@ -134,8 +153,14 @@ def inventariosGuardarPaquete():
             productosPaquete.clear()
 
             return redirect(url_for('modulo_paquetes.paquetes', success = True, alerta = 'Paquete Añadido Correctamente!'))
-    else:
-        return render_template('Paquetes/agregarPaquete.html', form=paqueteF, productosPaquete=productosPaquete)
+    elif request.form['action'] == 'quitar':
+        print('quitar')
+        id_producto = request.form['id_producto']
+        productosPaquete[:] = [item for item in productosPaquete if item['id_producto'] != int(id_producto)]
+        precioSugerido = round(sum([item['costo'] for item in productosPaquete]), 3)
+        pesoTotal = round( sum( [ float(item['peso']) for item in productosPaquete ] ), 3 )
+        return render_template('Paquetes/agregarPaquete.html', form=paqueteF, productosPaquete=productosPaquete, precio = precioSugerido, peso = pesoTotal)
+    return render_template('Paquetes/agregarPaquete.html', form=paqueteF, productosPaquete=productosPaquete)
 
 @modulo_paquetes.route('/paquetes/editarPaquete', methods=["GET", "POST"])
 def editarPaquete():
