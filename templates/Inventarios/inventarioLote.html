@@ -72,29 +72,35 @@
                     </thead>
                     <tbody>
                         {% for inv in inventario %}
-                        <tr {% if inv.tipostock_inv == 3 %} style="background-color: rgb(160, 3, 3); color: white;" {% endif %}>
-                            <td>{{ inv.tipo_stock }}</td>
-                            <td>{{ inv.nombre }}</td>
-                            <td>{{ inv.tipo_inv }}</td>
-                            <td>{{ inv.costo }}</td>
-                            <td>{{ inv.cantidad_inv }}</td>
-                            <td>{{ inv.fecha_caducidad }}</td>
-                            <td>{{ inv.numeroLote }}</td>
-                            <td>
-                                <form action="/inventario/confirmarMermas" method="POST" style="display: inline;">
-                                    <input type="hidden" name="id_inv" value="{{ inv.id_inventario }}">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    {{ custom_button("Merma") }}
-                                </form>
-                            </td>
-                            <td>
-                                <form action="/inventario/salidaInventario" method="POST" style="display: inline;">
-                                    <input type="hidden" name="id_inv" value="{{ inv.id_inventario }}">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    {{ custom_buttondelete("Salida") }}
-                                </form>
-                            </td>   
-                        </tr>
+                            <tr {% if inv.tipostock_inv == 3 %} style="background-color: rgb(160, 3, 3); color: white;" {% endif %}>
+                                <td>{{ inv.tipo_stock }}</td>
+                                <td>{{ inv.nombre }}</td>
+                                <td>{{ inv.tipo_inv }}</td>
+                                <td>{{ inv.costo }}</td>
+                                <td>{{ inv.cantidad_inv }}</td>
+                                <td>{{ inv.fecha_caducidad }}</td>
+                                <td>{{ inv.numeroLote }}</td>
+                                <td>
+                                    {% if inv.cantidad_inv > 0 %}
+                                        <form action="/inventario/confirmarMermas" method="POST" style="display: inline;">
+                                            <input type="hidden" name="id_inv" value="{{ inv.id_inventario }}">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            {{ custom_button("Merma") }}
+                                        </form>
+                                    {% else %}
+                                        <label style="text-align: end;"> SIN EXISTENCIA </label>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if inv.cantidad_inv > 0 %}
+                                        <form action="/inventario/salidaInventario" method="POST" style="display: inline;">
+                                            <input type="hidden" name="id_inv" value="{{ inv.id_inventario }}">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            {{ custom_buttondelete("Salida") }}
+                                        </form>
+                                    {% endif %}
+                                </td>   
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
