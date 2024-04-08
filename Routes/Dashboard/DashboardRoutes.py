@@ -3,11 +3,13 @@ from sqlalchemy import text
 from Entities.Inventario import db
 from sqlalchemy import text
 from flask_wtf.csrf import CSRFProtect
+from flask_login import login_required
 
 modulo_dashboard = Blueprint('modulo_dashboard', __name__)
 csrf=CSRFProtect()
 # ''''''''''''''''''''''''''DASHBOARD'''''''''''''''''''''''''''''''''''''''
 @modulo_dashboard.route('/dashboard')
+@login_required
 def dashboard():    
     ventas = getVentasAnio()
     produccion = getProduccion()

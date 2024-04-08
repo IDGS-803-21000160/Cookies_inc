@@ -56,6 +56,7 @@ def inventarios():
     return render_template('Inventarios/inventario.html', inventario = resultados)
 
 @modulo_inventario.route('/inventario/lotes',methods=["GET"])
+@login_required
 def lotes():
     id_inv = request.args.get('id_inv')
     id_tipoInv = request.args.get('id_tipoinv')
@@ -85,10 +86,12 @@ def lotes():
 
 
 @modulo_inventario.route('/inventario/seleccionarTipoEntrada',methods=["GET","POST"])
+@login_required
 def tipoEntrada():
     return render_template('Inventarios/seleccionarTipoEntrada.html')
 
 @modulo_inventario.route('/inventario/entradaInventario',methods=["GET","POST"])
+@login_required
 def inventariosEntrada():
     tipo = request.form['tipo']
     inventarioForm  = InventarioForm(request.form)
@@ -112,6 +115,7 @@ def inventariosEntrada():
 
 
 @modulo_inventario.route('/inventario/guardarEntrada', methods=["POST"])
+@login_required
 def inventariosGuardarEntrada():
 
     tipo = request.form['tipo']
@@ -144,6 +148,7 @@ def inventariosGuardarEntrada():
 
 
 @modulo_inventario.route('/inventario/confirmarMermas',methods=["GET","POST"])
+@login_required
 def confirmarMermas():
     id_inv = int(request.form['id_inv'])
     
@@ -164,6 +169,7 @@ def confirmarMermas():
     return render_template('Inventarios/confirmarMermas.html', form = inventarioForm, resultados = resultados)
 
 @modulo_inventario.route('/inventario/guardarMerma', methods=["POST"])
+@login_required
 def inventariosGuardarMerma():
     inventarioF = InventarioMerma(request.form)
     id_inv = request.form['id_inventario']
@@ -180,6 +186,7 @@ def inventariosGuardarMerma():
         return redirect(url_for('modulo_inventario.inventarios'))
 
 @modulo_inventario.route('/inventario/salidaInventario', methods=["POST"])
+@login_required
 def inventariosSalida():
     id_inv = int(request.form['id_inv'])
     
@@ -201,6 +208,7 @@ def inventariosSalida():
 
 
 @modulo_inventario.route('/inventario/guardarSalida', methods=["POST"])
+@login_required
 def inventariosGuardarSalida():
     inventarioF = InventarioSalida(request.form)
     id_inv = request.form['id_inventario']
@@ -218,6 +226,7 @@ def inventariosGuardarSalida():
 
 
 @modulo_inventario.route('/inventario/mermas',methods=["GET","POST"])
+@login_required
 def mermas():
     
     consulta = text("""
@@ -245,6 +254,7 @@ def mermas():
 # .......................................................
 
 @modulo_inventario.route('/inventario/materiales',methods=["GET","POST"])
+@login_required
 def materiales():
     query =  text("""
     SELECT id_material, nombre_mat, dias_caducidad,
@@ -257,11 +267,13 @@ def materiales():
     return render_template('Inventarios/Materiales/materiales.html', materiales=materiales)
 
 @modulo_inventario.route('/inventario/agregarMaterial',methods=["GET","POST"])
+@login_required
 def inventariosAddMaterial():
     materialForm  = InventarioMaterialForm(request.form)
     return render_template('Inventarios/Materiales/agregarMaterial.html', form = materialForm)
 
 @modulo_inventario.route('/inventario/editarMaterial', methods=["GET", "POST"])
+@login_required
 def editarMaterial():
     id_material = request.form['material_id']
     material = Material.query.get(id_material)
@@ -277,6 +289,7 @@ def editarMaterial():
     return render_template('Inventarios/Materiales/modificarMaterial.html', form=materialForm, material=material)
 
 @modulo_inventario.route('/inventario/guardarMaterial', methods=["POST"])
+@login_required
 def inventariosGuardarMaterial():   
     materialF = InventarioMaterialForm(request.form)
 
@@ -309,6 +322,7 @@ def inventariosGuardarMaterial():
     return render_template('Inventarios/Materiales/agregarMaterial.html', form=materialF)
 
 @modulo_inventario.route('/inventario/eliminarMaterial', methods=["POST"])
+@login_required
 def eliminarMaterial():
     id_material = request.form['material_id']
     material = Material.query.get(id_material)
@@ -318,6 +332,7 @@ def eliminarMaterial():
     return redirect(url_for('materiales'))
 
 @modulo_inventario.route('/inventario/actualizarMaterial', methods=["POST"])
+@login_required
 def actualizarMaterial():
     id_material = request.form['material_id']
     material = Material.query.get(id_material)
@@ -348,6 +363,7 @@ def actualizarMaterial():
 tabladatos = []
 
 @modulo_inventario.route('/inventario/agregarProducto',methods=["GET","POST"])
+@login_required
 def inventariosAddProducto():
     tabladatos.clear()
     productoForm  = InventarioProductoForm(request.form)
@@ -365,9 +381,10 @@ def inventariosAddProducto():
 
 
 @modulo_inventario.route('/inventario/guardarProducto', methods=["POST"])
+@login_required
 def inventariosGuardarProducto():
     productoF = InventarioProductoForm(request.form)
-      # Indica que no ha sido asignado aún.
+    # Indica que no ha sido asignado aún.
         
     costoProduccion = 0
     ingredientes = Material.query.all()
@@ -442,6 +459,7 @@ def inventariosGuardarProducto():
     return render_template('Inventarios/Producto/agregarProducto.html', form=productoF, tabladatos=tabladatos, costoProduccion = costoProduccion)
 
 @modulo_inventario.route('/inventario/productos',methods=["GET","POST"])
+@login_required
 def productos():
     # productos = Producto.query.join(RecetaItem, Producto.id_producto == RecetaItem.productoid_itm).filter(Producto.estatus == 1 and RecetaItem.estatus == 1).all()
     consulta = text("""
@@ -456,6 +474,7 @@ def productos():
     return render_template('Inventarios/Producto/productos.html', productos=productos)
 
 @modulo_inventario.route('/inventario/detalle', methods=["GET", "POST"])
+@login_required
 def verReceta():
     tabladatos.clear()
     id_producto = request.form['id_producto']
@@ -471,6 +490,7 @@ def verReceta():
     return render_template('Inventarios/Producto/detalleProducto.html', materiales=resultados, producto = producto)
 
 @modulo_inventario.route('/inventario/eliminarProducto', methods=["POST"])
+@login_required
 def eliminarProducto():
     id_producto = request.form['id_producto']
     producto = Producto.query.get(id_producto)
@@ -484,6 +504,7 @@ def eliminarProducto():
     return redirect(url_for('productos'))
 
 @modulo_inventario.route('/inventario/editarProducto', methods=["GET", "POST"])
+@login_required
 def editarProducto():
     tabladatos.clear()
     id_producto = request.form['id_producto']
@@ -508,6 +529,7 @@ def editarProducto():
     return render_template('Inventarios/Producto/modificarProducto.html', form=productoForm, producto=producto, tabladatos=tabladatos)
 
 @modulo_inventario.route('/inventario/actualizarProducto', methods=["POST"])
+@login_required
 def actualizarProducto():
     productoF = InventarioProductoForm(request.form)
     ingredientes = Material.query.all()
@@ -565,6 +587,7 @@ def actualizarProducto():
     return render_template('Inventarios/Producto/modificarProducto.html', form=productoF, tabladatos=tabladatos, producto=producto)
 
 @modulo_inventario.route('/inventario/eliminarIngrediente', methods=["POST"])
+@login_required
 def eliminarIngrediente():
     id_material = request.form['id_material']
     id_producto = request.form['id_producto']
@@ -579,6 +602,7 @@ def eliminarIngrediente():
 #.....................................................
 
 @modulo_inventario.route('/paquetes')
+@login_required
 def paquetes():
     query =  text("""
     SELECT id_paquete, nombre_paq, costopaquete_paq, cantidadproductos_paq
@@ -589,6 +613,7 @@ def paquetes():
     return render_template('Paquetes/paquetes.html', paquetes = paquete)
 
 @modulo_inventario.route('/paquetes/detalle', methods=["GET", "POST"])
+@login_required
 def verDetalle():
     id_paquete = request.form['id_paquete']
     consulta = text("""
@@ -607,6 +632,7 @@ def verDetalle():
 productosPaquete = []
 
 @modulo_inventario.route('/paquetes/agregarPaquete',methods=["GET","POST"])
+@login_required
 def inventariosAddPaquete():
     productosPaquete.clear()
     paqueteForm  = PaqueteForm(request.form)
@@ -624,6 +650,7 @@ def inventariosAddPaquete():
     return render_template('Paquetes/agregarPaquete.html', form = paqueteForm, productosPaquete = productosPaquete)
 
 @modulo_inventario.route('/paquetes/guardarPaquete', methods=["POST"])
+@login_required
 def inventariosGuardarPaquete():
     paqueteF = PaqueteForm(request.form)
     productos = Producto.query.all()
@@ -676,6 +703,7 @@ def inventariosGuardarPaquete():
         return render_template('Paquetes/agregarPaquete.html', form=paqueteF, productosPaquete=productosPaquete)
 
 @modulo_inventario.route('/paquetes/editarPaquete', methods=["GET", "POST"])
+@login_required
 def editarPaquete():
     productosPaquete.clear()
     id_paquete = request.form['id_paquete']
@@ -698,6 +726,7 @@ def editarPaquete():
     return render_template('Paquetes/modificarPaquete.html', form=paqueteForm, paquete=paquete, productosPaquete=productosPaquete)
 
 @modulo_inventario.route('/paquetes/actualizarPaquete', methods=["POST"])
+@login_required
 def actualizarPaquete():
     paqueteF = PaqueteForm(request.form)
     productos = Producto.query.all()
@@ -750,6 +779,7 @@ def actualizarPaquete():
             return redirect(url_for('modulo_inventario.paquetes'))
 
 @modulo_inventario.route('/paquetes/eliminarProducto', methods=["POST"])
+@login_required
 def eliminarProductoPaquete():
     id_producto = request.form['id_producto']
     id_paquete = request.form['id_paquete']
@@ -762,6 +792,7 @@ def eliminarProductoPaquete():
     return render_template('Paquetes/modificarPaquete.html', form=paqueteForm, productosPaquete=productosPaquete, paquete=paquete)
 
 @modulo_inventario.route('/paquetes/eliminarPaquete', methods=["POST"])
+@login_required
 def eliminarPaquete():
     id_paquete = request.form['id_paquete']
     paquete = Paquete.query.get(id_paquete)

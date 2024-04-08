@@ -1,4 +1,6 @@
 from flask import Flask, Blueprint, render_template, request, redirect, url_for, flash, current_app
+from flask_login import login_required,current_user
+
 from sqlalchemy import text
 from Entities.Inventario import db
 
@@ -8,6 +10,7 @@ modulo_produccion = Blueprint('modulo_produccion', __name__)
 # ''''''''''''''''''''''''''PRODUCCION'''''''''''''''''''''''''''''''''''''''
 
 @modulo_produccion.route('/produccion', methods=['GET','POST'])
+@login_required
 def produccion():
     if request.method == 'POST':
         idPro = request.form.get('idPro')  # Obtener el idPro enviado en la solicitud POST
@@ -38,6 +41,7 @@ def agregarProduccion(idProducto):
     return {'response':'success'}
 
 @modulo_produccion.route('/produccionGalleta', methods=['GET','POST'])
+@login_required
 def produccionGalleta():
     if request.method == 'POST':
         idProducto = request.form.get('idProducto')

@@ -1,5 +1,5 @@
 from flask import  render_template, request, redirect, url_for, flash, current_app, Blueprint,send_file
-from flask_login import current_user
+from flask_login import current_user,login_required
 import random, json
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
@@ -21,6 +21,7 @@ modulo_ventas=Blueprint('modulo_ventas',__name__)
 galletas=[]
 idGalletas=[]
 @modulo_ventas.route("/pagePrincipal/venta",methods=["GET", "POST"])
+@login_required
 def ventas():
     cliente_form=ClienteFormReg(request.form)
     productos=VistaDetalleProducto.query.all()
@@ -165,6 +166,7 @@ def ventas():
 paquetes=[]
 galletasVent=[]
 @modulo_ventas.route("/pagePrincipal/ventaPaquetes",methods=["GET", "POST"])
+@login_required
 def ventasPaq():
     cliente_form=ClienteFormReg(request.form)
     paquete=VistaDetallePaquete.query.all()
