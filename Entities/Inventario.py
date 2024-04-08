@@ -119,6 +119,40 @@ class LoginLog(db.Model):
     ip_address = db.Column(db.String(45))
     user_agent = db.Column(db.String(255))
     login_successful = db.Column(db.Boolean, default=True)
+    
+# ************** COMPRA *************** 
+class Compra(db.Model):
+    __tablename__ = 'compra'
+
+    id_compra = db.Column(db.Integer, primary_key=True)
+    proveedorid_comp = db.Column(db.Integer, db.ForeignKey('proveedor.id_proveedor'))
+    usuario_comp = db.Column(db.Integer, db.ForeignKey('usuario.id_usuario'))
+    folio_comp = db.Column(db.String(50))
+    fecha_comp = db.Column(db.DateTime)
+    fecha_cancelacion = db.Column(db.DateTime)
+    cantidad = db.Column(db.Integer)
+    total = db.Column(db.Float)
+    estatus = db.Column(db.Integer)
+    fecha_registro = db.Column(db.DateTime)
+
+    proveedor = db.relationship('Proveedor', backref='compras')
+    usuario = db.relationship('Usuario', backref='compras')
+    
+class CompraItem(db.Model):
+    __tablename__ = 'compraitem'
+
+    id_compraitem = db.Column(db.Integer, primary_key=True)
+    compra_itm = db.Column(db.Integer, db.ForeignKey('compra.id_compra'))
+    materialid_itm = db.Column(db.Integer, db.ForeignKey('material.id_material'))
+    cantidad = db.Column(db.Integer)
+    subtotal = db.Column(db.Float)
+    estatus = db.Column(db.Integer)
+    usuario_registro = db.Column(db.Integer)
+    fecha_registro = db.Column(db.DateTime)
+    
+    compra = db.relationship('Compra', backref='compraitems')
+    material = db.relationship('Material', backref='compraitems')
+    
 
 class Proveedor(db.Model):
     __tablename__ = 'proveedor'

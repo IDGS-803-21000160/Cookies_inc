@@ -15,6 +15,9 @@ from Entities.Inventario import VistaDetalleProducto,VistaDetallePaquete
 from Entities.ClienteForm import ClienteFormReg
 from Entities.Inventario import db
 
+# entidades ventaCorte
+from Entities.VentaCorte import VentaForm
+from datetime import datetime, timedelta
 
 modulo_ventas=Blueprint('modulo_ventas',__name__)
 
@@ -245,3 +248,58 @@ def ventasPaq():
         
     
     return render_template('Ventas/Ventaspaq/ventasPaquetes.html',productos=paquete,galletas=paquetes,form=cliente_form)
+
+
+#******************************************************************************************
+#                ********************* VENTA - CORTE **************
+#******************************************************************************************
+
+
+@modulo_ventas.route('/pagePrincipal/venta/corte', methods=["POST", "GET"])
+def ventaCorte():
+    ventaForm = VentaForm(request.form)    
+    if request.method == "POST":
+        print(request.form)
+        tipo_corte = request.form['tipo_corte']
+        fecha_actual = datetime.now()
+        if tipo_corte == 'dia_actual':
+            fecha_limite = fecha_actual
+            if fecha_limite:
+                consulta = text("SELECT * FROM venta WHERE fecha_venta >= :fecha_limite and estatus = 1")
+                resultado = db.session.execute(consulta, {'fecha_limite': fecha_limite})
+                registros = resultado.fetchall()
+            else:
+                return 'Tipo de consulta no válido'
+        elif tipo_corte == 'semanal':
+            fecha_limite = fecha_actual - timedelta(days=7)
+            if fecha_limite:
+                consulta = text("SELECT * FROM venta WHERE fecha_venta >= :fecha_limite and estatus = 1")
+                resultado = db.session.execute(consulta, {'fecha_limite': fecha_limite})
+                registros = resultado.fetchall()
+            else:
+                return 'Tipo de consulta no válido'
+        elif tipo_corte == 'mensual':
+            fecha_limite = fecha_actual - timedelta(days=30)
+            if fecha_limite:
+                consulta = text("SELECT * FROM venta WHERE fecha_venta >= :fecha_limite and estatus = 1")
+                resultado = db.session.execute(consulta, {'fecha_limite': fecha_limite})
+                registros = resultado.fetchall()
+            else:
+                return 'Tipo de consulta no válido'
+        elif tipo_corte == 'anual':
+            fecha_limite = fecha_actual - timedelta(days=365)
+            if fecha_limite:
+                consulta = text("SELECT * FROM venta WHERE fecha_venta >= :fecha_limite and estatus = 1")
+                resultado = db.session.execute(consulta, {'fecha_limite': fecha_limite})
+                registros = resultado.fetchall()
+            else:
+                return 'Tipo de consulta no válido'
+        
+        total = 0
+        for item in registros:
+            total = total + float(item[7])
+        
+        
+        return render_template('Ventas/VentaCorte/ventaCorte.html', form = ventaForm, registros = registros, total = total)
+        
+    return render_template('Ventas/VentaCorte/ventaCorte.html', form = ventaForm)
