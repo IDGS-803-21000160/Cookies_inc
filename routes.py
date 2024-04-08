@@ -7,6 +7,10 @@ from sqlalchemy import text, create_engine
 from Entities.Inventario import db,Usuario
 from datetime import datetime
 from Routes.Inventario.InventarioRoute import modulo_inventario
+from Routes.Paquetes.PaquetesRoute import modulo_paquetes
+from Routes.Materiales.MaterialesRoute import modulo_materiales
+from Routes.Productos.ProductosRoute import modulo_producto
+
 from Routes.Produccion.ProducionRoute import modulo_produccion
 from Routes.Dashboard.DashboardRoutes import modulo_dashboard
 from Routes.Login.LoginRoute import modulo_login
@@ -22,13 +26,15 @@ mysql = MySQL(app)
 login_manager_app=LoginManager(app)
 
 
-# csrf=CSRFProtect()
 app.config.from_object(DevelopmentConfig)
 app.register_blueprint(modulo_login)
 app.register_blueprint(modulo_usuarios)
 app.register_blueprint(modulo_inventario)
 app.register_blueprint(modulo_produccion)
 app.register_blueprint(modulo_dashboard)
+app.register_blueprint(modulo_paquetes)
+app.register_blueprint(modulo_materiales)
+app.register_blueprint(modulo_producto)
 
 @app.errorhandler(404)
 def page_not_found(e):

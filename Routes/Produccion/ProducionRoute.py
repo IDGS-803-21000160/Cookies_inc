@@ -18,7 +18,7 @@ def produccion():
 
 def getProductos():
     query = """
-    select inv.id_inventario as idInv, p.id_producto as idPro, p.nombre_producto as nombre, sum(inv.cantidad_inv) as cantidad
+    select min(inv.id_inventario) as idInv, p.id_producto as idPro, min(p.nombre_producto) as nombre, sum(inv.cantidad_inv) as cantidad
     from inventario inv join producto p on inv.producto_inv = p.id_producto 
     where p.id_producto not in 
         (select pi.productoid_itm from produccionitem pi join produccion p ON p.id_produccionitem = pi.id_produccionitem where p.fecha_fin is null)
@@ -50,15 +50,22 @@ def produccionGalleta():
     
     query = """
         SELECT 
-            pi.id_produccionitem as idProduccionitem, prod.id_producto as idProducto, prod.nombre_producto as nombre,
-            GROUP_CONCAT(m.nombre_mat SEPARATOR ' | ') AS materiales, min(floor(inv.cantidad_inv/ri.cantidad)) as cuantas
+            pi.id_produccionitem as idProduccionitem, prod.id_producto as idProducto, min(prod.nombre_producto) as nombre,
+            GROUP_CONCAT(DISTINCT m.nombre_mat SEPARATOR ' | ') AS materiales , min(sum.cuantas) as cuantas
         FROM 
             produccionitem pi
             JOIN produccion p ON p.id_produccionitem = pi.id_produccionitem
             JOIN producto prod ON prod.id_producto = pi.productoid_itm
             JOIN recetaitem ri ON ri.productoid_itm = prod.id_producto
             JOIN material m ON m.id_material = ri.materialid_itm
-            join inventario inv on inv.material_inv = m.id_material
+            join (select p.id_producto as idProducto, inv.material_inv as idMaterial, sum(inv.cantidad_inv) as matExistente , min(ri.cantidad) as matNecesitado,
+                floor(sum(inv.cantidad_inv)/min(ri.cantidad)) as cuantas
+                from recetaitem ri 
+                join material m on m.id_material = ri.materialid_itm
+                join inventario inv on inv.material_inv = m.id_material
+                join producto p on ri.productoid_itm = p.id_producto
+                where inv.tipostock_inv = 1
+                group by inv.material_inv, p.id_producto) sum ON sum.idProducto= pi.productoid_itm
         where p.fecha_fin is null
         GROUP BY 
             pi.id_produccionitem;

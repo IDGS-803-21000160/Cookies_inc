@@ -2,7 +2,6 @@
 {% block content %}
     {% from "Macros/inputComponent.html" import search_input, input_custom, input_select %}
     {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttonsave %}
-
     <div class="row" style="justify-content: space-evenly;">
         <div class="col-md-7">
             <h1>MODIFICAR PRODUCTO</h1>
@@ -63,14 +62,24 @@
                             {{ input_custom(form.materiales) }}
                         </div>
 
-                        <div class="row">
+                        <div class="row" style="justify-content: space-evenly;">
                             <div class="col-md-6">
                                 <input type="number" id="cantidad" placeholder="Cantidad" class="input-container" name="cantidad" style="text-align: center;">
                             </div>
 
                             <div class="col-md-6">
-                                <button type="submit" name="action" value="agregar_item" class="custom-button">Agregar Ingrediente</button>
+                                <input type="number" id="merma" placeholder="Merma" class="input-container" name="merma" style="text-align: center;">
                             </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <label style="text-align: center;"> La cantidades de los ingredientes ingresados deben ser equivalentes a la producción de 50 galletas </label>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2" style="justify-content: center;">
+                            <button type="submit" name="action" value="agregar_item" class="custom-button">Agregar Ingrediente</button>
                         </div>
 
                         <div class="row text-center mt-3">
