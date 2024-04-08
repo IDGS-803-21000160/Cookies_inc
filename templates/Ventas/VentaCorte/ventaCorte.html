@@ -8,7 +8,7 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="row">
             <div class="col-3">
-                <h1 class="text-start">Corte</h1>
+                <h1 class="text-center">CORTE</h1>
             </div>
             <div class="col-4">
                 {{ input_customVenta(form.tipo_corte) }}
@@ -23,9 +23,9 @@
     <div class="col-md-10 mb-4 mt-3" style="height: 2px; background-color: rgba(0, 0, 0, 0.603);"></div>
 </div>
 <div class="row">
-    <div class="box-form">
+    <div class="p-5">
         <h1>Ventas realizadas</h1>
-        <table class="table table-bordered table-striped custom-table p-5">
+        <table class="table table-bordered table-striped custom-table">
             <thead class="text-dark">
                 <tr>
                     <th>Folio</th>
@@ -37,17 +37,18 @@
             <tbody>
                 {% for registro in registros %}
                 <tr>
+                    {% set subtotal_float = registro[7] | float %}
                     <td>{{ registro[3] }}</td>
                     <td>{{ registro[4] }}</td>
                     <td>{{ registro[6] }}</td>
-                    <td>{{ registro[7] }}</td>
+                    <td>{{ subtotal_float }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
             <tfoot>
                 <tr>
-                    <td>Total</td>
-                    <td>{{ total }}</td>
+                    <td colspan="2">Total</td>
+                    <td colspan="3">{{ total }}</td>
                 </tr>
             </tfoot>
         </table>

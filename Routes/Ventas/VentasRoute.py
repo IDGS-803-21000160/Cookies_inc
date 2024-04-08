@@ -292,7 +292,12 @@ def ventaCorte():
                 registros = resultado.fetchall()
             else:
                 return 'Tipo de consulta no válido'
-        # print(registros)
-        return render_template('Ventas/VentaCorte/ventaCorte.html', form = ventaForm, registros = registros)
+        
+        total = 0
+        for item in registros:
+            total = total + float(item[7])
+        
+        
+        return render_template('Ventas/VentaCorte/ventaCorte.html', form = ventaForm, registros = registros, total = total)
         
     return render_template('Ventas/VentaCorte/ventaCorte.html', form = ventaForm)
