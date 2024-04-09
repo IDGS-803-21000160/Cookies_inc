@@ -5,6 +5,7 @@ from Entities.InventarioMaterialForm import InventarioMaterialForm
 from Entities.Inventario import Material
 from datetime import datetime
 from Entities.Inventario import db
+from flask_login import current_user
 
 modulo_materiales = Blueprint('modulo_materiales', __name__)
 
@@ -70,7 +71,7 @@ def inventariosGuardarMaterial():
         unidad_medida=unidad,
         costo_mat=costomaterial,
         estatus=1,  # Puedes establecer el valor de estatus aquí si es necesario
-        usuario_registro=1,  # Puedes establecer el usuario de registro aquí si es necesario
+        usuario_registro= current_user.id_usuario,  # Puedes establecer el usuario de registro aquí si es necesario
         fecha_registro=datetime.now()  # Puedes establecer la fecha de registro aquí si es necesario
         )
         db.session.add(nuevo_material)
