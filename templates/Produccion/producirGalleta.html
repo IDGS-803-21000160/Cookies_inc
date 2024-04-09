@@ -10,6 +10,8 @@
         <a href="/produccion" class="custom-buttongreen" style="text-decoration: none;">Volver a Produccion</a>
     </div>
 </div>
+
+{% if exist == 1 %}
 {% set counter = namespace(value=1) %}
 {% for receta in recetas %}
 <div class="row">
@@ -53,6 +55,15 @@
 <br><br>
 {% set counter.value = counter.value + 1 %}
 {% endfor %}
+
+{% else %}
+<div class="container">
+    <img src="empty_box.svg" alt="Empty Box" class="illustration">
+    <h1>No hay solicitudes de producción de galletas</h1>
+    <p>¡Aún no se han recibido solicitudes de producción de galletas en este momento!</p>
+    <button class="button" onclick="location.href='solicitud_produccion.html'">Crear nueva solicitud</button>
+</div>
+{% endif %}
 
 <script>
 

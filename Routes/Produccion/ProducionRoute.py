@@ -82,8 +82,7 @@ def produccionGalleta():
         """
     # Ejecutar la consulta
     data = db.session.execute(text(query))
-
-    return render_template("Produccion/producirGalleta.html", recetas = data)
+    return render_template("Produccion/producirGalleta.html", recetas = data, exist = exist)
 
 
 def descontarProduccion(idProducto,cantidad,idProduccionitem):

@@ -7,9 +7,9 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    DB_USER = os.environ.get('DB_USER', 'admincookies')
-    DB_PASS = os.environ.get('DB_PASS', 'Karelyruiz123')
-    DB_HOST = os.environ.get('DB_HOST', 'cookies.mysql.database.azure.com')
+    DB_USER = os.environ.get('DB_USER', 'root')
+    DB_PASS = os.environ.get('DB_PASS', '1234')
+    DB_HOST = os.environ.get('DB_HOST', 'localhost')
     DB_NAME = os.environ.get('DB_NAME', 'cookiesInc')
     
     SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{DB_USER}:{urllib.parse.quote_plus(DB_PASS)}@{DB_HOST}/{DB_NAME}'
