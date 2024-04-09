@@ -8,12 +8,17 @@ from datetime import datetime
 
 from Entities.InventarioMermaSalida import InventarioMerma, InventarioSalida
 from Entities.Inventario import db
+from permissions import pos_required
+from flask_login import login_required,current_user
+
 
 modulo_paquetes = Blueprint('modulo_paquetes', __name__)
 
 productosPaquete = []
  
 @modulo_paquetes.route('/paquetes')
+@login_required
+@pos_required
 def paquetes():
 
     alerta = ''

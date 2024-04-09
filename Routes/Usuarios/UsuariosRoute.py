@@ -8,6 +8,7 @@ from flask_login import login_required,current_user
 from Entities.Inventario import Usuario
 from Entities.UsuarioForm import UserFormReg
 from Entities.Inventario import db
+from permissions import admin_required
 
 
 modulo_usuarios=Blueprint('modulo_usuarios',__name__)
@@ -18,6 +19,7 @@ common_passwords = ['123456', 'password', '12345678', 'qwerty', '123456789']
 
 @modulo_usuarios.route("/pagePrincipal/user", methods=["GET", "POST"])
 @login_required
+@admin_required
 def user():
     print(current_user.id_usuario)
     user_formreg = UserFormReg(request.form)
