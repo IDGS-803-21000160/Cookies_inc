@@ -240,7 +240,7 @@ def inventariosGuardarSalida():
         inventario.cantidad_inv = inventario.cantidad_inv - inventarioF.cantidad.data
         db.session.commit()
         if inventario.tipostock_inv == 2 or inventario.tipostock_inv == 4:
-            return redirect(url_for('mermas'))
+            return redirect(url_for('modulo_inventario.mermas'))
         else:
             return redirect(url_for('modulo_inventario.inventarios', alerta='Salida de inventario realizada con éxito', success= True))
     
