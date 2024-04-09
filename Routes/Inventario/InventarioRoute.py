@@ -8,11 +8,14 @@ from Entities.Inventario import Producto
 
 from Entities.InventarioMermaSalida import InventarioMerma, InventarioSalida
 from Entities.Inventario import db
+from permissions import inventario_required
 
 modulo_inventario = Blueprint('modulo_inventario', __name__)
 
 @modulo_inventario.route('/inventario',methods=["GET","POST"])
 @login_required
+@inventario_required
+@inventario_required
 def inventarios():
     alerta = ''
     success = ''
@@ -53,6 +56,8 @@ def inventarios():
 
 @modulo_inventario.route('/inventario/lotes',methods=["GET"])
 @login_required
+@inventario_required
+@inventario_required
 def lotes():
     id_inv = request.args.get('id_inv')
     id_tipoInv = request.args.get('id_tipoinv')
@@ -83,12 +88,14 @@ def lotes():
 
 @modulo_inventario.route('/inventario/seleccionarTipoEntrada',methods=["GET","POST"])
 @login_required
+@inventario_required
 def tipoEntrada():
     return render_template('Inventarios/seleccionarTipoEntrada.html')
 
 
 @modulo_inventario.route('/inventario/entradaInventario',methods=["GET","POST"])
 @login_required
+@inventario_required
 def inventariosEntrada():
 
     alerta = ''
@@ -121,6 +128,7 @@ def inventariosEntrada():
 
 @modulo_inventario.route('/inventario/guardarEntrada', methods=["POST", "GET"])
 @login_required
+@inventario_required
 def inventariosGuardarEntrada():
 
     entrada = InventarioForm(request.form)
@@ -158,6 +166,7 @@ def inventariosGuardarEntrada():
 
 @modulo_inventario.route('/inventario/confirmarMermas',methods=["GET","POST"])
 @login_required
+@inventario_required
 def confirmarMermas():
     id_inv = int(request.form['id_inv'])
     
@@ -180,6 +189,7 @@ def confirmarMermas():
 
 @modulo_inventario.route('/inventario/guardarMerma', methods=["POST"])
 @login_required
+@inventario_required
 def inventariosGuardarMerma():
     inventarioF = InventarioMerma(request.form)
     id_inv = request.form['id_inventario']
@@ -197,6 +207,7 @@ def inventariosGuardarMerma():
 
 @modulo_inventario.route('/inventario/salidaInventario', methods=["POST"])
 @login_required
+@inventario_required
 def inventariosSalida():
     id_inv = int(request.form['id_inv'])
     
@@ -219,6 +230,7 @@ def inventariosSalida():
 
 @modulo_inventario.route('/inventario/guardarSalida', methods=["POST"])
 @login_required
+@inventario_required
 def inventariosGuardarSalida():
     inventarioF = InventarioSalida(request.form)
     id_inv = request.form['id_inventario']
@@ -228,7 +240,7 @@ def inventariosGuardarSalida():
         inventario.cantidad_inv = inventario.cantidad_inv - inventarioF.cantidad.data
         db.session.commit()
         if inventario.tipostock_inv == 2 or inventario.tipostock_inv == 4:
-            return redirect(url_for('mermas'))
+            return redirect(url_for('modulo_inventario.mermas'))
         else:
             return redirect(url_for('modulo_inventario.inventarios', alerta='Salida de inventario realizada con éxito', success= True))
     
@@ -237,6 +249,7 @@ def inventariosGuardarSalida():
 
 @modulo_inventario.route('/inventario/mermas',methods=["GET","POST"])
 @login_required
+@inventario_required
 def mermas():
     
     consulta = text("""

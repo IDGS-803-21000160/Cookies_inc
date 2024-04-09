@@ -43,7 +43,7 @@ class UsersForm(FlaskForm):
 class UserFormReg(FlaskForm):
     id_us = IntegerField('ID')
     tipousuario = SelectField('Tipo de Usuario', 
-                            choices=[('operProduccion','Operador de producción'),('ejecVentas','Operador punto de venta'),('adminInventario','Administrador de Inventario')],
+                            choices=[('operProduccion','Operador de producción'),('opPOS','Operador punto de venta'),('adminInventario','Administrador de Inventario')],
                             validators=[DataRequired(message='El tipo de usuario es requerido')])
     nombrecompleto = StringField('Nombre Completo',[validators.DataRequired(message='El campo es requerido')])
     estatus = IntegerField('Estatus') 

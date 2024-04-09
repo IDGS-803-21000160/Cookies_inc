@@ -1,13 +1,16 @@
 from flask import Flask, Blueprint, render_template, request, redirect, url_for, flash, current_app
 from sqlalchemy import text
 from Entities.Inventario import db
-
+from permissions import pos_required
+from flask_login import login_required,current_user
 
 modulo_produccion = Blueprint('modulo_produccion', __name__)
 # '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # ''''''''''''''''''''''''''PRODUCCION'''''''''''''''''''''''''''''''''''''''
 
 @modulo_produccion.route('/produccion', methods=['GET','POST'])
+@pos_required
+@login_required
 def produccion():
     if request.method == 'POST':
         idPro = request.form.get('idPro')  # Obtener el idPro enviado en la solicitud POST
@@ -82,7 +85,7 @@ def produccionGalleta():
         """
     # Ejecutar la consulta
     data = db.session.execute(text(query))
-    return render_template("Produccion/producirGalleta.html", recetas = data, exist = exist)
+    return render_template("Produccion/producirGalleta.html", recetas = data)
 
 
 def descontarProduccion(idProducto,cantidad,idProduccionitem):

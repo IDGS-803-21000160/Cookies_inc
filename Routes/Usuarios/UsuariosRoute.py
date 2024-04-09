@@ -8,16 +8,18 @@ from flask_login import login_required,current_user
 from Entities.Inventario import Usuario
 from Entities.UsuarioForm import UserFormReg
 from Entities.Inventario import db
+from permissions import admin_required
 
 
 modulo_usuarios=Blueprint('modulo_usuarios',__name__)
 
 
-common_passwords = ['123456', 'password', '12345678', 'qwerty', '123456789']
+common_passwords = ['123456', 'password', '12345678', 'qwerty', '123456789','123abcD*']
 
 
 @modulo_usuarios.route("/pagePrincipal/user", methods=["GET", "POST"])
 @login_required
+@admin_required
 def user():
     print(current_user.id_usuario)
     user_formreg = UserFormReg(request.form)
@@ -32,6 +34,7 @@ def user():
             
             if new_password in common_passwords:
                 flash('La contraseña utilizada es demasiado común. Por favor, elige otra.')
+                return render_template('Usuarios/usuarios.html', form=user_formreg,users=allUsuarios,alert=alert)
             
             if any(check_password_hash(u.password, new_password) for u in allUsuarios):
                 alert='alert-danger'
@@ -83,6 +86,7 @@ def user():
                 existing_user.ultima_modificacion = datetime.now()
                 
                 db.session.commit()
+                alert='alert-success'
                 flash('Usuario Editado Correctamente...')
                 #Se limpia el formulario
                 user_formreg.nombrecompleto.data=''

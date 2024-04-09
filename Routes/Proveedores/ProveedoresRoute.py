@@ -6,13 +6,13 @@ from flask_login import LoginManager,login_user,logout_user,login_required,curre
 from Entities.Inventario import Proveedor
 from Entities.ProveedorForm import ProveedorFormReg
 from Entities.Inventario import db
-
-
+from permissions import admin_required
 
 moodulo_proveedor=Blueprint('moodulo_proveedor',__name__)
 
 @moodulo_proveedor.route("/pagePrincipal/proveedor", methods=["GET", "POST"])
 @login_required
+@admin_required
 def proveedor():
     provee_formreg = ProveedorFormReg(request.form)
     allProveedores=Proveedor.query.all()
