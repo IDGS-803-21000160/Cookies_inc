@@ -5,6 +5,8 @@ from sqlalchemy import text
 from flask_wtf.csrf import CSRFProtect
 from Entities.CompraForm import CompraForm
 from datetime import datetime, timedelta
+from permissions import inventario_required
+from flask_login import login_required,current_user
 
 modulo_compras = Blueprint('modulo_compras', __name__)
 csrf=CSRFProtect()
@@ -15,6 +17,8 @@ productos_a_comprar = 0
 subtotal = 0
 total = 0
 @modulo_compras.route('/compra', methods=["GET","POST"])
+@inventario_required
+@login_required
 def compra():
     
     global productos_a_comprar

@@ -5,6 +5,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
+from functools import wraps
 import io
 import datetime
 
@@ -18,6 +19,7 @@ from Entities.Inventario import db
 # entidades ventaCorte
 from Entities.VentaCorte import VentaForm
 from datetime import datetime, timedelta
+from permissions import pos_required
 
 modulo_ventas=Blueprint('modulo_ventas',__name__)
 
@@ -25,6 +27,7 @@ galletas=[]
 idGalletas=[]
 @modulo_ventas.route("/pagePrincipal/venta",methods=["GET", "POST"])
 @login_required
+@pos_required
 def ventas():
     cliente_form=ClienteFormReg(request.form)
     productos=VistaDetalleProducto.query.all()
@@ -170,6 +173,7 @@ paquetes=[]
 galletasVent=[]
 @modulo_ventas.route("/pagePrincipal/ventaPaquetes",methods=["GET", "POST"])
 @login_required
+@pos_required
 def ventasPaq():
     cliente_form=ClienteFormReg(request.form)
     paquete=VistaDetallePaquete.query.all()
@@ -256,6 +260,8 @@ def ventasPaq():
 
 
 @modulo_ventas.route('/pagePrincipal/venta/corte', methods=["POST", "GET"])
+@login_required
+@pos_required
 def ventaCorte():
     ventaForm = VentaForm(request.form)    
     if request.method == "POST":

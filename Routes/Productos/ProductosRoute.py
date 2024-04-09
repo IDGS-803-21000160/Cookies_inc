@@ -5,19 +5,26 @@ from Entities.InventarioProductoForm import InventarioProductoForm
 from Entities.Inventario import Material, RecetaItem
 from Entities.Inventario import Producto
 from datetime import datetime
+from flask_login import current_user
 
 from Entities.InventarioMermaSalida import InventarioMerma, InventarioSalida
 from Entities.Inventario import db
 
 
 modulo_producto = Blueprint('modulo_producto', __name__)
-
+ 
 
 tabladatos = []
 
 @modulo_producto.route('/inventario/agregarProducto',methods=["GET","POST"])
 def inventariosAddProducto():
-    tabladatos.clear()
+
+    alerta = ''
+    if request.args.get('alerta'):
+        alerta = request.args.get('alerta')
+    if alerta == '':
+        tabladatos.clear()
+        
     productoForm  = InventarioProductoForm(request.form)
     ingredientes = Material.query.all()
     opciones = [
@@ -29,13 +36,13 @@ def inventariosAddProducto():
     for receta in ingredientes
     ]
     productoForm.materiales.choices = opciones
-    return render_template('Inventarios/Producto/agregarProducto.html', form = productoForm, tabladatos = tabladatos, costoProduccion = 0)
+    return render_template('Inventarios/Producto/agregarProducto.html', form = productoForm, tabladatos = tabladatos, costoProduccion = 0, alerta = alerta)
 
 @modulo_producto.route('/inventario/guardarProducto', methods=["POST"])
 def inventariosGuardarProducto():
     productoF = InventarioProductoForm(request.form)
       # Indica que no ha sido asignado aún.
-        
+
     costoProduccion = 0
     ingredientes = Material.query.all()
     opciones = [
@@ -50,9 +57,13 @@ def inventariosGuardarProducto():
 
     # Verifica qué botón se presionó
     if request.form['action'] == 'agregar_item':
-        # Lógica para agregar ingredientes a la lista
+        
         cantidad = request.form.get("cantidad", type=float)
         merma = request.form.get("merma", type=float)
+
+        if cantidad is None or merma is None:
+            return redirect(url_for('modulo_producto.inventariosAddProducto', alerta = 'No has ingresado una cantidad o merma valida!' ))  # Mantén al usuario en la misma página
+
         id_material = productoF.materiales.data
         nombre_material = next((nombre_mat for id_mat, nombre_mat in opciones if id_mat == id_material), None)
         
@@ -67,13 +78,17 @@ def inventariosGuardarProducto():
     elif request.form['action'] == 'guardar_producto':
         # Lógica para guardar el producto completo
         if tabladatos == []:
-            return render_template('Inventarios/Producto/agregarProducto.html', form=productoF, tabladatos=tabladatos, costoProduccion = 0)
+            redirect(url_for('modulo_producto.inventariosAddProducto', alerta = 'No has ingresado ingredientes para el producto!'))  # Mantén al usuario en la misma página
         else: 
+
+            if productoF.nombreProducto.data == '' or productoF.alias.data == '' or productoF.costoProducto.data == '' or productoF.diasCaducidad.data == '':
+                return redirect(url_for('modulo_producto.inventariosAddProducto', alerta = 'No has ingresado todos los campos requeridos!'))
+
             nuevo_producto = Producto(
                 nombre_producto=productoF.nombreProducto.data,
                 alias=productoF.alias.data,
                 estatus=1,
-                usuario_registro=1,
+                usuario_registro= current_user.id_usuario,
                 fecha_registro=datetime.now(),
                 costoproducto=productoF.costoProducto.data,
                 dias_caducidadpd=productoF.diasCaducidad.data,
@@ -90,7 +105,7 @@ def inventariosGuardarProducto():
                         materialid_itm=item['id_material'],
                         cantidad= float(item['cantidad']) / 50,
                         estatus=1,
-                        usuario_registro=1,
+                        usuario_registro= current_user.id_usuario,
                         fecha_registro=datetime.now(),
                         cantidad_merma = float(item['merma']) / 50
                     )
@@ -161,8 +176,18 @@ def eliminarProducto():
 
 @modulo_producto.route('/inventario/editarProducto', methods=["GET", "POST"])
 def editarProducto():
+
+    alerta = ''
+    id_producto = ''
+
+    if request.args.get('alerta'):
+        alerta = request.args.get('alerta')
+    if request.args.get('id_producto'):
+        id_producto = request.args.get('id_producto')
+    else:
+        id_producto = request.form['id_producto']
+
     tabladatos.clear()
-    id_producto = request.form['id_producto']
     producto = Producto.query.get(id_producto)
     productoForm = InventarioProductoForm(request.form)
     ingredientes = Material.query.all()
@@ -181,7 +206,7 @@ def editarProducto():
     for item in ingredientes:
         tabladatos.append({"id_material": item.materialid_itm, "nombre_material": item.nombre_mat, "cantidad" : item.cantidad * 50, "merma" : item.cantidad_merma * 50})
     print(tabladatos)
-    return render_template('Inventarios/Producto/modificarProducto.html', form=productoForm, producto=producto, tabladatos=tabladatos)
+    return render_template('Inventarios/Producto/modificarProducto.html', form=productoForm, producto=producto, tabladatos=tabladatos, alerta = alerta)
 
 @modulo_producto.route('/inventario/actualizarProducto', methods=["POST"])
 def actualizarProducto():
@@ -197,6 +222,10 @@ def actualizarProducto():
         # Lógica para agregar ingredientes a la lista
         cantidad = request.form.get("cantidad", type=int)
         merma = request.form.get("merma", type=int)
+
+        if cantidad is None or merma is None:
+            return redirect(url_for('modulo_producto.editarProducto', id_producto=id_producto, alerta = 'No has ingresado una cantidad o merma valida!' ))
+
         id_material = productoF.materiales.data
         nombre_material = next((nombre_mat for id_mat, nombre_mat in opciones if id_mat == id_material), None)
         if nombre_material and nombre_material not in [item['nombre_material'] for item in tabladatos]:
@@ -206,6 +235,12 @@ def actualizarProducto():
         return render_template('Inventarios/Producto/modificarProducto.html', form=productoF, tabladatos=tabladatos, producto=producto)
     
     elif request.form['action'] == 'guardar_producto':
+
+        if tabladatos == []:
+            return redirect(url_for('modulo_producto.editarProducto', id_producto=id_producto, alerta = 'No has ingresado ingredientes para el producto!'))
+        elif productoF.nombreProducto.data == '' or productoF.alias.data == '' or productoF.costoProducto.data == '' or productoF.diasCaducidad.data == '':
+            return redirect(url_for('modulo_producto.editarProducto', id_producto=id_producto, alerta = 'No has ingresado todos los campos requeridos!'))
+
         # Lógica para guardar el producto completo
         producto = Producto.query.get(id_producto)
         producto.nombre_producto = productoF.nombreProducto.data
@@ -225,7 +260,7 @@ def actualizarProducto():
                 materialid_itm=item['id_material'],
                 cantidad=item['cantidad'] / 50,
                 estatus=1,
-                usuario_registro=1,
+                usuario_registro= current_user.id_usuario,
                 fecha_registro=datetime.now(),
                 cantidad_merma = item['merma'] / 50
             )

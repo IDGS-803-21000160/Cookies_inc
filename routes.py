@@ -1,4 +1,4 @@
-from flask import Flask,render_template
+from flask import Flask,render_template,flash,redirect,url_for
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import text, create_engine
 from flask_cors import CORS, cross_origin
@@ -22,7 +22,9 @@ from Routes.Compra.CompraRoutes import modulo_compras
 from Routes.Ventas.VentasRoute import modulo_ventas
 from flask_mysqldb import MySQL
 from config import DevelopmentConfig
-from flask_login import LoginManager
+from flask_login import LoginManager,login_user,logout_user,login_required,current_user
+from functools import wraps
+
 
 app = Flask(__name__)
 csrf=CSRFProtect()
@@ -42,8 +44,6 @@ app.register_blueprint(modulo_usuarios)
 app.register_blueprint(modulo_inventario)
 app.register_blueprint(moodulo_proveedor)
 app.register_blueprint(modulo_ventas)
-# app.register_blueprint(modulo_produccion)
-# app.register_blueprint(modulo_dashboard)
 app.register_blueprint(modulo_produccion)
 app.register_blueprint(modulo_dashboard)
 app.register_blueprint(modulo_compras)
@@ -66,7 +66,8 @@ def bad_request(e):
 
 @login_manager_app.user_loader
 def load_user(user_id):
-    return Usuario.query.get(int(user_id))
+    return db.session.query(Usuario).get(int(user_id))
+
 
 
 if __name__ == "__main__":
