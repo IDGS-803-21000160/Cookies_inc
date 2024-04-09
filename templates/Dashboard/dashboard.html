@@ -137,8 +137,12 @@
                     {% for pro in produccion %}
                         {% set color = '#DDFFC7' %}
                         {% if pro.estado_fecha == 0 %}
+                            {% set color = '#FBFFC7' %}
+                        {% endif %}
+                        {% if pro.estado_fecha == 2 %}
                             {% set color = '#FFCFC7' %}
                         {% endif %}
+                        <!-- FBFFC7 -->
                         <tr style="background-color: {{ color }};">
                             <td>{{ pro.nombre }}</td>
                             <td>{{ pro.costo }}</td>
@@ -166,15 +170,6 @@
     var earning = document.getElementById('earning').getContext('2d');
 
     const allColors = [
-    // 'rgba(153, 102, 255, 1)',
-    // 'rgba(255, 159, 64, 1)',
-    // 'rgba(75, 192, 192, 1)',
-    // 'rgba(255, 0, 0, 1)',     // Red
-    // 'rgba(0, 255, 0, 1)',     // Green
-    // 'rgba(0, 0, 255, 1)',     // Blue
-    // 'rgba(255, 255, 0, 1)',   // Yellow
-    // 'rgba(255, 0, 255, 1)',   // Magenta
-    // 'rgba(0, 255, 255, 1)'
     'rgba(255, 206, 86, 1)',
     'rgba(75, 192, 192, 1)',
     'rgba(153, 102, 255, 1)',

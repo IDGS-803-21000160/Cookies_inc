@@ -12,7 +12,7 @@ from Entities.Inventario import db
 
 
 modulo_producto = Blueprint('modulo_producto', __name__)
-
+ 
 
 tabladatos = []
 

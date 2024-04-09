@@ -8,7 +8,11 @@
     
     {% if alerta %}
         <script>
-            Swal.fire({ icon: 'error', title: '¡Error!', text: '{{ alerta }}' })
+            Swal.fire({ icon: 'error', title: '¡Error!', text: '{{ alerta }}' }).then(function() {
+                let url = new URL(window.location.href);
+                url.searchParams.delete('alerta');
+                window.location.href = url.toString();
+            });
         </script>
     {% endif %}
 
