@@ -5,6 +5,7 @@ from Entities.InventarioProductoForm import InventarioProductoForm
 from Entities.Inventario import Material, RecetaItem
 from Entities.Inventario import Producto
 from datetime import datetime
+from flask_login import current_user
 
 from Entities.InventarioMermaSalida import InventarioMerma, InventarioSalida
 from Entities.Inventario import db
@@ -87,7 +88,7 @@ def inventariosGuardarProducto():
                 nombre_producto=productoF.nombreProducto.data,
                 alias=productoF.alias.data,
                 estatus=1,
-                usuario_registro=1,
+                usuario_registro= current_user.id_usuario,
                 fecha_registro=datetime.now(),
                 costoproducto=productoF.costoProducto.data,
                 dias_caducidadpd=productoF.diasCaducidad.data,
@@ -104,7 +105,7 @@ def inventariosGuardarProducto():
                         materialid_itm=item['id_material'],
                         cantidad= float(item['cantidad']) / 50,
                         estatus=1,
-                        usuario_registro=1,
+                        usuario_registro= current_user.id_usuario,
                         fecha_registro=datetime.now(),
                         cantidad_merma = float(item['merma']) / 50
                     )
@@ -259,7 +260,7 @@ def actualizarProducto():
                 materialid_itm=item['id_material'],
                 cantidad=item['cantidad'] / 50,
                 estatus=1,
-                usuario_registro=1,
+                usuario_registro= current_user.id_usuario,
                 fecha_registro=datetime.now(),
                 cantidad_merma = item['merma'] / 50
             )

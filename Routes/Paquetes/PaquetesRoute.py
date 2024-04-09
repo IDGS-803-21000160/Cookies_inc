@@ -5,6 +5,7 @@ from Entities.Inventario import Paquete, PaqueteItem
 from Entities.Inventario import Producto
 from Entities.PaqueteForm import PaqueteForm
 from datetime import datetime
+from flask_login import current_user
 
 from Entities.InventarioMermaSalida import InventarioMerma, InventarioSalida
 from Entities.Inventario import db
@@ -132,7 +133,7 @@ def inventariosGuardarPaquete():
                 costopaquete_paq=paqueteF.costoPaquete.data,
                 cantidadproductos_paq=len(productosPaquete),
                 estatus=1,
-                usuarioregistro=1,
+                usuarioregistro = current_user.id_usuario,
                 fecha_registro=datetime.now()
             )
             db.session.add(nuevo_paquete)
@@ -145,7 +146,7 @@ def inventariosGuardarPaquete():
                     productoid_itm=item['id_producto'],
                     cantidadproducto_itm=item['cantidad'],
                     estatus=1,
-                    usuarioregistro=1,
+                    usuarioregistro= current_user.id_usuario,
                     fecha_registro=datetime.now()
                 )
                 db.session.add(addItem)
@@ -225,7 +226,7 @@ def actualizarPaquete():
                     productoid_itm=item['id_producto'],
                     cantidadproducto_itm=item['cantidad'],
                     estatus=1,
-                    usuarioregistro=1,
+                    usuarioregistro= current_user.id_usuario,
                     fecha_registro=datetime.now()
                 )
                 db.session.add(addItem)

@@ -1,7 +1,7 @@
 
 from flask import  render_template, request, redirect, url_for, flash, current_app, Blueprint
 from sqlalchemy import text
-from flask_login import login_required
+from flask_login import login_required, current_user
 from Entities.InventarioForm import InventarioForm
 from Entities.Inventario import Material, Inventario
 from Entities.Inventario import Producto
@@ -146,7 +146,7 @@ def inventariosGuardarEntrada():
         tipoInv = int(tipo)
         idmateriaproducto = int(inv)
         cantidad = float(entrada.cantidad.data)
-        usuariop = 2
+        usuariop = current_user.id_usuario
         db.session.execute(
                 text("CALL entradaInventario(:tipo, :id_materia_producto, :cantidad, :usuariop)"),
                 {"tipo": tipo, "id_materia_producto": idmateriaproducto, "cantidad": cantidad, "usuariop": usuariop}
@@ -183,7 +183,7 @@ def confirmarMermas():
 def inventariosGuardarMerma():
     inventarioF = InventarioMerma(request.form)
     id_inv = request.form['id_inventario']
-    usuariop = 2
+    usuariop = current_user.id_usuario
     
     if request.method == "POST" and inventarioF.validate():
 
