@@ -3,6 +3,19 @@
 {%block content %}
 {% from "Macros/inputComponent.html" import input_customVenta %}
 <div>
+    {%with messages = get_flashed_messages(with_categories=true)%}
+    {%if messages%}
+    <br />
+    {%for category, message in messages %}
+    <div class="alert alert-{{ category }}" role="alert">
+        <strong>{{message}}</strong>
+        <div class="justify-content-end">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+    {%endfor%}
+    {%endif%}
+    {%endwith%}
     <form action="/compra" method="post" novalidate>
         <div class="row">
             <div class="col-4 ">
@@ -35,8 +48,9 @@
                                     {% set campo_nombre = 'nombre_producto_' + loop.index|string %}
                                     <input type="hidden" name="{{ campo_nombre }}" value="{{ producto.nombre }}">
                                     {% set campo_descripcion = 'unidad_medida_' + loop.index|string %}
-                                    <input type="hidden" name="{{ campo_descripcion }}" value="{{ producto.unidad_medida }}">
-                                    {% set unidad_med = producto.unidad_medida  %}
+                                    <input type="hidden" name="{{ campo_descripcion }}"
+                                        value="{{ producto.unidad_medida }}">
+                                    {% set unidad_med = producto.unidad_medida %}
                                     {% if unidad_med == 'pieza' %}
                                     <p>Costo: {{ producto.costo }} por pieza</p>
                                     {% else %}
@@ -87,7 +101,7 @@
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
         <div class="row">
             <div class="col-6">
                 <div class="row justify-content-center">
