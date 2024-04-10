@@ -1,0 +1,78 @@
+.contenedor {
+  background-color: #ffffff;
+  border-radius: 18px;
+  box-shadow: 12px 12px 12px 12px #0f0e0e14;
+  display: flex;
+  flex-direction: column;
+  height: 19rem;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
+  white-space: normal;
+  width: 28.2352941176rem;
+  padding: 20px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-left: 20px;
+}
+
+.contenedor-con-scroll {
+  width: 530px;
+  height: 600px;
+  overflow: auto;
+}
+
+.nameProduct {
+  border-radius: 150px;
+  padding: 5px;
+}
+
+.unidades {
+  background-color: #738064;
+  color: #ffffff;
+  border-radius: 10px;
+  width: 50px;
+  padding: 8px;
+  display: flex;
+  margin-left: auto;
+}
+
+.contenedorPrincipal {
+  display: flex;
+}
+
+.summary {
+  background-color: #ffffff;
+  border-radius: 18px;
+  box-shadow: 2px 4px 12px #00000014;
+  display: flex;
+  flex-direction: column;
+  height: 15rem;
+  overflow: auto;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
+  white-space: normal;
+  width: 50rem;
+  padding: 20px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.orden {
+  padding-left: 25px;
+}
+
+.ingresar {
+  width: 200px;
+}
+
+.precio {
+  background-color: #725849;
+  color: #ffffff;
+  width: 100px;
+  border-radius: 10px;
+}
+
+.contenidoVentaUn {
+  padding-left: 100px;
+}

@@ -1,0 +1,143 @@
+{% extends 'ContenedorMain/contenedorMain.html' %} {%block content %} {%from
+"Macros/_macros.html" import render_field%}
+<link rel="stylesheet" href="../../../static/css/ventas.css" />
+<link rel="stylesheet" href="../../../static/css/buttons.css" />
+
+<link
+  rel="stylesheet"
+  href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="../../../static/bootstrap-5.1.3-dist/css/bootstrap.css"
+/>
+<script src="../../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../../../static/sweetalert2/sweetalert2.min.js"></script>
+<link rel="stylesheet" href="../../../static/sweetalert2/sweetalert2.min.css" />
+
+<div class="contenidoVentaUn">
+  <h2>Módulo Gestión Venta De Galletas.</h2>
+  <hr />
+  <br /><br />
+  <form name="" action="" id="venta" method="post" novalidate>
+    {%with messages = get_flashed_messages()%} {%if messages%} {%for message in
+    messages %}
+    <div class="alert {{alert}} alert-dismissible" role="alert">
+      <strong>{{message}}</strong>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {%endfor%} {%endif%} {%endwith%}
+    <div class="contenedorPrincipal">
+      <div class="contenedor-con-scroll">
+        {%for product in productos%}
+        <div class="contenedor">
+          <div>
+            <div><h5 class="unidades">{{product.cantidad}}</h5></div>
+            <h4 class="nameProduct">{{product.nombre_producto}}</h4>
+            <h4 class="precio">$ {{product.costo}}</h4>
+          </div>
+          <br />
+          <label for="numero">Cantidad de galletas</label>
+          <input
+            type="number"
+            id="numero_{{ product.idProducto }}"
+            name="numero_{{ product.idProducto }}"
+            class="form-label"
+          />
+          <button
+            id="registrar_{{product.nombre_producto}}"
+            name="registrar"
+            value="{{ product.idProducto }}-{{ product.nombre_producto }}-{{ product.costo }}"
+            type="submit"
+            class="btnAgregar btn"
+            style="background-color: #e4e0dd"
+          >
+            Agregar
+          </button>
+        </div>
+        <input
+          type="hidden"
+          name="nombreGalleta_{{product.nombre_producto}}"
+          value="{{product.nombre_producto}}"
+        />
+
+        {%endfor%}
+      </div>
+      <div class="orden">
+        <h3>Detalle de la Venta</h3>
+        <div class="summary">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Nombre de la Galleta</th>
+                <th>Cantidad</th>
+                <th>Costo Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for nombre_galleta, cantidad_galletas, costo_total in galletas
+              %}
+              <tr>
+                <td>{{ nombre_galleta }}</td>
+                <td>{{ cantidad_galletas }}</td>
+                <td>${{ costo_total }}</td>
+                <td>
+                  <button
+                    type="submit"
+                    name="quitarProducto"
+                    value="{{ loop.index0 }}"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <br />
+        <div class="row formCliente">
+          <h3>Datos del cliente</h3>
+          <br /><br />
+          <div class="col-md-6">
+            {{ render_field(form.nombreCliente,
+            class="form-control",id="form-nombre",placeholder="ej. Alan de Jesus
+            ") }} {% if form.nombreCliente.errors %} {% for error in
+            form.nombreCliente.errors %}
+            <p style="color: red">*{{ error }}</p>
+            {% endfor %} {% endif %}
+          </div>
+          <div class="col-md-6">
+            {{ render_field(form.correo,
+            class="form-control",id="form-correo",placeholder="ej.
+            alanJes@gmail.com") }} {% if form.correo.errors %} {% for error in
+            form.correo.errors %}
+            <p style="color: red">*{{ error }}</p>
+            {% endfor %} {% endif %}
+          </div>
+        </div>
+        <br /><br /><br /><br />
+        <div class="row">
+          <button
+            id="ingresar"
+            name="ingresar"
+            type="submit"
+            class="btn btn-warning"
+          >
+            Realizar Venta
+          </button>
+        </div>
+      </div>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    </div>
+  </form>
+</div>
+{%endblock%}

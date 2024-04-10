@@ -3,8 +3,32 @@
 
 {% block content %}
 {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttondelete %}
+<script src="../../static/sweetalert2/sweetalert2.min.js"></script>
+<link rel="stylesheet" href="../../static/sweetalert2/sweetalert2.min.css" />
 
-<div class="container"> <!-- Agregar un contenedor para centrar todo el contenido -->
+{% if alerta %}
+    {% if success == False %}
+    <script>
+        Swal.fire({ icon: 'error', title: '¡Error!', text: '{{ alerta }}' }).then(function() {
+            let url = new URL(window.location.href);
+                url.searchParams.delete('success');
+                url.searchParams.delete('alerta');
+                window.location.href = url.toString();
+        });
+    </script>
+    {% else %}
+    <script>
+        Swal.fire({ icon: 'success', title: '¡Éxito!', text: '{{ alerta }}' }).then(function() {
+            let url = new URL(window.location.href);
+                url.searchParams.delete('success');
+                url.searchParams.delete('alerta');
+                window.location.href = url.toString();
+        });
+    </script>
+    {% endif %}  
+{% endif %}
+
+<div class="ms-5 me-5"> <!-- Agregar un contenedor para centrar todo el contenido -->
 
     <div class="row">
         <div class="col-md-6">
@@ -95,7 +119,7 @@
                                 <form action="/inventario/detalle" method="POST" style="display: inline;">
                                     <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    {{ custom_button("Detalle") }}
+                                    {{ custom_button("Receta") }}
                                 </form>
                             </td>
                             <td>
@@ -143,6 +167,7 @@
             }
         }
     }
+
 </script>
 
 {% endblock %}

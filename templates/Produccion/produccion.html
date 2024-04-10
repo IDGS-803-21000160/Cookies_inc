@@ -1,59 +1,100 @@
-{%extends 'ContenedorMain/contenedorMain.html' %}
-
-{%block content %}
+{%extends 'ContenedorMain/contenedorMain.html' %} {%block content %}
 <form id="produccionForm" action="/produccion" method="post">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <input type="hidden" id="idProHidden" name="idPro" value="">
-    <div class="row">
-        <div class="col-md-8">
-            <h1>PRODUCTO TERMINADO</h1>
-        </div>
-        <div class="col-4">
-            <a href="/produccionGalleta" class="custom-buttongreen" style="text-decoration: none;">Ir a producir galleta</a>
-        </div>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+  <input type="hidden" id="idProHidden" name="idPro" value="" />
+  <input type="hidden" id="counter" name="counter" value="" />
+  <div class="row">
+    <div class="col-md-8">
+      <h1>PRODUCTO TERMINADO</h1>
     </div>
-    <div class="row">
-        <table class="table table-bordered table-striped custom-table">
-            <thead class="text-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Galleta</th>
-                    <th>Cantidad en venta</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% set counter = namespace(value=1) %}
-                {% for pro in productos %}
-                    {% set color = '' %}
-                    {% if pro.cantidad <= 10 %}
-                        {% set color = '#FEB9B6' %}
-                    {% elif pro.cantidad <= 20 %}
-                        {% set color = '#FAFEB6' %}
-                    {% endif %}
-                    <tr style="background-color: {{ color }};">
-                        <th scope="row">{{ counter.value }}</th>
-                        <td>{{ pro.nombre }}</td>
-                        <td>{{ pro.cantidad }}</td>
-                        <td><button type="button" onclick="solicitarProduccion('button{{ counter.value }}', '{{ pro.idPro }}')" name="action" value="Producir{{ counter.value }}" id="button{{ counter.value }}" class="btn btn-secondary">Producir</button></td>                    </tr>
-                    {% set counter.value = counter.value + 1 %}
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+  </div>
+  <div class="row">
+    <table class="table table-bordered table-striped custom-table">
+      <thead class="text-dark">
+        <tr>
+          <th>#</th>
+          <th>Galleta</th>
+          <th>Cantidad en venta</th>
+          <th>Cantidad max a producir</th>
+          <th>Cantidad a solicitar</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set counter = namespace(value=1) %} {% for pro in productos %} {% set
+        color = '' %} {% if pro.cantidad <= 10 %} {% set color = '#FEB9B6' %} {%
+        elif pro.cantidad <= 20 %} {% set color = '#FAFEB6' %} {% endif %}
+        <tr style="background-color: {{ color }};">
+          <th scope="row">{{ counter.value }}</th>
+          <td>{{ pro.nombre }}</td>
+          <td>{{ pro.cantidad }}</td>
+          <td>{{ pro.cuantas }}</td>
+
+          <td>
+            <input
+              type="number"
+              id="cuantas_{{ counter.value }}"
+              class="form-control cantidad"
+              placeholder="Cantidad"
+              name="cuantas_{{ counter.value }}"
+              min="0"
+              max="{{pro.cuantas}}"
+            />
+          </td>
+          <td>
+            <button
+              type="button"
+              onclick="solicitarProduccion('button{{ counter.value }}', '{{ pro.idPro }}','{{counter.value}}')"
+              name="action"
+              value="Producir{{ counter.value }}"
+              id="button{{ counter.value }}"
+              class="btn btn-secondary"
+            >
+              Solicitar
+            </button>
+          </td>
+        </tr>
+        {% set counter.value = counter.value + 1 %} {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </form>
 
-<!-- <script src="../static/js/produccion.js"></script> -->
 <script>
-    function solicitarProduccion(idButton, idProducto) {
-        //Desactivar el boton
-        document.getElementById(idButton).disabled = true
+  // Get all input elements with class "cantidad"
+  var cantidadInputs = document.querySelectorAll(".cantidad");
+  // Add event listener for input event to each input element
+  cantidadInputs.forEach(function (cantidadInput) {
+    cantidadInput.addEventListener("input", function (event) {
+      // Get the entered value
+      var enteredValue = parseInt(event.target.value);
+      // Get the maximum allowed value from the corresponding "cuantas" attribute
+      var maxAllowedValue = parseInt(event.target.getAttribute("max"));
+      var minAllowedValue = parseInt(event.target.getAttribute("min"));
 
-        document.getElementById('idProHidden').value = idProducto; // Establecer el valor del campo oculto con idPro
-        document.getElementById('produccionForm').submit(); // Enviar el formulario
-    }
+      // If the entered value is greater than the maximum allowed value
+      if (enteredValue > maxAllowedValue || enteredValue < minAllowedValue) {
+        // Prevent the default behavior of input event (don't update the input value)
+        event.preventDefault();
+        // Display a Swal alert
+        event.target.value = "";
+        Swal.fire({
+          title: "Error",
+          text: "La cantidad debe ser menor o igual a " + maxAllowedValue,
+          icon: "error",
+          button: "Aceptar",
+        });
+      }
+    });
+  });
 
+  function solicitarProduccion(idButton, idProducto, contador) {
+    //Desactivar el boton
+    document.getElementById(idButton).disabled = true;
+    document.getElementById("counter").value = contador;
+    document.getElementById("idProHidden").value = idProducto; // Establecer el valor del campo oculto con idPro
+    document.getElementById("produccionForm").submit(); // Enviar el formulario
+  }
 </script>
-
 
 {%endblock%}

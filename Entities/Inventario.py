@@ -53,6 +53,7 @@ class RecetaItem(db.Model):
     estatus = db.Column(Boolean, default=1)
     usuario_registro = db.Column(db.Integer)
     fecha_registro = db.Column(db.DateTime, default=datetime.now)
+    cantidad_merma = db.Column(db.Float, nullable=False)
 
 class TipoStock(db.Model):
     __tablename__ = 'tipostock'
@@ -118,3 +119,68 @@ class LoginLog(db.Model):
     ip_address = db.Column(db.String(45))
     user_agent = db.Column(db.String(255))
     login_successful = db.Column(db.Boolean, default=True)
+    
+# ************** COMPRA *************** 
+class Compra(db.Model):
+    __tablename__ = 'compra'
+
+    id_compra = db.Column(db.Integer, primary_key=True)
+    proveedorid_comp = db.Column(db.Integer, db.ForeignKey('proveedor.id_proveedor'))
+    usuario_comp = db.Column(db.Integer, db.ForeignKey('usuario.id_usuario'))
+    folio_comp = db.Column(db.String(50))
+    fecha_comp = db.Column(db.DateTime)
+    fecha_cancelacion = db.Column(db.DateTime)
+    cantidad = db.Column(db.Integer)
+    total = db.Column(db.Float)
+    estatus = db.Column(db.Integer)
+    fecha_registro = db.Column(db.DateTime)
+
+    proveedor = db.relationship('Proveedor', backref='compras')
+    usuario = db.relationship('Usuario', backref='compras')
+    
+class CompraItem(db.Model):
+    __tablename__ = 'compraitem'
+
+    id_compraitem = db.Column(db.Integer, primary_key=True)
+    compra_itm = db.Column(db.Integer, db.ForeignKey('compra.id_compra'))
+    materialid_itm = db.Column(db.Integer, db.ForeignKey('material.id_material'))
+    cantidad = db.Column(db.Integer)
+    subtotal = db.Column(db.Float)
+    estatus = db.Column(db.Integer)
+    usuario_registro = db.Column(db.Integer)
+    fecha_registro = db.Column(db.DateTime)
+    
+    compra = db.relationship('Compra', backref='compraitems')
+    material = db.relationship('Material', backref='compraitems')
+    
+
+class Proveedor(db.Model):
+    __tablename__ = 'proveedor'
+
+    id_proveedor = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(50), nullable=True)
+    telefono = db.Column(db.Numeric(13, 0), nullable=True)
+    correo = db.Column(db.String(50), nullable=True)
+    dias_visita = db.Column(db.String(50), nullable=True)
+    db.Column(db.String(1), default='1')   # BIT se maneja como Boolean en SQLAlchemy
+    usuario_registro = db.Column(db.Integer, nullable=True)
+    fecha_registro = db.Column(db.DateTime, nullable=True, default=datetime.now)
+    estatus = db.Column(db.String(1), default='1')
+
+class VistaDetalleProducto(db.Model):
+    __tablename__ = 'vista_detalle_producto'
+
+    # Asumiendo que nombre_producto puede actuar como una clave única para la vista
+    nombre_producto = db.Column(db.String, primary_key=True)
+    idProducto = db.Column(db.Integer)
+    costo = db.Column(db.Float)
+    cantidad = db.Column(db.Integer)
+
+class VistaDetallePaquete(db.Model):
+    __tablename__ = 'vista_detalle_paquetes'
+
+    id_paquete = db.Column(db.Integer, primary_key=True)
+    nombre_paq = db.Column(db.String)
+    costopaquete_paq = db.Column(db.Float)
+    cantidadproductos_paq = db.Column(db.Integer)
+    productos = db.Column(db.JSON) 

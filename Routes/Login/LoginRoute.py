@@ -9,6 +9,7 @@ from Entities.Inventario import Usuario,LoginLog
 from Entities.UsuarioForm import UsersForm
 from Entities.Inventario import db
 from Routes.Inventario.InventarioRoute import modulo_inventario
+from Routes.Dashboard.DashboardRoutes import modulo_dashboard
 
 
 modulo_login=Blueprint('modulo_login',__name__)
@@ -53,7 +54,7 @@ def index():
                     log_attempt(user_id, True)
                     db.session.commit()
                     login_user(user)
-                    return redirect(url_for('modulo_login.pagePrincipal'))
+                    return redirect(url_for('modulo_dashboard.dashboard'))
             else:
                 user.failed_attempts += 1  # Aumenta el contador de intentos fallidos
                 log_attempt(user_id, False)
@@ -73,9 +74,8 @@ def index():
     return render_template("Login/login.html", form=user_form)
 
 @modulo_login.route("/pagePrincipal")
-@login_required
 def pagePrincipal():
-    return render_template('/dashboard.html')
+    return redirect(url_for('modulo_dashboard.dashboard'))
 
 @modulo_login.route('/logout')
 def logout():

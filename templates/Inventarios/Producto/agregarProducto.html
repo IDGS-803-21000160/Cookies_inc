@@ -1,13 +1,26 @@
 {% extends 'ContenedorMain/contenedorMain.html' %}
 {% block content %}
-    {% from "Macros/inputComponent.html" import search_input, input_custom, input_select %}
+    {% from "Macros/inputComponent.html" import search_input, input_custom, input_select, input_customWithPlaceholder %}
     {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttonsave %}
 
-    <div class="row">
-        <div class="col-md-8">
+    <script src="../../static/sweetalert2/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="../../static/sweetalert2/sweetalert2.min.css" />
+    
+    {% if alerta %}
+        <script>
+            Swal.fire({ icon: 'error', title: '¡Error!', text: '{{ alerta }}' }).then(function() {
+                let url = new URL(window.location.href);
+                url.searchParams.delete('alerta');
+                window.location.href = url.toString();
+            });
+        </script>
+    {% endif %}
+
+    <div class="row" style="justify-content: space-evenly;">
+        <div class="col-md-7">
             <h1>AGREGAR PRODUCTO</h1>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <form action="/inventario/productos" method="post">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {{ custom_buttongreen("Volver a Productos") }}
@@ -19,7 +32,7 @@
         <div class="col-md-10 mt-3" style="height: 2px; background-color: rgba(0, 0, 0, 0.603);"></div>
     </div>
 
-    <form action="/inventario/guardarProducto" method="post" novalidate>
+    <form action="/inventario/guardarProducto" method="post" novalidate id="productoForm">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="row">
             <div class="col-md-12 box-form3">
@@ -35,22 +48,33 @@
 
                 <div class="row mb-5">
                     <div class="col-md-6">
+
                         <div class="col-md-12 mb-3">
                             {{ input_custom(form.materiales) }}
                         </div>
 
-                        <div class="row">
+                        <div class="row" style="justify-content: space-evenly;">
                             <div class="col-md-6">
-                                <input type="number" id="cantidad" placeholder="Cantidad" class="input-container" name="cantidad">
+                                <input type="number" id="cantidad" placeholder="Cantidad" class="input-container" name="cantidad" style="text-align: center;">
                             </div>
 
                             <div class="col-md-6">
-                                <button type="submit" name="action" value="agregar_item" class="custom-button">Agregar Ingrediente</button>
+                                <input type="number" id="merma" placeholder="Merma" class="input-container" name="merma" style="text-align: center;">
                             </div>
                         </div>
 
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <label style="text-align: center;"> La cantidades de los ingredientes ingresados deben ser equivalentes a la producción de 50 galletas </label>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2" style="justify-content: center;">
+                            <button type="submit" name="action" value="agregar_item" class="custom-button">Agregar Ingrediente</button>
+                        </div>
+
                         <div class="row text-center mt-3">
-                            <label style="font-weight: bold;">AGREGA LOS INGREDIENTES</label>
+                            <label style="font-weight: bold;">AGREGA LOS INGREDIENTES QUE COMPONEN LA RECETA</label>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -60,6 +84,7 @@
                                     <tr>
                                         <th>Ingrediente</th>
                                         <th>Cantidad</th>
+                                        <th>Merma</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -68,6 +93,7 @@
                                         <tr>
                                             <td>{{ t.nombre_material }}</td>
                                             <td>{{ t.cantidad }}</td>
+                                            <td>{{ t.merma }}</td>
                                             <td>
                                                 <input type="hidden" name="id_material" value="{{ t.id_material }}">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -78,6 +104,16 @@
                                 </tbody>
                             </table>
                         </div>
+                        
+                    </div>
+                </div>
+
+                <div class="row mb-4" style="justify-content: end;">
+                    <div class="col-md-4" style="justify-content: space-between;">
+                        <h5>COSTO DE PRODUCCIÓN INDIVIDUAL:</h5>
+                    </div>
+                    <div class="col-md-1" style="justify-content: space-between;">
+                        <h5 style="color: green;">$ {{costoProduccion}}</h5>
                     </div>
                 </div>
                 

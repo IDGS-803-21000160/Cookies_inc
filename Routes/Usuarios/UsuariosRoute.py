@@ -3,22 +3,25 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from sqlalchemy import text
 from datetime import datetime
-from flask_login import login_required
+from flask_login import login_required,current_user
 
 from Entities.Inventario import Usuario
 from Entities.UsuarioForm import UserFormReg
 from Entities.Inventario import db
+from permissions import admin_required
 
 
 modulo_usuarios=Blueprint('modulo_usuarios',__name__)
 
 
-common_passwords = ['123456', 'password', '12345678', 'qwerty', '123456789']
+common_passwords = ['123456', 'password', '12345678', 'qwerty', '123456789','123abcD*']
 
 
 @modulo_usuarios.route("/pagePrincipal/user", methods=["GET", "POST"])
 @login_required
+@admin_required
 def user():
+    print(current_user.id_usuario)
     user_formreg = UserFormReg(request.form)
     allUsuarios=Usuario.query.all()
     alert=''
@@ -31,6 +34,7 @@ def user():
             
             if new_password in common_passwords:
                 flash('La contraseña utilizada es demasiado común. Por favor, elige otra.')
+                return render_template('Usuarios/usuarios.html', form=user_formreg,users=allUsuarios,alert=alert)
             
             if any(check_password_hash(u.password, new_password) for u in allUsuarios):
                 alert='alert-danger'
@@ -39,7 +43,7 @@ def user():
                 try:
                     newUser=Usuario(tipousuario=user_formreg.tipousuario.data,
                                 nombrecompleto=user_formreg.nombrecompleto.data,
-                                usuario_registro=request.form.get('idUser'),
+                                usuario_registro=current_user.id_usuario,
                                 user = user_formreg.username.data,
                                 password = generate_password_hash(user_formreg.password.data)
                                 )
@@ -82,6 +86,7 @@ def user():
                 existing_user.ultima_modificacion = datetime.now()
                 
                 db.session.commit()
+                alert='alert-success'
                 flash('Usuario Editado Correctamente...')
                 #Se limpia el formulario
                 user_formreg.nombrecompleto.data=''

@@ -28,32 +28,39 @@ def dashboard():
     return render_template("Dashboard/dashboard.html",ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
 
 def get_ventasPr():
-
     # Prepare the SQL query to filter by week and sum quantities
-    query = text("""
+    query = """
         SELECT paquete.nombre_paq as nombre, sum(ventaitem.cantidad) as cantidad, month(venta.fecha_venta) as mes 
-	    FROM ventaitem
+        FROM ventaitem
         JOIN venta ON venta.id_venta = ventaitem.ventaid_itm
         join paquete on ventaitem.paqueteid_itm = paquete.id_paquete
         GROUP BY month(venta.fecha_venta), paquete.nombre_paq;
-    """)
+    """
 
     # Execute the query with the week number parameter
-    data = db.session.execute(query)
+    data = db.session.execute(text(query))
+
     # Estructura para almacenar los resultados por mes
     resultados_por_mes = {}
+
+    meses_espanol = [
+        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ]
+
     # Iterar sobre los resultados y almacenarlos en la estructura
     for row in data:
         nombre = row[0]
         cantidad = row[1]
-        mes = row[2]
-        # Create a dictionary for each row
-        row_dict = {'nombre': nombre, 'cantidad': cantidad, 'mes': mes}
-        # Append the dictionary to the corresponding month list
-        if mes not in resultados_por_mes:
-            resultados_por_mes[mes] = []
-        resultados_por_mes[mes].append(row_dict)
-        
+        mes_numero = row[2]
+        mes_nombre = meses_espanol[mes_numero - 1]
+        # Crea un diccionario para cada fila
+        row_dict = {'nombre': nombre, 'cantidad': cantidad, 'mes': mes_nombre}
+        # Append el diccionario a la lista correspondiente del mes
+        if mes_nombre not in resultados_por_mes:
+            resultados_por_mes[mes_nombre] = []
+        resultados_por_mes[mes_nombre].append(row_dict)
+
     return resultados_por_mes
 
 def getVentasAnio2():
@@ -146,21 +153,26 @@ def getCards():
         "Caducidades": caducidades.cuenta,
         "cantidadVentas": cantidadVentas.cantidadVentas,
         "totalVentas": totalVentas.totalVentas,
-        "productoVendido": productoVendido.productoVendido
+        "productoVendido": productoVendido.productoVendido if productoVendido else "No hay ventas"
 
     })
 
     return data
 
 def getProduccion():
-    query = """  SELECT prod.nombre_producto as nombre, pi.costo as costo, pi.costo as costo, p.fecha_inicio as fechaInicio, coalesce(p.fecha_fin, 'En espera') as fechaFin, 
+    query = """  SELECT prod.nombre_producto as nombre, pi.costo as costo, pi.costo as costo, p.fecha_inicio as fechaInicio,
     CASE 
+        WHEN pi.estatus = 0 THEN 'Cancelado'
+        ELSE COALESCE(p.fecha_fin, 'En espera')
+    END AS fechaFin,  
+    CASE 
+        WHEN pi.estatus = 0 THEN 2
         WHEN p.fecha_fin IS NULL THEN 0 
         ELSE 1 
     END AS estado_fecha
     FROM produccion p JOIN produccionitem pi ON p.id_produccionitem = pi.id_produccionitem
     join producto prod on prod.id_producto = pi.productoid_itm
-    WHERE p.fecha_inicio IS NOT NULL order by  p.fecha_inicio asc limit 6;"""
+    WHERE p.fecha_inicio IS NOT NULL order by  p.fecha_inicio desc limit 6;"""
     # Ejecutar la consulta
     data = db.session.execute(text(query))
     db.session.commit()
