@@ -134,6 +134,9 @@
                     {% for pro in produccion %}
                         {% set color = '#DDFFC7' %}
                         {% if pro.estado_fecha == 0 %}
+                            {% set color = '#FBFFC7' %}
+                        {% endif %}
+                        {% if pro.estado_fecha == 2 %}
                             {% set color = '#FFCFC7' %}
                         {% endif %}
                         <tr style="background-color: {{ color }};">
