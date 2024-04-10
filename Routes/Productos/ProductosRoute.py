@@ -2,7 +2,7 @@
 from flask import  render_template, request, redirect, url_for, flash, Blueprint, jsonify
 from sqlalchemy import text
 from Entities.InventarioProductoForm import InventarioProductoForm
-from Entities.Inventario import Material, RecetaItem
+from Entities.Inventario import Material, RecetaItem, Inventario
 from Entities.Inventario import Producto
 from datetime import datetime
 from flask_login import current_user
@@ -111,6 +111,13 @@ def inventariosGuardarProducto():
                     )
                     db.session.add(addItem)
                     db.session.commit()
+                
+                usuariop = current_user.id_usuario
+                db.session.execute(
+                        text("CALL entradaInventario(:tipo, :id_materia_producto, :cantidad, :usuariop)"),
+                        {"tipo": 2, "id_materia_producto": id_producto, "cantidad": 0, "usuariop": usuariop}
+                    )
+                db.session.commit()
 
                 tabladatos.clear()
 
