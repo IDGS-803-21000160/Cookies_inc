@@ -1,4 +1,4 @@
-from flask import  render_template, request, redirect, url_for, flash, current_app, Blueprint
+from flask import  render_template, request, Blueprint, flash
 from sqlalchemy import text
 from Entities.Inventario import db, Proveedor, Compra, CompraItem, Material
 from sqlalchemy import text
@@ -27,10 +27,16 @@ def compra():
     global listaCompra_insertar
     
     productos = []
+    compras = []
     listaProveedor = []
-    ventaForm = CompraForm(request.form)
+    ventaForm = CompraForm()
         
     productos = cargarProducto()
+    compras = loadComprasRealizadas()
+    
+    if request.method == "GET":
+        compras = loadComprasRealizadas()
+    
         
     proveedores = Proveedor.query.all()
 
@@ -73,18 +79,18 @@ def compra():
                             'nombre_producto': request.form[f'nombre_producto_{index}'],
                             'unidad_medida': request.form[f'unidad_medida_{index}'],
                             'cantidad_producto': valor*1000,
-                            'subtotal': subtotal
+                            'subtotal': round(subtotal, 2)
                         })
                     productos_a_comprar = productos_a_comprar + 1
             
             for i in listaCompra:
                 total = total + float(i['subtotal'])
             #print(listaCompra)
-            
+            total = round(total, 2)
             listaCompra_insertar.extend(listaCompra)
             listaCompra = []
             
-            return render_template('Compra/compra.html', prodct = productos, form = ventaForm, listaCompra = listaCompra_insertar, total = total)
+            return render_template('Compra/compra.html', prodct = productos, form = ventaForm, listaCompra = listaCompra_insertar, total = total, compra = compras)
         
         elif 'Eliminar' in request.form :
             
@@ -92,7 +98,7 @@ def compra():
             listaCompra_insertar.pop(index_eliminar)
                 #print('Elemento eliminado:', elemento_eliminado)
             
-            return render_template('Compra/compra.html', prodct = productos, form = ventaForm, listaCompra = listaCompra_insertar)
+            return render_template('Compra/compra.html', prodct = productos, form = ventaForm, listaCompra = listaCompra_insertar, total = total, compra = compras)
             
         elif 'Terminar' in request.form:    
             print('boton Terminar')
@@ -104,56 +110,63 @@ def compra():
 
             folio = f"{id_proveedor}-{segundo_actual}{minuto_actual}{ano_actual}"
             print(total)
-            nueva_compra = Compra(
-                proveedorid_comp = id_proveedor,  
-                usuario_comp = 1,  
-                folio_comp = folio,  
-                fecha_comp = datetime.now(),  
-                cantidad = productos_a_comprar,  
-                total = total, 
-                estatus = 1,  
-                fecha_registro=datetime.now()
-            )
             
-            db.session.add(nueva_compra)
-
-            db.session.commit()
-            
-            # Obtener el último ID insertado (ID de la nueva compra)
-            ultimo_id_insertado = nueva_compra.id_compra
-
-            # Imprimir el último ID insertado para verificar
-            print("Último ID insertado:", ultimo_id_insertado)
-            
-            for prod in listaCompra_insertar:
-                nuevo_product = CompraItem(
-                    compra_itm = ultimo_id_insertado,
-                    materialid_itm = prod['id_material'],
-                    cantidad = prod['cantidad_producto'],
-                    subtotal = prod['subtotal'],
-                    estatus = 1,
-                    usuario_registro = 1,
-                    fecha_registro = datetime.now()
+            try:
+                nueva_compra = Compra(
+                    proveedorid_comp = id_proveedor,  
+                    usuario_comp = current_user.id_usuario,  
+                    folio_comp = folio,  
+                    fecha_comp = datetime.now(),  
+                    cantidad = productos_a_comprar,  
+                    total = total, 
+                    estatus = 1,  
+                    fecha_registro=datetime.now()
                 )
                 
-                db.session.add(nuevo_product)
+                db.session.add(nueva_compra)
 
                 db.session.commit()
                 
-            consulta = text('CALL descuentoInventarioPorCompra(:parametro1)')
-            db.session.execute(consulta, {'parametro1': ultimo_id_insertado})
-            
-            db.session.commit()
-            
+                # Obtener el último ID insertado (ID de la nueva compra)
+                ultimo_id_insertado = nueva_compra.id_compra
+
+                # Imprimir el último ID insertado para verificar
+                print("Último ID insertado:", ultimo_id_insertado)
+                
+                for prod in listaCompra_insertar:
+                    nuevo_product = CompraItem(
+                        compra_itm = ultimo_id_insertado,
+                        materialid_itm = prod['id_material'],
+                        cantidad = prod['cantidad_producto'],
+                        subtotal = prod['subtotal'],
+                        estatus = 1,
+                        usuario_registro = 1,
+                        fecha_registro = datetime.now()
+                    )
+                    
+                    db.session.add(nuevo_product)
+
+                    db.session.commit()
+                    
+                consulta = text('CALL descuentoInventarioPorCompra(:parametro1)')
+                db.session.execute(consulta, {'parametro1': ultimo_id_insertado})
+                
+                db.session.commit()
+                
+                flash("Compra realizada", "success")
+            except:
+                flash("Algo salio mal, intenta de nuevo", "danger")
             # for row in resultado:
             #     print(row)
                 
+            compras = loadComprasRealizadas()    
+            
             productos_a_comprar = 0
             subtotal = 0
             total = 0
             listaCompra_insertar = []
                          
-    return render_template('Compra/compra.html', prodct = productos, form = ventaForm)
+    return render_template('Compra/compra.html', prodct = productos, form = ventaForm, listaCompra = listaCompra_insertar, total = total, compra = compras)
 
 
 def cargarProducto():
@@ -170,3 +183,22 @@ def cargarProducto():
             'unidad_medida': material.unidad_medida
         })
     return productos
+
+def loadComprasRealizadas():
+    compras = []
+
+    materiales = db.session.query(Compra).all()
+
+    for material in materiales:
+        # print(material.id_compra, material.proveedorid_comp, material.usuario_comp)
+        compras.append({
+            'id_compra': material.id_compra,
+            'proveedorid_comp': material.proveedorid_comp,
+            'usuario_comp': material.usuario_comp,
+            'folio_comp': material.folio_comp,
+            'fecha_comp':material.fecha_comp,
+            'cantidad_productos':material.cantidad,
+            'total_compra': material.total
+        })
+        
+    return compras

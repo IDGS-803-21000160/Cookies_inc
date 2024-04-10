@@ -45,7 +45,7 @@ def index():
             if user.estatus == '0':
                 log_attempt(user_id, False)
                 flash('Usuario bloqueado.')
-                return render_template("index.html", form=user_form)
+                return render_template("Login/login.html", form=user_form)
             
             # Verifica la contraseña y el estatus del usuario
             if check_password_hash(user.password, password):

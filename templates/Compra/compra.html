@@ -3,6 +3,19 @@
 {%block content %}
 {% from "Macros/inputComponent.html" import input_customVenta %}
 <div>
+    {%with messages = get_flashed_messages(with_categories=true)%}
+    {%if messages%}
+    <br />
+    {%for category, message in messages %}
+    <div class="alert alert-{{ category }}" role="alert">
+        <strong>{{message}}</strong>
+        <div class="justify-content-end">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+    {%endfor%}
+    {%endif%}
+    {%endwith%}
     <form action="/compra" method="post" novalidate>
         <div class="row">
             <div class="col-4 ">
@@ -16,42 +29,41 @@
                 </div>
             </div>
         </div>
-        <hr>
+        <div class="row justify-content-center">
+            <div class="col-md-10 mb-4 mt-3" style="height: 2px; background-color: rgba(0, 0, 0, 0.603);"></div>
+        </div>
         <div class="row">
-            <div class="col">
+            <div class="col pb-3">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <h4 class="text-center">Productos</h4>
                 <div class="seccion-con-scroll">
-                    <div class="contenido-seccion">
-                        <div class="row">
-                            {% for producto in prodct %}
-                            <div class="col-lg-4 mb-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ producto.nombre }}</h5>
-                                        {% set campo_nombre = 'nombre_producto_' + loop.index|string %}
-                                        <input type="hidden" name="{{ campo_nombre }}" value="{{ producto.nombre }}">
-                                        {% set campo_descripcion = 'unidad_medida_' + loop.index|string %}
-                                        <input type="hidden" name="{{ campo_descripcion }}"
-                                            value="{{ producto.unidad_medida }}">
-                                        <div class="input-group">
-                                            {{ input_customVenta(form['cantidad_producto_' + loop.index|string]) }}
-                                        </div>
+                    <div class="row">
+                        {% for producto in prodct %}
+                        <div class="col-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-header h-50">
+                                    <h5>{{ producto.nombre }}</h5>
+                                </div>
+                                <div class="card-body">
+                                    {% set campo_nombre = 'nombre_producto_' + loop.index|string %}
+                                    <input type="hidden" name="{{ campo_nombre }}" value="{{ producto.nombre }}">
+                                    {% set campo_descripcion = 'unidad_medida_' + loop.index|string %}
+                                    <input type="hidden" name="{{ campo_descripcion }}"
+                                        value="{{ producto.unidad_medida }}">
+                                    {% set unidad_med = producto.unidad_medida %}
+                                    {% if unidad_med == 'pieza' %}
+                                    <p>Costo: {{ producto.costo }} por pieza</p>
+                                    {% else %}
+                                    {% set costos = (producto.costo | float * 1000) | round(2) %}
+                                    <p>Costo: {{ costos }} por kg/ml</p>
+                                    {%endif%}
+                                    <div class="input-group">
+                                        {{ input_customVenta(form['cantidad_producto_' + loop.index|string]) }}
                                     </div>
                                 </div>
                             </div>
-                            {% endfor %}
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <button type="submit" class="mt-3 custom-buttongreen" name="Agregar">Agregar</button>
-                    </div>
-                    <div class="col"></div>
-                    <div class="col"></div>
-                    <div class="col">
-                        <button type="submit" class="mt-3 custom-buttongreen" name="Terminar">Terminar</button>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -90,7 +102,54 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="row justify-content-center">
+                    <div class="col-3">
+                        <button type="submit" class="mt-3 custom-buttongreen" name="Agregar">Agregar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row justify-content-center">
+                    <div class="col-3">
+                        <button type="submit" class="mt-3 custom-buttongreen" name="Terminar">Terminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </form>
+    <div class="row p-5">
+        <h2>Compras Realizadas</h2>
+        <div class="col">
+            <table class="table table-bordered table-striped custom-table ">
+                <thead class="text-dark">
+                    <tr>
+                        <th scope="col">idCompra</th>
+                        <th scope="col">idProveedor</th>
+                        <th scope="col">idUsuario</th>
+                        <th scope="col">Folio</th>
+                        <th scope="col">Fecha compra</th>
+                        <th scope="col">Cantidad productos</th>
+                        <th scope="col">Total gastado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for compra in compra %}
+                    <tr>
+                        <td>{{ compra['id_compra'] }} </td>
+                        <td>{{ compra['proveedorid_comp'] }}</td>
+                        <td>{{ compra['usuario_comp'] }}</td>
+                        <td>{{ compra['folio_comp'] }}</td>
+                        <td>{{ compra['fecha_comp'] }}</td>
+                        <td>{{ compra['cantidad_productos'] }}</td>
+                        <td>{{ compra['total_compra'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 

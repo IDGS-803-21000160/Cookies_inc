@@ -159,7 +159,7 @@ def ventas():
 
                 alert='alert-success'
                 flash("Venta realizada con Éxito...")
-                return response
+                #return response
                 
             except Exception as e:
                 db.session.rollback()

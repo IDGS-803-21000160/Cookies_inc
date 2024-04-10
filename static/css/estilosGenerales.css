@@ -180,11 +180,6 @@
 }
 
 .seccion-con-scroll {
-    height: 300px; 
+    height: 400px; 
     overflow-y: auto; 
-}
-
-.contenido-seccion {
-    padding: 10px;
-    border: 1px solid #ccc;
 }
