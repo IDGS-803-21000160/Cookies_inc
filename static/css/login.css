@@ -1,9 +1,14 @@
 .contaimerImage {
   background-color: #6e8163;
+  border: 1px solid #6e8163;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
 }
 
 .container {
   margin-top: 5%;
+  background-color: transparent;
+  /* border: transparent; */
 }
 #btnLogin {
   background-color: #502e1a;
@@ -13,6 +18,9 @@
 }
 
 body {
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url("../img/FondoDos.webp");
+  /* background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("../img/fondoUX.png"); */
+  background-image: url("../img/fondoUX.png");
+  background-size: cover;
+  background-repeat: no-repeat;
 }

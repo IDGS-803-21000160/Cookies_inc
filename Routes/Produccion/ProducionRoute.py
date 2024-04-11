@@ -52,7 +52,6 @@ def agregarProduccion(idProducto,cantidad):
     db.session.commit()
     return {'response':'success'}
 
-
 @modulo_produccion.route('/produccionGalleta', methods=['GET','POST'])
 def produccionGalleta():
     if request.method == 'POST':
@@ -62,11 +61,14 @@ def produccionGalleta():
         cantidad = request.form.get('cuantas_'+counter)
         idProduccionitem = request.form.get('idProduccionitem')
 
+        #USER
+        usuario_registro=current_user.id_usuario
+
         # print('idp: ', idProducto,'counter: ',counter,'cant: ',cantidad, 'idpi: ', idProduccionitem)
         if acceptacion == '1':
-            descontarProduccion(idProducto,cantidad,idProduccionitem)
+            descontarProduccion(idProducto,cantidad,idProduccionitem,usuario_registro)
         else:
-            rechazarProduccion(idProducto,cantidad,idProduccionitem)
+            rechazarProduccion(idProducto,cantidad,idProduccionitem,usuario_registro)
 
     
     query = """
@@ -85,22 +87,21 @@ def produccionGalleta():
         """
     # Ejecutar la consulta
     data = db.session.execute(text(query))
-
     return render_template("Produccion/producirGalleta.html", recetas = data)
 
 
-def descontarProduccion(idProducto,cantidad,idProduccionitem):
+def descontarProduccion(idProducto,cantidad,idProduccionitem,usuario_registro):
     db.session.execute(
-        text("CALL descontarProduccion(:idProducto, :cantidad, :idProduccionitem)"),
-        {"idProducto": idProducto, "cantidad":cantidad, "idProduccionitem":idProduccionitem}
+        text("CALL descontarProduccion(:idProducto, :cantidad, :idProduccionitem, :usuario_registro)"),
+        {"idProducto": idProducto, "cantidad":cantidad, "idProduccionitem":idProduccionitem,"usuario_registro":usuario_registro}
     )
     db.session.commit()
     return {'response':'success'}
 
-def rechazarProduccion(idProducto,cantidad,idProduccionitem):
+def rechazarProduccion(idProducto,cantidad,idProduccionitem,usuario_registro):
     db.session.execute(
-        text("CALL rechazar(:idProducto, :cantidad, :idProduccionitem)"),
-        {"idProducto": idProducto, "cantidad":cantidad, "idProduccionitem":idProduccionitem}
+        text("CALL rechazar(:idProducto, :cantidad, :idProduccionitem, :usuario_registro)"),
+        {"idProducto": idProducto, "cantidad":cantidad, "idProduccionitem":idProduccionitem,"usuario_registro":usuario_registro}
     )
     db.session.commit()
     return {'response':'success'}

@@ -13,6 +13,7 @@ def dashboard():
     produccion = getProduccion()
     caducidadesINV = getCaducidades()
     cardData = getCards()
+    profeCardData = getProfeCards()
 
     for item in cardData:
         caducidades = item['Caducidades']
@@ -20,21 +21,31 @@ def dashboard():
         totalVentas = item['totalVentas']
         productoVendido = item['productoVendido']
 
+    #CONSULTAS DEL PROFE DE BD IASHNDIOAHSIUFJHOAISDJFIADJSIOFJDS
+    for item in profeCardData:
+        utilidadGalleta = item['utilidadGalleta']
+        paqueteVendido = item['paqueteVendido']
+        galletaMerma = item['galletaMerma']
+
+    profe = getProveedoresResponsables()
+    costoProduccion = getCostoProduccion()
+
     #----- CHARTS ------
     ventasAnio = getVentasAnio2()
     ventasPr = get_ventasPr()
     print(ventasPr)
 
-    return render_template("Dashboard/dashboard.html",ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
+    return render_template("Dashboard/dashboard.html",profe=profe,costoProduccion=costoProduccion,paqueteVendido=paqueteVendido,galletaMerma=galletaMerma,utilidadGalleta=utilidadGalleta, ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
 
 def get_ventasPr():
     # Prepare the SQL query to filter by week and sum quantities
     query = """
-        SELECT paquete.nombre_paq as nombre, sum(ventaitem.cantidad) as cantidad, month(venta.fecha_venta) as mes 
-        FROM ventaitem
-        JOIN venta ON venta.id_venta = ventaitem.ventaid_itm
-        join paquete on ventaitem.paqueteid_itm = paquete.id_paquete
-        GROUP BY month(venta.fecha_venta), paquete.nombre_paq;
+        SELECT coalesce(min(p.nombre_paq), min(pro.nombre_producto)) as nombre, sum(vi.cantidad) as cantidad, month(v.fecha_venta) as mes 
+        FROM ventaitem vi
+        JOIN venta v ON v.id_venta = vi.ventaid_itm
+        left join paquete p on vi.paqueteid_itm = p.id_paquete
+        left join producto pro on pro.id_producto = vi.productoid_itm
+        GROUP BY month(v.fecha_venta),coalesce(vi.paqueteid_itm,vi.productoid_itm);
     """
 
     # Execute the query with the week number parameter
@@ -139,12 +150,12 @@ def getCards():
     query = """ SELECT sum(total_ventas) as totalVentas FROM venta; """
     totalVentas = db.session.execute(text(query)).fetchone()
 
-    query = """SELECT p.nombre_paq AS productoVendido, COUNT(vi.id_ventaitem) AS cantidad_ventas 
+    query = """SELECT ifnull(nombre_paq, nombre_producto) AS productoVendido, COUNT(vi.id_ventaitem) AS cantidad_ventas 
     FROM ventaitem vi 
-    JOIN paqueteitem pi ON vi.paqueteid_itm = pi.id_paqueteitem
-    join paquete p on p.id_paquete = pi.paqueteid_itm
-    GROUP BY p.nombre_paq
-    ORDER BY cantidad_ventas DESC LIMIT 1; """
+    LEFT JOIN paquete p on p.id_paquete = vi.paqueteid_itm
+    left join producto on id_producto = vi.productoid_itm
+    GROUP BY p.nombre_paq,nombre_producto
+    ORDER BY cantidad_ventas DESC limit 1;"""
 
     productoVendido = db.session.execute(text(query)).fetchone()
 
@@ -177,4 +188,76 @@ def getProduccion():
     data = db.session.execute(text(query))
     db.session.commit()
     return data
-# '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+# ''''''''''''''''''''''''CONSULTAS DE BD''''''''''''''''''''''''''''''''
+
+def getProfeCards():
+   
+    data = []
+
+    query = text(""" select c.id_producto, c.nombre_producto, round((c.costoventa - costoproduccion), 3) utilidad
+    from (SELECT id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto costoventa, ROUND(sum((costo_mat * (cantidad + cantidad_merma))), 3) costoproduccion,  CONCAT(ROUND(SUM(cantidad), 2), ' g') peso
+    FROM producto p
+        inner join recetaitem on productoid_itm = id_producto
+        inner join material on materialid_itm = id_material
+    WHERE p.estatus = 1 and recetaitem.estatus = 1
+    GROUP BY id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto, costoventa) as c ORDER BY utilidad desc limit 1;""")
+    utilidadGalleta = db.session.execute(query).fetchone()
+
+    query = """ SELECT p.nombre_paq AS paqueteVendido, COUNT(vi.id_ventaitem) AS cantidad_ventas 
+    FROM ventaitem vi 
+    JOIN paqueteitem pi ON vi.paqueteid_itm = pi.id_paqueteitem
+    join paquete p on p.id_paquete = pi.paqueteid_itm
+    GROUP BY p.nombre_paq
+    ORDER BY cantidad_ventas DESC limit 1; """
+    paqueteVendido = db.session.execute(text(query)).fetchone()
+
+    query = """ select p.nombre_producto as nombre, p.alias, sum(ri.cantidad_merma) as merma
+    from producto p 
+    join recetaitem ri on p.id_producto = ri.productoid_itm
+    group by ri.productoid_itm
+    order by merma desc; """
+    galletaMerma = db.session.execute(text(query)).fetchone()
+
+    # Append the results to the data list
+    data.append({
+        "utilidadGalleta": utilidadGalleta.nombre_producto,
+        "paqueteVendido": paqueteVendido.paqueteVendido,
+        "galletaMerma": galletaMerma.nombre,
+
+    })
+
+    return data
+
+
+def getProveedoresResponsables():
+    query = """  select pi.id_produccionitem as idProduccionItem , min(p.nombre_producto) as productoProducido, min(pi.fecha_registro) as fecha,
+        GROUP_CONCAT(DISTINCT m.nombre_mat SEPARATOR ' | ') AS materiales , GROUP_CONCAT(DISTINCT prov.nombre SEPARATOR ' | ') as nombreProveedor,
+        u.nombrecompleto as responsable, u.tipousuario as rol
+        from produccionitem pi
+        join producto p on p.id_producto = pi.productoid_itm
+        join recetaitem ri on ri.productoid_itm = p.id_producto
+        join material m on m.id_material = ri.materialid_itm
+        join compraitem ci on ci.materialid_itm = m.id_material
+        join compra c on c.id_compra = ci.compra_itm
+        join proveedor prov on prov.id_proveedor = c.proveedorid_comp
+        join usuario u on u.id_usuario = pi.usuario_registrado
+        group by pi.id_produccionitem
+        ORDER BY pi.fecha_registro desc limit 6;  """
+    # Ejecutar la consulta
+    data = db.session.execute(text(query))
+    db.session.commit()
+    return data
+
+def getCostoProduccion():
+    query = """  SELECT pi.id_produccionitem as idProduccionItem, min(p.id_producto), min(p.nombre_producto) as nom, ROUND(sum((costo_mat * (ri.cantidad + ri.cantidad_merma))), 3) costoproduccion, max(pi.fecha_registro) as fecha
+    FROM producto p
+	inner join recetaitem ri on ri.productoid_itm = p.id_producto
+	inner join material m on ri.materialid_itm = m.id_material
+    left join produccionitem pi on  pi.productoid_itm = p.id_producto
+    WHERE p.estatus = 1 and ri.estatus = 1
+    GROUP BY pi.id_produccionitem
+    order by max(pi.fecha_registro) desc limit 6;"""
+    # Ejecutar la consulta
+    data = db.session.execute(text(query))
+    db.session.commit()
+    return data
