@@ -45,7 +45,7 @@ def verDetalle():
         INNER JOIN producto on id_producto = productoid_itm
         LEFT JOIN recetaitem on id_producto = recetaitem.productoid_itm
         LEFT JOIN material on id_material = materialid_itm
-    WHERE paqueteid_itm = 6
+    WHERE paqueteid_itm = :id_paquete
     GROUP BY  nombre_producto, alias, costoproducto, cantidadproducto_itm;
     """)
     resultados = db.session.execute(consulta.params(id_paquete=id_paquete))
@@ -182,36 +182,33 @@ def editarPaquete():
     id_paquete = request.form['id_paquete']
     paquete = Paquete.query.get(id_paquete)
     paqueteForm = PaqueteForm(request.form)
-    productos = Producto.query.all()
+    consulta = text("""
+    SELECT id_producto, CONCAT( nombre_producto, '  |     peso de    ',  ROUND(SUM(cantidad), 3), '  g', '     | costo de    $', costoproducto ) nombre_producto
+    FROM producto
+        inner join recetaitem on id_producto = productoid_itm
+        inner join material on id_material = materialid_itm
+    where producto.estatus = 1 and recetaitem.estatus = 1
+    group by id_producto, nombre_producto;
+    """)
+    productos = db.session.execute(consulta)
     opciones = [(producto.id_producto, producto.nombre_producto) for producto in productos]
     paqueteForm.productos.choices = opciones
 
     consulta = text("""
-    SELECT productoid_itm, nombre_producto, cantidadproducto_itm cantidad
-    FROM paqueteitem
-        INNER JOIN producto on id_producto = productoid_itm
-    WHERE paqueteid_itm = :id_paquete;
+    SELECT pq.productoid_itm, nombre_producto, ROUND(SUM(cantidad), 3) as peso, 
+    ROUND(p.costoproducto * cantidadproducto_itm, 3) costoSugerido, cantidadproducto_itm cantidad
+    FROM paquete
+        INNER JOIN paqueteitem pq on pq.paqueteid_itm = paquete.id_paquete
+        INNER JOIN producto p on id_producto = pq.productoid_itm
+        INNER JOIN recetaitem r on p.id_producto = r.productoid_itm
+        INNER JOIN material m on m.id_material = r.materialid_itm
+    WHERE paqueteid_itm = 1
+    GROUP BY pq.productoid_itm, nombre_producto;
     """)
     ingredientes = db.session.execute(consulta.params(id_paquete=id_paquete))
 
-    productoid = None
     for item in ingredientes:
-        productoid = item.productoid_itm
-        break
-
-    consulta2 = text("""    
-    SELECT ROUND(SUM(cantidad), 3) as peso, producto.costoproducto
-    FROM producto
-        inner join recetaitem on id_producto = productoid_itm
-        inner join material on id_material = materialid_itm
-    where producto.estatus = 1 and id_producto = :id_producto
-    group by id_producto, nombre_producto;
-    """)
-    
-    producto = db.session.execute(consulta2.params(id_producto=productoid)).fetchone()
-
-    for item in ingredientes:
-        productosPaquete.append({"id_producto": item.productoid_itm, "nombre_producto": item.nombre_producto, "cantidad" : item.cantidad, "costo" : producto.costoproducto * item.cantidad, "peso" : producto.peso * item.cantidad})
+        productosPaquete.append({"id_producto": item.productoid_itm, "nombre_producto": item.nombre_producto, "cantidad" : item.cantidad, "costo" : item.costoSugerido, "peso" : item.peso})
     precioSugerido = round(sum([float(item['costo']) for item in productosPaquete]), 3)
     pesoTotal = round( sum( [ float(item['peso']) for item in productosPaquete ] ), 3 )
     return render_template('Paquetes/modificarPaquete.html', form=paqueteForm, paquete=paquete, productosPaquete=productosPaquete, precio = precioSugerido, peso = pesoTotal)
@@ -219,7 +216,15 @@ def editarPaquete():
 @modulo_paquetes.route('/paquetes/actualizarPaquete', methods=["POST"])
 def actualizarPaquete():
     paqueteF = PaqueteForm(request.form)
-    productos = Producto.query.all()
+    consulta = text("""
+    SELECT id_producto, CONCAT( nombre_producto, '  |     peso de    ',  ROUND(SUM(cantidad), 3), '  g', '     | costo de    $', costoproducto ) nombre_producto
+    FROM producto
+        inner join recetaitem on id_producto = productoid_itm
+        inner join material on id_material = materialid_itm
+    where producto.estatus = 1 and recetaitem.estatus = 1
+    group by id_producto, nombre_producto;
+    """)
+    productos = db.session.execute(consulta)
     opciones = [(producto.id_producto, producto.nombre_producto) for producto in productos]
     paqueteF.productos.choices = opciones
 

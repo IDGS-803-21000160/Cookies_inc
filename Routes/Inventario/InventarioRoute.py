@@ -38,7 +38,7 @@ def inventarios():
     IFNULL(nombre_producto, nombre_mat) nombre, 
     COUNT(DISTINCT id_inventario) lotes,
     nombre_tipoInv tipo_inv,
-    SUM(IFNULL(costoproducto, costo_mat)) costo,
+    ROUND(SUM(IFNULL(costoproducto, costo_mat)), 3) costo,
     ROUND(SUM(cantidad_inv), 2) cantidad_inv,
     tipo_inv id_tipoInv
     FROM inventario
@@ -200,7 +200,7 @@ def inventariosGuardarMerma():
         cantidadInv = Inventario.query.get(id_inv).cantidad_inv
 
         if inventarioF.merma.data > cantidadInv:
-            return redirect(url_for('modulo_inventario.inventarios', alerta='La merma no puede ser mayor a la cantidad en inventario!', success= False))
+            return redirect(url_for('modulo_inventario.inventarios', alerta='Nmms como vas a quitar mas de lo que tienes papito', success= False))
 
         db.session.execute(
                 text("CALL mermaInventario(:id_inv, :merma, :usuariop)"),
