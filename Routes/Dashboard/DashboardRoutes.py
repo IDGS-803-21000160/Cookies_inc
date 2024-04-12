@@ -136,15 +136,15 @@ def getCards():
     query = """ SELECT count(*) as cantidadVentas FROM venta; """
     cantidadVentas = db.session.execute(text(query)).fetchone()
 
-    query = """ SELECT sum(total_ventas) as totalVentas FROM venta; """
+    query = """ SELECT ROUND(sum(total_ventas), 3) as totalVentas FROM venta; """
     totalVentas = db.session.execute(text(query)).fetchone()
 
-    query = """SELECT p.nombre_paq AS productoVendido, COUNT(vi.id_ventaitem) AS cantidad_ventas 
+    query = """SELECT ifnull(nombre_paq, nombre_producto) AS productoVendido, COUNT(vi.id_ventaitem) AS cantidad_ventas 
     FROM ventaitem vi 
-    JOIN paqueteitem pi ON vi.paqueteid_itm = pi.id_paqueteitem
-    join paquete p on p.id_paquete = pi.paqueteid_itm
-    GROUP BY p.nombre_paq
-    ORDER BY cantidad_ventas DESC LIMIT 1; """
+    LEFT JOIN paquete p on p.id_paquete = vi.paqueteid_itm
+    left join producto on id_producto = vi.productoid_itm
+    GROUP BY p.nombre_paq, nombre_producto
+    ORDER BY cantidad_ventas DESC limit 1;"""
 
     productoVendido = db.session.execute(text(query)).fetchone()
 

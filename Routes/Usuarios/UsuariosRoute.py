@@ -86,6 +86,7 @@ def user():
                 existing_user.ultima_modificacion = datetime.now()
                 
                 db.session.commit()
+                alert='alert-success'
                 flash('Usuario Editado Correctamente...')
                 #Se limpia el formulario
                 user_formreg.nombrecompleto.data=''

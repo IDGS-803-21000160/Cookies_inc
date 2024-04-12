@@ -10,6 +10,7 @@
         <a href="/produccion" class="custom-buttongreen" style="text-decoration: none;">Volver a Produccion</a>
     </div>
 </div>
+
 {% set counter = namespace(value=1) %}
 {% for receta in recetas %}
 <div class="row">
@@ -53,6 +54,7 @@
 <br><br>
 {% set counter.value = counter.value + 1 %}
 {% endfor %}
+
 
 <script>
 
