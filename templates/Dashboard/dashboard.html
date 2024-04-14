@@ -135,9 +135,14 @@
           </tr>
         </thead>
         <tbody>
-          {% for pro in produccion %} {% set color = '#DDFFC7' %} {% if
-          pro.estado_fecha == 0 %} {% set color = '#FBFFC7' %} {% endif %} {% if
-          pro.estado_fecha == 2 %} {% set color = '#FFCFC7' %} {% endif %}
+          {% for pro in produccion %} 
+          {% set color = '#DDFFC7' %} 
+          {% if pro.estado_fecha == 0 %} 
+            {% set color = '#FBFFC7' %} 
+          {% endif %} 
+          {% if pro.estado_fecha == 2 %} 
+            {% set color = '#FFCFC7' %} 
+          {% endif %}
           <!-- FBFFC7 -->
           <tr style="background-color: {{ color }};">
             <td>{{ pro.nombre }}</td>
@@ -150,7 +155,97 @@
       </table>
     </div>
   </div>
+
+  <!-- PROFEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE -->
+  <div class="cardBox center">
+    <div class="card">
+      <div>
+        <div class="numbers">${{utilidadGalleta}}</div>
+        <div class="cardName">Galleta Con Mas utilidad</div>
+      </div>
+      <div class="iconBx">
+        <ion-icon name="cash-outline"></ion-icon>
+      </div>
+    </div>
+    <div class="card">
+      <div>
+        <div class="numbers">{{paqueteVendido}}</div>
+        <div class="cardName">Paquete Mas Vendido</div>
+      </div>
+      <div class="iconBx">
+        <ion-icon name="cart-outline"></ion-icon>
+      </div>
+    </div>
+    <div class="card">
+      <div>
+        <div class="numbers">{{galletaMerma}}</div>
+        <div class="cardName">Galleta Con Mas Merma</div>
+      </div>
+      <div class="iconBx">
+        <ion-icon name="trending-down-outline"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <div class="details">
+    <!-- order details list -->
+    <div class="recentOrders">
+      <div class="cardHeader">
+        <h2>Proveedores y Responsables</h2>
+        <!-- <a href="#" class="btn">View All</a> -->
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <td>Nombre Producto</td>
+            <td>Materiales</td>
+            <td>Fecha de Solicitud</td>
+            <td>Proveedores</td>
+            <td>Responsable</td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pro in profe %} 
+          <!-- FBFFC7 -->
+          <tr>
+            <td>{{ pro.productoProducido }}</td>
+            <td>{{ pro.materiales }}</td>
+            <td>{{ pro.fecha }}</td>
+            <td>{{ pro.nombreProveedor }}</td>
+            <td>{{ pro.responsable }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <!-- New Customers -->
+    <div class="recentCustomers">
+        <div class="cardHeader">
+          <h2>Costos de produccion</h2>
+        </div>
+        <table>
+          {% for cos in costoProduccion %}
+          <tr>
+            <td><h4>ID: {{cos.idProduccionItem}}</h4></td>
+            <!-- <td><div class="imgBx"><img src="Images/User2.png"></div></td> -->
+            <td>
+              <h4>
+                {{cos.nom}} <br /><span>Costo de produccion: {{cos.costoproduccion}}</span>
+              </h4>
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+  </div>
 </div>
+
+
+
+
+
+
+
 
 <script
   type="module"
@@ -161,7 +256,12 @@
   src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
 ></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
-
+<style>
+    .center {
+      display: flex;
+      justify-content: center;
+    }
+  </style>
 <!-- <script type="module" src="../static/js/my_chart.js"></script> -->
 <script>
 

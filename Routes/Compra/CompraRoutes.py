@@ -165,7 +165,7 @@ def compra():
             subtotal = 0
             total = 0
             listaCompra_insertar = []
-                         
+            
     return render_template('Compra/compra.html', prodct = productos, form = ventaForm, listaCompra = listaCompra_insertar, total = total, compra = compras)
 
 
