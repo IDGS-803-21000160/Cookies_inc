@@ -55,6 +55,13 @@ def inventariosGuardarMaterial():
 
     if request.method == "POST" and materialF.validate():
 
+        nombrematerial = materialF.nombreMaterial.data.upper()
+        consulta = text("SELECT nombre_mat FROM material WHERE UPPER(nombre_mat) = :nombre_mat AND estatus = 1")
+        material = db.session.execute(consulta, {'nombre_mat': nombrematerial}).fetchone()
+        if material:
+            return redirect(url_for('modulo_materiales.materiales', alerta = 'Material ya existe!', success = False))
+        
+
         costomaterial = float(materialF.costoMaterial.data)
         unidad = materialF.unidadMedidaAgregar.data
 
@@ -95,6 +102,12 @@ def actualizarMaterial():
     material = Material.query.get(id_material)
     materialForm = InventarioMaterialForm(request.form)
     if request.method == "POST" and materialForm.validate():
+
+        nombrematerial = materialForm.nombreMaterial.data.upper()
+        consulta = text("SELECT nombre_mat FROM material WHERE UPPER(nombre_mat) = :nombre_mat AND estatus = 1")
+        material = db.session.execute(consulta, {'nombre_mat': nombrematerial}).fetchone()
+        if material:
+            return redirect(url_for('modulo_materiales.materiales', alerta = 'Material ya existe!', success = False))
 
         costomaterial = float(materialForm.costoMaterial.data)
         unidad = materialForm.unidadMedidaAgregar.data
