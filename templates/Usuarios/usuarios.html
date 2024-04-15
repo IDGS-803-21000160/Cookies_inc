@@ -38,75 +38,81 @@
   <input type="hidden" name="action" id="form-action" value="" />
 
   <div class="container">
-    <h2>Módulo de gestión de Usuarios.</h2>
-    <hr />
+    <div class="titleModule">Módulo de gestión de Usuarios.</div>
     <br />
-    <div class="row">
-      <div class="col-md-6">
-        {{ render_field(form.nombrecompleto,
-        class="form-control",id="form-nombrecompleto", placeholder="Iván Aguayo"
-        ) }} {% if form.nombrecompleto.errors %} {% for error in
-        form.nombrecompleto.errors %}
-        <p style="color: red">*{{ error }}</p>
-        {% endfor %} {% endif %}
+    <div class="containerUser">
+      <div class="row">
+        <div class="col-md-6">
+          {{ render_field(form.nombrecompleto,
+          class="form-control",id="form-nombrecompleto", placeholder="Iván
+          Aguayo" ) }} {% if form.nombrecompleto.errors %} {% for error in
+          form.nombrecompleto.errors %}
+          <p style="color: red">*{{ error }}</p>
+          {% endfor %} {% endif %}
+        </div>
+        <div class="col-md-6">
+          {{ render_field(form.tipousuario,
+          class="form-control",id="form-tipousuario") }} {% if
+          form.tipousuario.errors %} {% for error in form.tipousuario.errors %}
+          <p style="color: red">*{{ error }}</p>
+          {% endfor %} {% endif %}
+        </div>
+        <div class="col-md-6">
+          {{ render_field(form.username,
+          class="form-control",id="form-username",placeholder="ej. IvanBlan27")
+          }} {% if form.username.errors %} {% for error in form.username.errors
+          %}
+          <p style="color: red">*{{ error }}</p>
+          {% endfor %} {% endif %}
+        </div>
+        <div class="col-md-6">
+          {{ render_field(form.password,
+          class="form-control",id="form-password",placeholder="ej. ivan5$B") }}
+          {% if form.password.errors %} {% for error in form.password.errors %}
+          <p style="color: red">*{{ error }}</p>
+          {% endfor %} {% endif %}
+        </div>
       </div>
-      <div class="col-md-6">
-        {{ render_field(form.tipousuario,
-        class="form-control",id="form-tipousuario") }} {% if
-        form.tipousuario.errors %} {% for error in form.tipousuario.errors %}
-        <p style="color: red">*{{ error }}</p>
-        {% endfor %} {% endif %}
-      </div>
-      <div class="col-md-6">
-        {{ render_field(form.username,
-        class="form-control",id="form-username",placeholder="ej. IvanBlan27") }}
-        {% if form.username.errors %} {% for error in form.username.errors %}
-        <p style="color: red">*{{ error }}</p>
-        {% endfor %} {% endif %}
-      </div>
-      <div class="col-md-6">
-        {{ render_field(form.password,
-        class="form-control",id="form-password",placeholder="ej. ivan5$B") }} {%
-        if form.password.errors %} {% for error in form.password.errors %}
-        <p style="color: red">*{{ error }}</p>
-        {% endfor %} {% endif %}
+      <br /><br /><br />
+      <div class="row">
+        <button
+          id="registrar"
+          class="btn"
+          type="submit"
+          name="registrar"
+          value="Registrar"
+        >
+          Insertar
+        </button>
+        <button
+          id="editar"
+          class="btn"
+          type="submit"
+          name="editar"
+          value="Editar"
+          disabled
+        >
+          Guardar Cambios
+        </button>
+        <button
+          id="limpiar"
+          class="btn"
+          type="submit"
+          name="limpiar"
+          value="Limpiar"
+          onclick="limpiarFormulario()"
+        >
+          Limpiar Formulario
+        </button>
       </div>
     </div>
-    <br />
-    <button
-      id="registrar"
-      class="btn"
-      type="submit"
-      name="registrar"
-      value="Registrar"
-    >
-      Insertar
-    </button>
-    <button
-      id="editar"
-      class="btn"
-      type="submit"
-      name="editar"
-      value="Editar"
-      disabled
-    >
-      Guardar Cambios
-    </button>
-    <button
-      id="limpiar"
-      class="btn"
-      type="submit"
-      name="limpiar"
-      value="Limpiar"
-      onclick="limpiarFormulario()"
-    >
-      Limpiar Formulario
-    </button>
   </div>
   <br /><br />
   <div class="tableContainer">
-    <table class="table table-striped">
-      <thead class="thead-dark">
+    <div class="titleTable">Usuarios:</div>
+    <br />
+    <table class="table">
+      <thead class="table-dark">
         <tr>
           <th scope="col"></th>
           <th scope="col">Tipo de Usuario</th>

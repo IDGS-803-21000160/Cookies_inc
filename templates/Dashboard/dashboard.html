@@ -2,7 +2,10 @@
 
 <!--Main-->
 <div class="main">
-  <h4>Bienvenido {{current_user.nombrecompleto}}</h4>
+  <div class="ms-4">
+    <h4>{{current_user.nombrecompleto}}</h4>
+    <label>{{current_user.tipousuario}}</label>
+  </div>
   <!--cards-->
   <div class="cardBox">
     <div class="card">
@@ -132,14 +135,9 @@
           </tr>
         </thead>
         <tbody>
-          {% for pro in produccion %} 
-          {% set color = '#DDFFC7' %} 
-          {% if pro.estado_fecha == 0 %} 
-            {% set color = '#FBFFC7' %} 
-          {% endif %} 
-          {% if pro.estado_fecha == 2 %} 
-            {% set color = '#FFCFC7' %} 
-          {% endif %}
+          {% for pro in produccion %} {% set color = '#DDFFC7' %} {% if
+          pro.estado_fecha == 0 %} {% set color = '#FBFFC7' %} {% endif %} {% if
+          pro.estado_fecha == 2 %} {% set color = '#FFCFC7' %} {% endif %}
           <!-- FBFFC7 -->
           <tr style="background-color: {{ color }};">
             <td>{{ pro.nombre }}</td>
@@ -202,7 +200,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for pro in profe %} 
+          {% for pro in profe %}
           <!-- FBFFC7 -->
           <tr>
             <td>{{ pro.productoProducido }}</td>
@@ -217,32 +215,27 @@
     </div>
     <!-- New Customers -->
     <div class="recentCustomers">
-        <div class="cardHeader">
-          <h2>Costos de produccion</h2>
-        </div>
-        <table>
-          {% for cos in costoProduccion %}
-          <tr>
-            <td><h4>ID: {{cos.idProduccionItem}}</h4></td>
-            <!-- <td><div class="imgBx"><img src="Images/User2.png"></div></td> -->
-            <td>
-              <h4>
-                {{cos.nom}} <br /><span>Costo de produccion: {{cos.costoproduccion}}</span>
-              </h4>
-            </td>
-          </tr>
-          {% endfor %}
-        </table>
+      <div class="cardHeader">
+        <h2>Costos de produccion</h2>
       </div>
+      <table>
+        {% for cos in costoProduccion %}
+        <tr>
+          <td><h4>ID: {{cos.idProduccionItem}}</h4></td>
+          <!-- <td><div class="imgBx"><img src="Images/User2.png"></div></td> -->
+          <td>
+            <h4>
+              {{cos.nom}} <br /><span
+                >Costo de produccion: {{cos.costoproduccion}}</span
+              >
+            </h4>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
   </div>
 </div>
-
-
-
-
-
-
-
 
 <script
   type="module"
@@ -254,11 +247,11 @@
 ></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
 <style>
-    .center {
-      display: flex;
-      justify-content: center;
-    }
-  </style>
+  .center {
+    display: flex;
+    justify-content: center;
+  }
+</style>
 <!-- <script type="module" src="../static/js/my_chart.js"></script> -->
 <script>
 

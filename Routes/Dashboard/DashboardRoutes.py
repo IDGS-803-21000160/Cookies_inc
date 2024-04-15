@@ -147,14 +147,14 @@ def getCards():
     query = """ SELECT count(*) as cantidadVentas FROM venta; """
     cantidadVentas = db.session.execute(text(query)).fetchone()
 
-    query = """ SELECT sum(total_ventas) as totalVentas FROM venta; """
+    query = """ SELECT ROUND(sum(total_ventas), 3) as totalVentas FROM venta; """
     totalVentas = db.session.execute(text(query)).fetchone()
 
     query = """SELECT ifnull(nombre_paq, nombre_producto) AS productoVendido, COUNT(vi.id_ventaitem) AS cantidad_ventas 
     FROM ventaitem vi 
     LEFT JOIN paquete p on p.id_paquete = vi.paqueteid_itm
     left join producto on id_producto = vi.productoid_itm
-    GROUP BY p.nombre_paq,nombre_producto
+    GROUP BY p.nombre_paq, nombre_producto
     ORDER BY cantidad_ventas DESC limit 1;"""
 
     productoVendido = db.session.execute(text(query)).fetchone()
@@ -191,7 +191,7 @@ def getProduccion():
 # ''''''''''''''''''''''''CONSULTAS DE BD''''''''''''''''''''''''''''''''
 
 def getProfeCards():
-   
+
     data = []
 
     query = text(""" select c.id_producto, c.nombre_producto, round((c.costoventa - costoproduccion), 3) utilidad

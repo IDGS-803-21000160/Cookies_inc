@@ -38,7 +38,7 @@ def inventarios():
     IFNULL(nombre_producto, nombre_mat) nombre, 
     COUNT(DISTINCT id_inventario) lotes,
     nombre_tipoInv tipo_inv,
-    SUM(IFNULL(costoproducto, costo_mat)) costo,
+    ROUND(SUM(IFNULL(costoproducto, costo_mat)), 3) costo,
     ROUND(SUM(cantidad_inv), 2) cantidad_inv,
     tipo_inv id_tipoInv
     FROM inventario
@@ -197,6 +197,11 @@ def inventariosGuardarMerma():
     
     if request.method == "POST" and inventarioF.validate():
 
+        cantidadInv = Inventario.query.get(id_inv).cantidad_inv
+
+        if inventarioF.merma.data > cantidadInv:
+            return redirect(url_for('modulo_inventario.inventarios', alerta='Nmms como vas a quitar mas de lo que tienes papito', success= False))
+
         db.session.execute(
                 text("CALL mermaInventario(:id_inv, :merma, :usuariop)"),
                 {"id_inv": id_inv, "merma": inventarioF.merma.data, "usuariop": usuariop}
@@ -237,8 +242,12 @@ def inventariosGuardarSalida():
     inventario = Inventario.query.get(id_inv)
 
     if request.method == "POST" and inventarioF.validate():
+        if inventarioF.cantidad.data > inventario.cantidad_inv:
+            return redirect(url_for('modulo_inventario.inventarios', alerta='No hay suficiente existencia en inventario!', success= False)) 
+        
         inventario.cantidad_inv = inventario.cantidad_inv - inventarioF.cantidad.data
         db.session.commit()
+        
         if inventario.tipostock_inv == 2 or inventario.tipostock_inv == 4:
             return redirect(url_for('modulo_inventario.mermas'))
         else:

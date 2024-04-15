@@ -24,3 +24,44 @@
   background-color: #4a6142;
   color: white;
 }
+
+.titleModule {
+  position: relative;
+  font-weight: 500;
+  font-size: 2.5em;
+  color: #7ca078;
+}
+
+.titleTable {
+  position: relative;
+  font-weight: 500;
+  font-size: 2.3em;
+  color: #7ca078;
+}
+
+.containerUser {
+  background-color: #ffffff;
+  border-radius: 18px;
+  box-shadow: 12px 12px 12px 12px #0f0e0e14;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
+  white-space: normal;
+  width: auto;
+  padding: 20px;
+}
+
+.spaceButton {
+  padding-right: 10px;
+}
+
+.buttons {
+  display: flex;
+}
+
+.btn {
+  margin: 0 10px; /* Espaciado horizontal de 10px a ambos lados del botón */
+}
