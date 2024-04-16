@@ -22,9 +22,9 @@ def proveedor():
             try:
                 newProveedor=Proveedor(nombre=provee_formreg.nombre.data,
                             telefono=provee_formreg.telefono.data,
-                            usuario_registro=request.form.get('idUser'),
+                            usuario_registro=current_user.id_usuario,
                             correo = provee_formreg.correo.data,
-                            dias_visita = provee_formreg.dias_visita.data
+                            dias_visita = provee_formreg.dias_visita.data,
                             )
                 db.session.add(newProveedor)
                 db.session.commit()
