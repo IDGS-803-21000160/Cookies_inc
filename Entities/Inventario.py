@@ -184,3 +184,15 @@ class VistaDetallePaquete(db.Model):
     costopaquete_paq = db.Column(db.Float)
     cantidadproductos_paq = db.Column(db.Integer)
     productos = db.Column(db.JSON) 
+
+class Movimientos (db.Model):
+    __tablename__ = 'movimientos_inventario'
+
+    id_movimientoinventario = db.Column(db.Integer, primary_key=True)
+    usuarioid_movinv = db.Column(db.Integer, db.ForeignKey('usuario.id_usuario'))
+    fecha_movimiento = db.Column(db.DateTime)
+    inventarioid_movinv = db.Column(db.Integer, db.ForeignKey('inventario.id_inventario'))
+    cantidad_movinv = db.Column(db.Float)
+    descripcion_movinv = db.Column(db.String(100))
+    tipomovimiento_movinv = db.Column(db.String(100))
+    

@@ -3,12 +3,13 @@ from flask import  render_template, request, redirect, url_for, flash, current_a
 from sqlalchemy import text
 from flask_login import login_required, current_user
 from Entities.InventarioForm import InventarioForm
-from Entities.Inventario import Material, Inventario
+from Entities.Inventario import Material, Inventario, Movimientos, TipoStock
 from Entities.Inventario import Producto
 
 from Entities.InventarioMermaSalida import InventarioMerma, InventarioSalida
 from Entities.Inventario import db
 from permissions import inventario_required
+from datetime  import datetime
 
 modulo_inventario = Blueprint('modulo_inventario', __name__)
 
@@ -155,9 +156,10 @@ def inventariosGuardarEntrada():
         idmateriaproducto = int(inv)
         cantidad = float(entrada.cantidad.data)
         usuariop = current_user.id_usuario
+        descripcion = entrada.descripcion.data
         db.session.execute(
-                text("CALL entradaInventario(:tipo, :id_materia_producto, :cantidad, :usuariop)"),
-                {"tipo": tipo, "id_materia_producto": idmateriaproducto, "cantidad": cantidad, "usuariop": usuariop}
+                text("CALL entradaInventario(:tipo, :id_materia_producto, :cantidad, :usuariop, :descripcionp)"),
+                {"tipo": tipo, "id_materia_producto": idmateriaproducto, "cantidad": cantidad, "usuariop": usuariop, "descripcionp" : descripcion}
             )
         db.session.commit()
     
@@ -246,6 +248,20 @@ def inventariosGuardarSalida():
             return redirect(url_for('modulo_inventario.inventarios', alerta='No hay suficiente existencia en inventario!', success= False)) 
         
         inventario.cantidad_inv = inventario.cantidad_inv - inventarioF.cantidad.data
+        tipomov = 'SALIDA DE MATERIAL EN STOCK' if inventario.tipo_inv == 1 else 'SALIDA DE PRODUCTO TERMINADO EN STOCK'
+        resultado = db.session.query(Inventario, TipoStock)\
+                      .filter(Inventario.id_inventario == id_inv)\
+                      .join(TipoStock, Inventario.tipostock_inv == TipoStock.id_tipostock)\
+                      .first()
+        movimiento = Movimientos(
+            usuarioid_movinv = current_user.id_usuario,
+            fecha_movimiento = datetime.now(),
+            inventarioid_movinv = int(id_inv),
+            cantidad_movinv = int (inventarioF.cantidad.data),
+            descripcion_movinv = inventarioF.descripcion.data,
+            tipomovimiento_movinv = tipomov + '  ' + str(resultado.TipoStock.nombre_stock)
+        )
+        db.session.add(movimiento)
         db.session.commit()
         
         if inventario.tipostock_inv == 2 or inventario.tipostock_inv == 4:
@@ -283,3 +299,29 @@ def mermas():
 
     return render_template('Inventarios/Mermas/mermas.html', inventario = resultados)
 
+@modulo_inventario.route('/inventario/movimientos', methods=['GET', 'POST'])
+@login_required
+@inventario_required
+@inventario_required
+def movimientos():
+    consulta = text("""
+    SELECT 
+        nombrecompleto responsable
+        , fecha_movimiento fecha
+        , productomaterial
+        , fecha_caducidad caducaLote
+        , cantidad_movinv cantidad
+        , id_inventario lote
+        , descripcion_movinv
+        , tipomovimiento_movinv
+    FROM movimientos_inventario
+        INNER JOIN usuario on id_usuario = usuarioid_movinv
+        INNER JOIN (
+            select id_inventario, ifnull(nombre_mat, nombre_producto) productomaterial, fecha_caducidad 
+            from inventario
+                left join material on material_inv = id_material
+                left join producto on producto_inv = id_producto
+        ) inv on inv.id_inventario = inventarioid_movinv
+    """)
+    movimientos = db.session.execute(consulta)
+    return render_template('Inventarios/Movimientos/movimientos.html', movimientos=movimientos)
