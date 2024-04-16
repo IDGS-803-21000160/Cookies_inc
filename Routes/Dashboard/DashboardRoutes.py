@@ -26,7 +26,10 @@ def dashboard():
         utilidadGalleta = item['utilidadGalleta']
         paqueteVendido = item['paqueteVendido']
         galletaMerma = item['galletaMerma']
-
+        cantidadUtilidad = item['cantidadUtilidad']
+        cantidadMerma = item['cantidadMerma']
+        cantidadVenta = item['cantidadVenta']
+        
     profe = getProveedoresResponsables()
     costoProduccion = getCostoProduccion()
 
@@ -35,7 +38,7 @@ def dashboard():
     ventasPr = get_ventasPr()
     print(ventasPr)
 
-    return render_template("Dashboard/dashboard.html",profe=profe,costoProduccion=costoProduccion,paqueteVendido=paqueteVendido,galletaMerma=galletaMerma,utilidadGalleta=utilidadGalleta, ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
+    return render_template("Dashboard/dashboard.html",cantidadVenta=cantidadVenta,cantidadMerma=cantidadMerma,cantidadUtilidad=cantidadUtilidad,profe=profe,costoProduccion=costoProduccion,paqueteVendido=paqueteVendido,galletaMerma=galletaMerma,utilidadGalleta=utilidadGalleta, ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
 
 def get_ventasPr():
     # Prepare the SQL query to filter by week and sum quantities
@@ -203,7 +206,7 @@ def getProfeCards():
     GROUP BY id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto, costoventa) as c ORDER BY utilidad desc limit 1;""")
     utilidadGalleta = db.session.execute(query).fetchone()
 
-    query = """ SELECT p.nombre_paq AS paqueteVendido, COUNT(vi.id_ventaitem) AS cantidad_ventas 
+    query = """ SELECT p.nombre_paq AS paqueteVendido, sum(vi.cantidad) AS cantidad_ventas 
     FROM ventaitem vi 
     JOIN paqueteitem pi ON vi.paqueteid_itm = pi.id_paqueteitem
     join paquete p on p.id_paquete = pi.paqueteid_itm
@@ -221,8 +224,11 @@ def getProfeCards():
     # Append the results to the data list
     data.append({
         "utilidadGalleta": utilidadGalleta.nombre_producto,
+        "cantidadUtilidad": utilidadGalleta.utilidad,
         "paqueteVendido": paqueteVendido.paqueteVendido,
         "galletaMerma": galletaMerma.nombre,
+        "cantidadMerma": galletaMerma.merma,
+        "cantidadVenta": paqueteVendido.cantidad_ventas,
 
     })
 
@@ -249,7 +255,8 @@ def getProveedoresResponsables():
     return data
 
 def getCostoProduccion():
-    query = """  SELECT pi.id_produccionitem as idProduccionItem, min(p.id_producto), min(p.nombre_producto) as nom, ROUND(sum((costo_mat * (ri.cantidad + ri.cantidad_merma))), 3) costoproduccion, max(pi.fecha_registro) as fecha
+    query = """  SELECT pi.id_produccionitem as idProduccionItem, min(p.id_producto), min(p.nombre_producto) as nom, 
+ROUND(sum(pi.cantidad * pi.costo), 3) as costoproduccion, max(pi.fecha_registro) as fecha
     FROM producto p
 	inner join recetaitem ri on ri.productoid_itm = p.id_producto
 	inner join material m on ri.materialid_itm = m.id_material
