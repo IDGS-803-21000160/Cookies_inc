@@ -82,6 +82,8 @@ def compra():
                             'subtotal': round(subtotal, 2)
                         })
                     productos_a_comprar = productos_a_comprar + 1
+                elif valor < 0:
+                    flash("ingresa nuemero valor valido", "danger")
             
             for i in listaCompra:
                 total = total + float(i['subtotal'])

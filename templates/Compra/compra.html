@@ -1,18 +1,21 @@
 {%extends 'ContenedorMain/contenedorMain.html' %} {%block content %} {% from
 "Macros/inputComponent.html" import input_customVenta %}
 <div>
-  {%with messages = get_flashed_messages(with_categories=true)%} {%if messages%}
-  <br />
-  {%for category, message in messages %}
-  <div class="alert alert-{{ category }}" role="alert">
-    <strong>{{message}}</strong>
-    <div class="justify-content-end">
-      <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
+    {%with messages = get_flashed_messages(with_categories=true)%}
+    {%if messages%}
+    <br />
+    {%for category, message in messages %}
+    <div class="alert alert-{{ category }}" role="alert">
+        <div class="row">
+            <div class="col">
+                <strong>{{message}}</strong>
+            </div>
+            <div class="col-1">
+                <div class="justify-content-end">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
     </div>
   </div>
   {%endfor%} {%endif%} {%endwith%}
