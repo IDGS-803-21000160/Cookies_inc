@@ -24,7 +24,7 @@ def dashboard():
     #CONSULTAS DEL PROFE DE BD IASHNDIOAHSIUFJHOAISDJFIADJSIOFJDS
     for item in profeCardData:
         utilidadGalleta = item['utilidadGalleta']
-        paqueteVendido = item['paqueteVendido']
+        galletaVendido = item['galletaVendido']
         galletaMerma = item['galletaMerma']
         cantidadUtilidad = item['cantidadUtilidad']
         cantidadMerma = item['cantidadMerma']
@@ -38,7 +38,7 @@ def dashboard():
     ventasPr = get_ventasPr()
     print(ventasPr)
 
-    return render_template("Dashboard/dashboard.html",cantidadVenta=cantidadVenta,cantidadMerma=cantidadMerma,cantidadUtilidad=cantidadUtilidad,profe=profe,costoProduccion=costoProduccion,paqueteVendido=paqueteVendido,galletaMerma=galletaMerma,utilidadGalleta=utilidadGalleta, ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
+    return render_template("Dashboard/dashboard.html",cantidadVenta=cantidadVenta,cantidadMerma=cantidadMerma,cantidadUtilidad=cantidadUtilidad,profe=profe,costoProduccion=costoProduccion,galletaVendido=galletaVendido,galletaMerma=galletaMerma,utilidadGalleta=utilidadGalleta, ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
 
 def get_ventasPr():
     # Prepare the SQL query to filter by week and sum quantities
@@ -197,7 +197,7 @@ def getProfeCards():
 
     data = []
 
-    query = text(""" select c.id_producto, c.nombre_producto, round((c.costoventa - costoproduccion), 3) utilidad
+    query = text(""" select c.id_producto, c.nombre_producto, round((c.costoventa - costoproduccion), 2) utilidad
     from (SELECT id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto costoventa, ROUND(sum((costo_mat * (cantidad + cantidad_merma))), 3) costoproduccion,  CONCAT(ROUND(SUM(cantidad), 2), ' g') peso
     FROM producto p
         inner join recetaitem on productoid_itm = id_producto
@@ -206,15 +206,20 @@ def getProfeCards():
     GROUP BY id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto, costoventa) as c ORDER BY utilidad desc limit 1;""")
     utilidadGalleta = db.session.execute(query).fetchone()
 
-    query = """ SELECT p.nombre_paq AS paqueteVendido, sum(vi.cantidad) AS cantidad_ventas 
-    FROM ventaitem vi 
-    JOIN paqueteitem pi ON vi.paqueteid_itm = pi.id_paqueteitem
-    join paquete p on p.id_paquete = pi.paqueteid_itm
-    GROUP BY p.nombre_paq
-    ORDER BY cantidad_ventas DESC limit 1; """
-    paqueteVendido = db.session.execute(text(query)).fetchone()
+    query = """ select p.nombre_producto as nombre, c.productoID as productoID, c.cantidad as cantidad
+    from producto p join (select productoID, sum(cantidad) as cantidad from (select vi.productoid_itm as productoID, sum(vi.cantidad) as cantidad
+    from ventaitem vi
+    join producto p on vi.productoid_itm = p.id_producto
+    group by vi.productoid_itm
+    union
+    SELECT pi.productoid_itm as productoID, sum(pi.cantidadproducto_itm*vi.cantidad) as cantidad
+    FROM ventaitem vi
+    join paquete p on p.id_paquete = vi.paqueteid_itm
+    join paqueteitem pi on pi.paqueteid_itm = p.id_paquete
+    GROUP BY pi.productoid_itm) as ventas group by productoID order by cantidad desc limit 1) c on c.productoID = p.id_producto;"""
+    GalletaVendida = db.session.execute(text(query)).fetchone()
 
-    query = """ select p.nombre_producto as nombre, p.alias, sum(ri.cantidad_merma) as merma
+    query = """ select p.nombre_producto as nombre, p.alias, round(sum(ri.cantidad_merma),2) as merma
     from producto p 
     join recetaitem ri on p.id_producto = ri.productoid_itm
     group by ri.productoid_itm
@@ -225,10 +230,10 @@ def getProfeCards():
     data.append({
         "utilidadGalleta": utilidadGalleta.nombre_producto,
         "cantidadUtilidad": utilidadGalleta.utilidad,
-        "paqueteVendido": paqueteVendido.paqueteVendido,
+        "galletaVendido": GalletaVendida.nombre,
         "galletaMerma": galletaMerma.nombre,
         "cantidadMerma": galletaMerma.merma,
-        "cantidadVenta": paqueteVendido.cantidad_ventas,
+        "cantidadVenta": GalletaVendida.cantidad,
 
     })
 

@@ -340,7 +340,7 @@ def devolverMerma():
     id_inventario,
     IFNULL( nombre_producto, nombre_mat ) nombre,
     fecha_caducidad,
-    cantidad_inv,
+    cantidad_inv
     FROM inventario
         INNER JOIN tipostock on id_tipostock = tipostock_inv
         LEFT JOIN producto on id_producto = producto_inv
