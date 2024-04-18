@@ -20,6 +20,12 @@ class Config(object):
     SESSION_COOKIE_SECURE = True
 
 class DevelopmentConfig(Config):
+
+    # print(decrypted_DB_USER)
+    # print(decrypted_DB_PASS)
+    # print(decrypted_DB_HOST)
+    # print(decrypted_DB_NAME)
+
     DEBUG = True
     DB_USER = os.environ.get('DB_USER', decrypted_DB_USER)
     DB_PASS = os.environ.get('DB_PASS', decrypted_DB_PASS)

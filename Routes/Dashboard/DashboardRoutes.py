@@ -29,6 +29,7 @@ def dashboard():
         cantidadUtilidad = item['cantidadUtilidad']
         cantidadMerma = item['cantidadMerma']
         cantidadVenta = item['cantidadVenta']
+        costo = item['costo']
         
     profe = getProveedoresResponsables()
     costoProduccion = getCostoProduccion()
@@ -38,7 +39,7 @@ def dashboard():
     ventasPr = get_ventasPr()
     print(ventasPr)
 
-    return render_template("Dashboard/dashboard.html",cantidadVenta=cantidadVenta,cantidadMerma=cantidadMerma,cantidadUtilidad=cantidadUtilidad,profe=profe,costoProduccion=costoProduccion,galletaVendido=galletaVendido,galletaMerma=galletaMerma,utilidadGalleta=utilidadGalleta, ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
+    return render_template("Dashboard/dashboard.html",cantidadVenta=cantidadVenta,cantidadMerma=cantidadMerma,cantidadUtilidad=cantidadUtilidad,profe=profe,costoProduccion=costoProduccion,galletaVendido=galletaVendido,galletaMerma=galletaMerma,utilidadGalleta=utilidadGalleta, ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas, costo=costo)
 
 def get_ventasPr():
     # Prepare the SQL query to filter by week and sum quantities
@@ -107,14 +108,24 @@ def getVentasAnio2():
 
 def getVentasAnio():
     query = text("""
+<<<<<<< HEAD
         SELECT c.nombre_cliente AS Cliente_NOM,
+=======
+        SELECT nombre_cliente AS Cliente_ID,
+>>>>>>> bca8e61a4a7832e29e8332b72e2e4e319e423bc8
             folio_venta AS Folio_Venta,
             fecha_venta AS Fecha_Venta,
             id_venta AS Id_Venta,
             total_ventas AS Total_Venta
+<<<<<<< HEAD
         FROM venta v
         join cliente c on v.cliente_venta = c.id_cliente
         ORDER BY v.fecha_registro DESC
+=======
+        FROM venta
+        INNER JOIN cliente on id_cliente = cliente_venta
+        ORDER BY venta.fecha_registro DESC
+>>>>>>> bca8e61a4a7832e29e8332b72e2e4e319e423bc8
         LIMIT 6;
     """)
     # Ejecutar la consulta
@@ -220,17 +231,18 @@ def getProfeCards():
     GROUP BY pi.productoid_itm) as ventas group by productoID order by cantidad desc limit 1) c on c.productoID = p.id_producto;"""
     GalletaVendida = db.session.execute(text(query)).fetchone()
 
-    # query = """ select p.nombre_producto as nombre, p.alias, round(sum(ri.cantidad_merma),2) as merma
-    # from producto p 
-    # join recetaitem ri on p.id_producto = ri.productoid_itm
-    # group by ri.productoid_itm
-    # order by merma desc; """
-    query = """ select min(p.nombre_producto) as nombre, sum(inv.cantidad_inv) as merma
-    from inventario inv
-    join producto p on inv.producto_inv = p.id_producto
-    where inv.tipostock_inv in (2,3,4) and inv.producto_inv is not null and inv.estatus = 1
-    group by producto_inv order by 2 desc;"""
-    
+    query = """ SELECT 
+        productoid_itm
+        , nombre_producto nombre
+        , SUM(costo_mat * cantidad_merma) merma
+        , costoproducto costo
+        FROM producto
+            INNER JOIN (  
+                SELECT productoid_itm, materialid_itm, cantidad_merma FROM recetaitem 
+            ) receta on productoid_itm = id_producto
+            INNER JOIN material on id_material = receta.materialid_itm
+        GROUP BY nombre_producto, productoid_itm
+        ORDER BY merma DESC LIMIT 1; """
     galletaMerma = db.session.execute(text(query)).fetchone()
 
     # Append the results to the data list
@@ -241,7 +253,7 @@ def getProfeCards():
         "galletaMerma": galletaMerma.nombre,
         "cantidadMerma": galletaMerma.merma,
         "cantidadVenta": GalletaVendida.cantidad,
-
+        "costo" : galletaMerma.costo
     })
 
     return data

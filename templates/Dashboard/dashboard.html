@@ -76,8 +76,13 @@
       <table>
         <thead>
           <tr>
+<<<<<<< HEAD
             <td>VentaID</td>
             <td>Cliente Nombre</td>
+=======
+            <td>N° Venta</td>
+            <td>Cliente</td>
+>>>>>>> bca8e61a4a7832e29e8332b72e2e4e319e423bc8
             <td>Folio</td>
             <td>Fecha</td>
             <td>Total</td>
@@ -155,8 +160,8 @@
   <div class="cardBox center">
     <div class="card">
       <div>
-        <div class="numbers">${{utilidadGalleta}} </div>
-        <div class="cardName">Galleta Con Mas utilidad: ${{cantidadUtilidad}} Por Galleta</div>
+        <div class="numbers">{{utilidadGalleta}} </div>
+        <div class="cardName">Galleta Con Mas utilidad: ${{cantidadUtilidad}} MXN. Por Galleta</div>
       </div>
       <div class="iconBx">
         <ion-icon name="cash-outline"></ion-icon>
@@ -173,8 +178,20 @@
     </div>
     <div class="card">
       <div>
+<<<<<<< HEAD
         <div class="numbers">{{galletaMerma}}</div>
         <div class="cardName">Galleta Con Mas Merma: {{cantidadMerma}} Galletas En Merma</div>
+=======
+        <div class="numbers col-md-12">
+          <div class="col-md-11">
+            {{galletaMerma}} valor unitario
+          </div>
+          <div class="col-md-3">
+            $ {{costo}}
+          </div>
+        </div>
+        <div class="cardName">Galleta Con Mas Merma: ${{cantidadMerma}} MXN. Por Galleta</div>
+>>>>>>> bca8e61a4a7832e29e8332b72e2e4e319e423bc8
       </div>
       <div class="iconBx">
         <ion-icon name="trending-down-outline"></ion-icon>
