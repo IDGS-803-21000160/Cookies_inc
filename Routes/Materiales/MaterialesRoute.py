@@ -104,9 +104,9 @@ def actualizarMaterial():
     if request.method == "POST" and materialForm.validate():
 
         nombrematerial = materialForm.nombreMaterial.data.upper()
-        consulta = text("SELECT nombre_mat FROM material WHERE UPPER(nombre_mat) = :nombre_mat AND estatus = 1")
-        material = db.session.execute(consulta, {'nombre_mat': nombrematerial}).fetchone()
-        if material:
+        consulta = text("SELECT nombre_mat FROM material WHERE UPPER(nombre_mat) = :nombre_mat AND estatus = 1 and id_material != :id_material")
+        materialexiste = db.session.execute(consulta, {'nombre_mat': nombrematerial, 'id_material' : id_material}).fetchone()
+        if materialexiste:
             return redirect(url_for('modulo_materiales.materiales', alerta = 'Material ya existe!', success = False))
 
         costomaterial = float(materialForm.costoMaterial.data)
@@ -118,7 +118,7 @@ def actualizarMaterial():
                 unidad = 'g'
             else:
                 unidad = 'ml'
-        
+        Material 
         material.nombre_mat = materialForm.nombreMaterial.data
         material.dias_caducidad = materialForm.diasCaducidad.data
         material.unidad_medida = unidad

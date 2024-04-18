@@ -108,24 +108,14 @@ def getVentasAnio2():
 
 def getVentasAnio():
     query = text("""
-<<<<<<< HEAD
-        SELECT c.nombre_cliente AS Cliente_NOM,
-=======
         SELECT nombre_cliente AS Cliente_ID,
->>>>>>> bca8e61a4a7832e29e8332b72e2e4e319e423bc8
             folio_venta AS Folio_Venta,
             fecha_venta AS Fecha_Venta,
             id_venta AS Id_Venta,
             total_ventas AS Total_Venta
-<<<<<<< HEAD
-        FROM venta v
-        join cliente c on v.cliente_venta = c.id_cliente
-        ORDER BY v.fecha_registro DESC
-=======
         FROM venta
         INNER JOIN cliente on id_cliente = cliente_venta
         ORDER BY venta.fecha_registro DESC
->>>>>>> bca8e61a4a7832e29e8332b72e2e4e319e423bc8
         LIMIT 6;
     """)
     # Ejecutar la consulta
@@ -216,6 +206,7 @@ def getProfeCards():
         inner join material on materialid_itm = id_material
     WHERE p.estatus = 1 and recetaitem.estatus = 1
     GROUP BY id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto, costoventa) as c ORDER BY utilidad desc limit 1;""")
+    
     utilidadGalleta = db.session.execute(query).fetchone()
 
     query = """ select p.nombre_producto as nombre, c.productoID as productoID, c.cantidad as cantidad
@@ -232,17 +223,13 @@ def getProfeCards():
     GalletaVendida = db.session.execute(text(query)).fetchone()
 
     query = """ SELECT 
-        productoid_itm
-        , nombre_producto nombre
-        , SUM(costo_mat * cantidad_merma) merma
-        , costoproducto costo
-        FROM producto
-            INNER JOIN (  
-                SELECT productoid_itm, materialid_itm, cantidad_merma FROM recetaitem 
-            ) receta on productoid_itm = id_producto
-            INNER JOIN material on id_material = receta.materialid_itm
-        GROUP BY nombre_producto, productoid_itm
-        ORDER BY merma DESC LIMIT 1; """
+	nombre_producto nombre, cantidad_inv merma, (SUM( cantidad_inv ) * SUM(costoproducto)) costo
+    FROM inventario 
+        INNER JOIN producto on id_producto = producto_inv
+    WHERE tipo_inv = 2 and tipostock_inv in ( 2, 4 )
+    GROUP BY nombre_producto, cantidad_inv
+    ORDER BY 3 DESC LIMIT 1;
+    """
     galletaMerma = db.session.execute(text(query)).fetchone()
 
     # Append the results to the data list
