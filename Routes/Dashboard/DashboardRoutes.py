@@ -107,13 +107,14 @@ def getVentasAnio2():
 
 def getVentasAnio():
     query = text("""
-        SELECT cliente_venta AS Cliente_ID,
+        SELECT c.nombre_cliente AS Cliente_NOM,
             folio_venta AS Folio_Venta,
             fecha_venta AS Fecha_Venta,
             id_venta AS Id_Venta,
             total_ventas AS Total_Venta
-        FROM venta
-        ORDER BY fecha_registro DESC
+        FROM venta v
+        join cliente c on v.cliente_venta = c.id_cliente
+        ORDER BY v.fecha_registro DESC
         LIMIT 6;
     """)
     # Ejecutar la consulta
@@ -174,7 +175,7 @@ def getCards():
     return data
 
 def getProduccion():
-    query = """  SELECT prod.nombre_producto as nombre, pi.costo as costo, pi.costo as costo, p.fecha_inicio as fechaInicio,
+    query = """  SELECT prod.nombre_producto as nombre, round(p.costo_total,2) as costoTotal, pi.costo as costo, p.fecha_inicio as fechaInicio,
     CASE 
         WHEN pi.estatus = 0 THEN 'Cancelado'
         ELSE COALESCE(p.fecha_fin, 'En espera')
@@ -219,11 +220,17 @@ def getProfeCards():
     GROUP BY pi.productoid_itm) as ventas group by productoID order by cantidad desc limit 1) c on c.productoID = p.id_producto;"""
     GalletaVendida = db.session.execute(text(query)).fetchone()
 
-    query = """ select p.nombre_producto as nombre, p.alias, round(sum(ri.cantidad_merma),2) as merma
-    from producto p 
-    join recetaitem ri on p.id_producto = ri.productoid_itm
-    group by ri.productoid_itm
-    order by merma desc; """
+    # query = """ select p.nombre_producto as nombre, p.alias, round(sum(ri.cantidad_merma),2) as merma
+    # from producto p 
+    # join recetaitem ri on p.id_producto = ri.productoid_itm
+    # group by ri.productoid_itm
+    # order by merma desc; """
+    query = """ select min(p.nombre_producto) as nombre, sum(inv.cantidad_inv) as merma
+    from inventario inv
+    join producto p on inv.producto_inv = p.id_producto
+    where inv.tipostock_inv in (2,3,4) and inv.producto_inv is not null and inv.estatus = 1
+    group by producto_inv order by 2 desc;"""
+    
     galletaMerma = db.session.execute(text(query)).fetchone()
 
     # Append the results to the data list

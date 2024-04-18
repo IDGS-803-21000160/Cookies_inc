@@ -29,7 +29,7 @@
     <div class="card">
       <div>
         <div class="numbers">{{productoVendido}}</div>
-        <div class="cardName">Mas vendida</div>
+        <div class="cardName">Producto Mas vendido</div>
       </div>
       <div class="iconBx">
         <ion-icon name="analytics-outline"></ion-icon>
@@ -77,7 +77,7 @@
         <thead>
           <tr>
             <td>VentaID</td>
-            <td>ClienteID</td>
+            <td>Cliente Nombre</td>
             <td>Folio</td>
             <td>Fecha</td>
             <td>Total</td>
@@ -87,7 +87,7 @@
           {% for venta in ventas %}
           <tr>
             <td>{{ venta.Id_Venta }}</td>
-            <td>{{ venta.Cliente_ID }}</td>
+            <td>{{ venta.Cliente_NOM }}</td>
             <td>{{ venta.Folio_Venta }}</td>
             <td>{{ venta.Fecha_Venta }}</td>
             <td>{{ venta.Total_Venta }}</td>
@@ -129,7 +129,7 @@
         <thead>
           <tr>
             <td>Nombre Producto</td>
-            <td>Costo Producto</td>
+            <td>Costo De Produccion Paquete</td>
             <td>Fecha de inicio de produccion</td>
             <td>Fecha de fin de produccion</td>
           </tr>
@@ -141,7 +141,7 @@
           <!-- FBFFC7 -->
           <tr style="background-color: {{ color }};">
             <td>{{ pro.nombre }}</td>
-            <td>{{ pro.costo }}</td>
+            <td>${{ pro.costoTotal }}</td>
             <td>{{ pro.fechaInicio }}</td>
             <td>{{ pro.fechaFin }}</td>
           </tr>
@@ -174,7 +174,7 @@
     <div class="card">
       <div>
         <div class="numbers">{{galletaMerma}}</div>
-        <div class="cardName">Galleta Con Mas Merma: ${{cantidadMerma}} Por Galleta</div>
+        <div class="cardName">Galleta Con Mas Merma: {{cantidadMerma}} Galletas En Merma</div>
       </div>
       <div class="iconBx">
         <ion-icon name="trending-down-outline"></ion-icon>
