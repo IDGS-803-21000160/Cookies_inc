@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="../../static/sweetalert2/sweetalert2.min.css" />
 
 {% if alerta %}
-    {% if success == False %}
+    {% if success == 'False' %}
     <script>
         Swal.fire({ icon: 'error', title: '¡Error!', text: '{{ alerta }}' }).then(function() {
             let url = new URL(window.location.href);

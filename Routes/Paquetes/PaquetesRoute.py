@@ -266,9 +266,23 @@ def actualizarPaquete():
         return render_template('Paquetes/modificarPaquete.html', form=paqueteF, productosPaquete=productosPaquete, paquete=paquete, precio = precioSugerido, peso = pesoTotal)
     
     elif request.form['action'] == 'guardar_paquete':
+
+        consulta3 = text(""" SELECT nombre_paq FROM paquete WHERE id_paquete != :id_paquete and UPPER(nombre_paq) = :nombre_paq """)
+        paqueteRepetido = db.session.execute(consulta3, {'id_paquete': id_paquete, 'nombre_paq' : paqueteF.nombrePaquete.data.upper()}).fetchone() 
+
         # Lógica para guardar el producto completo
         if productosPaquete == []:
-            return render_template('Paquetes/modificarPaquete.html', form=paqueteF, productosPaquete=productosPaquete, paquete=paquete)
+            return render_template('Paquetes/modificarPaquete.html', form=paqueteF, productosPaquete=productosPaquete, paquete=paquete, alerta = 'Debe agregar al menos un producto al paquete', precio = precioSugerido, peso = pesoTotal, success = 'False')
+        
+        elif paqueteF.nombrePaquete.data == '' or paqueteF.costoPaquete.data == '':
+            return render_template('Paquetes/modificarPaquete.html', form=paqueteF, productosPaquete=productosPaquete, paquete=paquete, alerta = 'Debe llenar todos los campos', precio = precioSugerido, peso = pesoTotal, success = 'False')
+        
+        elif paqueteRepetido:
+            return render_template('Paquetes/modificarPaquete.html', form=paqueteF, productosPaquete=productosPaquete, paquete=paquete, alerta = 'El nombre del paquete ya existe', precio = precioSugerido, peso = pesoTotal, success = 'False')
+    
+        elif paqueteF.costoPaquete.data <= 0:
+            return render_template('Paquetes/modificarPaquete.html', form=paqueteF, productosPaquete=productosPaquete, paquete=paquete, alerta = 'El costo del paquete debe ser mayor a 0', precio = precioSugerido, peso = pesoTotal, success = 'False')
+
         else: 
             paquete.nombre_paq = paqueteF.nombrePaquete.data
             paquete.costopaquete_paq = paqueteF.costoPaquete.data

@@ -223,7 +223,7 @@ def getProfeCards():
     GalletaVendida = db.session.execute(text(query)).fetchone()
 
     query = """ SELECT 
-	nombre_producto nombre, cantidad_inv merma, (SUM( cantidad_inv ) * SUM(costoproducto)) costo
+    nombre_producto nombre, cantidad_inv merma, (SUM( cantidad_inv ) * SUM(costoproducto)) costo
     FROM inventario 
         INNER JOIN producto on id_producto = producto_inv
     WHERE tipo_inv = 2 and tipostock_inv in ( 2, 4 )
