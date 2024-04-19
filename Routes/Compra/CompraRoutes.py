@@ -219,7 +219,13 @@ def verDetalleCompra():
                 c.fecha_comp,
                 c.cantidad,
                 COUNT(1) AS cantProducto,
-                GROUP_CONCAT(m.nombre_mat SEPARATOR ' | ') AS nomProducto
+                GROUP_CONCAT('Nombre Mat: ',m.nombre_mat,' - Cantidad: ', ct.cantidad,
+                    CASE
+                        WHEN m.unidad_medida = 'g' or m.unidad_medida = 'ml'  THEN CONCAT(' - Precio $', (m.costo_mat * 1000))
+                        ELSE CONCAT(' - Precio $', m.costo_mat)
+                    END
+                SEPARATOR ' | ') AS nomProducto,
+                c.total
             FROM compra c
             LEFT JOIN compraitem ct ON c.id_compra = ct.compra_itm
             LEFT JOIN material m ON ct.materialid_itm = m.id_material
@@ -240,6 +246,7 @@ def verDetalleCompra():
             fecha_compra = row.fecha_comp
             cantidad = row.cantidad
             nombres_productos = row.nomProducto
+            total = row.total
 
             datelleVenta = {
                 'id_compra': id_compra,
@@ -249,7 +256,8 @@ def verDetalleCompra():
                 'nombre_usuario': nombre_usuario,
                 'fecha_compra': fecha_compra,
                 'cantidad': cantidad,
-                'nombres_productos': nombres_productos
+                'nombres_productos': nombres_productos,
+                'total': total
             }
             # print(f"ID Compra: {id_compra}")
             # print(f"Proveedor: {nombre_proveedor} - Teléfono: {telefono_proveedor}")
