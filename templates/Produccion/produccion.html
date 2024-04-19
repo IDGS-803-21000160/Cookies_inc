@@ -30,16 +30,17 @@
           <td>{{ pro.cantidad }}</td>
           <td>{{ pro.cuantas }}</td>
 
+          <!-- <td>
+            <input type="number" id="cuantas_{{ counter.value }}" class="form-control cantidad" placeholder="Cantidad" 
+              name="cuantas_{{ counter.value }}" min="0" max="{{pro.cuantas}}"/>
+          </td> -->
           <td>
-            <input
-              type="number"
-              id="cuantas_{{ counter.value }}"
-              class="form-control cantidad"
-              placeholder="Cantidad"
-              name="cuantas_{{ counter.value }}"
-              min="0"
-              max="{{pro.cuantas}}"
-            />
+            <select name="cuantas_{{ counter.value }}" id="cuantas_{{ counter.value }}" class="form-control cantidad"  min="0" max="{{pro.cuantas}}">
+                <option value="" disabled selected>cantidad</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+            </select>
           </td>
           <td>
             <button
@@ -62,10 +63,10 @@
 
 <script>
   // Get all input elements with class "cantidad"
-  var cantidadInputs = document.querySelectorAll(".cantidad");
+  var cantidadSelects = document.querySelectorAll("select.cantidad");
   // Add event listener for input event to each input element
-  cantidadInputs.forEach(function (cantidadInput) {
-    cantidadInput.addEventListener("input", function (event) {
+  cantidadSelects.forEach(function (cantidadSelect) {
+    cantidadSelect.addEventListener("change", function (event) {
       // Get the entered value
       var enteredValue = parseInt(event.target.value);
       // Get the maximum allowed value from the corresponding "cuantas" attribute
@@ -77,7 +78,7 @@
         // Prevent the default behavior of input event (don't update the input value)
         event.preventDefault();
         // Display a Swal alert
-        event.target.value = "";
+        event.target.selectedIndex = 0;
         Swal.fire({
           title: "Error",
           text: "La cantidad debe ser menor o igual a " + maxAllowedValue,
@@ -89,11 +90,25 @@
   });
 
   function solicitarProduccion(idButton, idProducto, contador) {
-    //Desactivar el boton
-    document.getElementById(idButton).disabled = true;
-    document.getElementById("counter").value = contador;
-    document.getElementById("idProHidden").value = idProducto; // Establecer el valor del campo oculto con idPro
-    document.getElementById("produccionForm").submit(); // Enviar el formulario
+    // Obtener el valor seleccionado del select
+    var selectElement = document.getElementById("cuantas_" + contador);
+    var selectedValue = selectElement.value;
+    // Validar si se ha seleccionado un valor
+    if (selectedValue === "") {
+      // Si no se ha seleccionado ningún valor, mostrar una alerta y no enviar el formulario
+      Swal.fire({
+          title: "Error",
+          text: "Selecciona una cantidad",
+          icon: "error",
+          button: "Aceptar",
+        });
+    } else {
+      //Desactivar el boton
+      document.getElementById(idButton).disabled = true;
+      document.getElementById("counter").value = contador;
+      document.getElementById("idProHidden").value = idProducto; // Establecer el valor del campo oculto con idPro
+      document.getElementById("produccionForm").submit(); // Enviar el formulario
+    }
   }
 </script>
 
