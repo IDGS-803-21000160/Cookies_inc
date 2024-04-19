@@ -162,7 +162,6 @@ class Proveedor(db.Model):
     telefono = db.Column(db.Numeric(13, 0), nullable=True)
     correo = db.Column(db.String(50), nullable=True)
     dias_visita = db.Column(db.String(50), nullable=True)
-    db.Column(db.String(1), default='1')   # BIT se maneja como Boolean en SQLAlchemy
     usuario_registro = db.Column(db.Integer, nullable=True)
     fecha_registro = db.Column(db.DateTime, nullable=True, default=datetime.now)
     estatus = db.Column(db.String(1), default='1')
@@ -184,3 +183,15 @@ class VistaDetallePaquete(db.Model):
     costopaquete_paq = db.Column(db.Float)
     cantidadproductos_paq = db.Column(db.Integer)
     productos = db.Column(db.JSON) 
+
+class Movimientos (db.Model):
+    __tablename__ = 'movimientos_inventario'
+
+    id_movimientoinventario = db.Column(db.Integer, primary_key=True)
+    usuarioid_movinv = db.Column(db.Integer, db.ForeignKey('usuario.id_usuario'))
+    fecha_movimiento = db.Column(db.DateTime)
+    inventarioid_movinv = db.Column(db.Integer, db.ForeignKey('inventario.id_inventario'))
+    cantidad_movinv = db.Column(db.Float)
+    descripcion_movinv = db.Column(db.String(100))
+    tipomovimiento_movinv = db.Column(db.String(100))
+    

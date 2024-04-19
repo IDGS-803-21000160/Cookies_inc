@@ -3,12 +3,13 @@ from flask import  render_template, request, redirect, url_for, flash, current_a
 from sqlalchemy import text
 from flask_login import login_required, current_user
 from Entities.InventarioForm import InventarioForm
-from Entities.Inventario import Material, Inventario
+from Entities.Inventario import Material, Inventario, Movimientos, TipoStock
 from Entities.Inventario import Producto
 
 from Entities.InventarioMermaSalida import InventarioMerma, InventarioSalida
 from Entities.Inventario import db
 from permissions import inventario_required
+from datetime  import datetime
 
 modulo_inventario = Blueprint('modulo_inventario', __name__)
 
@@ -155,9 +156,10 @@ def inventariosGuardarEntrada():
         idmateriaproducto = int(inv)
         cantidad = float(entrada.cantidad.data)
         usuariop = current_user.id_usuario
+        descripcion = entrada.descripcion.data
         db.session.execute(
-                text("CALL entradaInventario(:tipo, :id_materia_producto, :cantidad, :usuariop)"),
-                {"tipo": tipo, "id_materia_producto": idmateriaproducto, "cantidad": cantidad, "usuariop": usuariop}
+                text("CALL entradaInventario(:tipo, :id_materia_producto, :cantidad, :usuariop, :descripcionp)"),
+                {"tipo": tipo, "id_materia_producto": idmateriaproducto, "cantidad": cantidad, "usuariop": usuariop, "descripcionp" : descripcion}
             )
         db.session.commit()
     
@@ -195,7 +197,7 @@ def inventariosGuardarMerma():
     id_inv = request.form['id_inventario']
     usuariop = current_user.id_usuario
     
-    if request.method == "POST" and inventarioF.validate():
+    if request.method == "POST" and inventarioF.merma.data > 0:
 
         cantidadInv = Inventario.query.get(id_inv).cantidad_inv
 
@@ -208,6 +210,7 @@ def inventariosGuardarMerma():
             )
         db.session.commit()
         return redirect(url_for('modulo_inventario.inventarios', alerta='Se ha añadido merma correctamente!', success= True))
+    return redirect(url_for('modulo_inventario.inventarios', alerta='Error al añadir merma!', success= False))
 
 
 @modulo_inventario.route('/inventario/salidaInventario', methods=["POST"])
@@ -246,6 +249,20 @@ def inventariosGuardarSalida():
             return redirect(url_for('modulo_inventario.inventarios', alerta='No hay suficiente existencia en inventario!', success= False)) 
         
         inventario.cantidad_inv = inventario.cantidad_inv - inventarioF.cantidad.data
+        tipomov = 'SALIDA DE MATERIAL EN STOCK' if inventario.tipo_inv == 1 else 'SALIDA DE PRODUCTO TERMINADO EN STOCK'
+        resultado = db.session.query(Inventario, TipoStock)\
+                      .filter(Inventario.id_inventario == id_inv)\
+                      .join(TipoStock, Inventario.tipostock_inv == TipoStock.id_tipostock)\
+                      .first()
+        movimiento = Movimientos(
+            usuarioid_movinv = current_user.id_usuario,
+            fecha_movimiento = datetime.now(),
+            inventarioid_movinv = int(id_inv),
+            cantidad_movinv = int (inventarioF.cantidad.data),
+            descripcion_movinv = inventarioF.descripcion.data,
+            tipomovimiento_movinv = tipomov + '  ' + str(resultado.TipoStock.nombre_stock)
+        )
+        db.session.add(movimiento)
         db.session.commit()
         
         if inventario.tipostock_inv == 2 or inventario.tipostock_inv == 4:
@@ -283,3 +300,74 @@ def mermas():
 
     return render_template('Inventarios/Mermas/mermas.html', inventario = resultados)
 
+@modulo_inventario.route('/inventario/movimientos', methods=['GET', 'POST'])
+@login_required
+@inventario_required
+@inventario_required
+def movimientos():
+    consulta = text("""
+    SELECT 
+        nombrecompleto responsable
+        , fecha_movimiento fecha
+        , productomaterial
+        , fecha_caducidad caducaLote
+        , cantidad_movinv cantidad
+        , id_inventario lote
+        , descripcion_movinv
+        , tipomovimiento_movinv
+    FROM movimientos_inventario
+        INNER JOIN usuario on id_usuario = usuarioid_movinv
+        INNER JOIN (
+            select id_inventario, ifnull(nombre_mat, nombre_producto) productomaterial, fecha_caducidad 
+            from inventario
+                left join material on material_inv = id_material
+                left join producto on producto_inv = id_producto
+        ) inv on inv.id_inventario = inventarioid_movinv
+    """)
+    movimientos = db.session.execute(consulta)
+    return render_template('Inventarios/Movimientos/movimientos.html', movimientos=movimientos)
+
+@modulo_inventario.route('/inventario/devolverMerma', methods=['POST'])
+@login_required
+@inventario_required
+@inventario_required
+def devolverMerma():
+    id_inv = request.form['id_inv']
+    form = InventarioSalida(request.form)
+
+    consulta = text("""
+    SELECT
+    id_inventario,
+    IFNULL( nombre_producto, nombre_mat ) nombre,
+    fecha_caducidad,
+    cantidad_inv
+    FROM inventario
+        INNER JOIN tipostock on id_tipostock = tipostock_inv
+        LEFT JOIN producto on id_producto = producto_inv
+        LEFT JOIN material on id_material = material_inv
+        INNER JOIN tipoinventario on id_tipoInventario = tipo_inv
+    WHERE id_inventario = :id_inv;
+    """)
+    resultados = db.session.execute(consulta.params(id_inv=id_inv)).fetchone()
+    return render_template('Inventarios/Mermas/confirmarDevolucionMerma.html', resultados=resultados, form = form)
+
+@modulo_inventario.route('/inventario/guardarDevolucionMerma', methods=['POST'])
+@login_required
+@inventario_required
+@inventario_required
+def guardarDevolucionMerma():
+    id_inv = request.form['id_inventario']
+    form = InventarioSalida(request.form)
+
+    if request.method == "POST" and form.validate():
+        cantidad = form.cantidad.data
+        descripcion = form.descripcion.data
+        usuariop = current_user.id_usuario
+
+        db.session.execute(
+            text("CALL devolucionMerma(:idinv, :cantidadp, :usuariop, :descripcionp)"),
+            {"idinv": id_inv, "cantidadp": cantidad, "usuariop": usuariop, "descripcionp": descripcion}
+        )
+        db.session.commit()
+        return redirect(url_for('modulo_inventario.mermas', alerta='Devolución de merma realizada con éxito', success= 'True'))
+    return redirect(url_for('modulo_inventario.mermas', alerta='Error al realizar la devolución', success= 'False'))

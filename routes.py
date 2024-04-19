@@ -3,7 +3,6 @@ from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import text, create_engine
 from flask_cors import CORS, cross_origin
 
-
 #Impiortacion del modelo de formulario de material
 
 from Entities.Inventario import db,Usuario

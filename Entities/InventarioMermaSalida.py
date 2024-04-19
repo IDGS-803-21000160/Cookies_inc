@@ -5,9 +5,13 @@ from wtforms import validators
 class InventarioMerma (Form):
 
     merma = FloatField("Ingresa la cantidad a enviar a merma", [validators.DataRequired(message= 'Debes ingresar una cantidad'),
-                                        validators.number_range(min=1, message='Debe ser una cantidad mayor a 0')])
+                                        validators.number_range(min = 0.0000001, message='Debe ser una cantidad mayor a 0')])
+    
+    descripcion = StringField("Motivo", [validators.DataRequired(message= 'Debes ingresar un motivo')])
 
 class InventarioSalida (Form):
 
-    cantidad = IntegerField("Cantidad", [validators.DataRequired(message= 'Debes ingresar una cantidad'),
-                                        validators.number_range(min=1, message='Debe ser una cantidad mayor a 0')])
+    cantidad = FloatField("Cantidad", [validators.DataRequired(message= 'Debes ingresar una cantidad'),
+                                        validators.number_range(min = 0.0000001, message='Debe ser una cantidad mayor a 0')])
+    
+    descripcion = StringField("Motivo", [validators.DataRequired(message= 'Debes ingresar un motivo')])

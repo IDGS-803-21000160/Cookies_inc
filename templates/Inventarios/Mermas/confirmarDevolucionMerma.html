@@ -13,11 +13,11 @@
     {% from "Macros/inputComponent.html" import search_input, input_custom %}
     {% from "Macros/botonComponent.html" import custom_button, custom_buttondelete, custom_buttongreen %}
 
-    <form action="/inventario/guardarSalida" method="post" novalidate>
+    <form action="/inventario/guardarDevolucionMerma" method="post" novalidate>
         <input type="hidden" name="id_inventario" value="{{ resultados.id_inventario }}">
 
         <div class="box-form2">
-            <h2 style="text-align: center;">DETALLES DEL PRODUCTO QUE SE LE DARA SALIDA</h2>
+            <h2 style="text-align: center;">DETALLES DEL PRODUCTO QUE SE DEVUELVE A INVENTARIO DISPONIBLE</h2>
     
             <div class="row mb-3 mt-5">
                 <div class="col-md-12 mb-1" style="text-align: center;">
@@ -27,7 +27,7 @@
                     <label for="fecha" class="form-label" style=" color: rgb(165, 112, 42);">Caduca el: {{resultados.fecha_caducidad}}</label>
                 </div>
                 <div class="col-md-12 mb-1" style="text-align: center;">
-                    <label for="cantidad" class="form-label" style=" color: rgb(165, 112, 42);">Tu inventario disponible es de: {{resultados.cantidad_inv}}</label>
+                    <label for="cantidad" class="form-label" style=" color: rgb(165, 112, 42);">Tu inventario es de: {{resultados.cantidad_inv}}</label>
                 </div>
             </div>
     
@@ -45,13 +45,9 @@
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     {{ custom_buttongreen("Aceptar") }}
                 </div>
-        </form>
+            </form>
                 <div class="col-md-6">
-                    {% if resultados.tipostock_inv == 1 %}
-                        <a href="/inventario" class="custom-buttondelete" style="text-decoration: none;">Cancelar</a>
-                    {% else %}
-                        <a href="/inventario/mermas" class="custom-buttondelete" style="text-decoration: none;">Cancelar</a>
-                    {% endif %}
+                    <a href="/inventario/mermas" class="custom-buttondelete" style="text-decoration: none;">Cancelar</a>
                 </div>
             </div>
         </div>

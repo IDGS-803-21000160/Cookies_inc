@@ -97,11 +97,25 @@
               >
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item dropdown">
               <span class="material-symbols-outlined"> inventory_2 </span>
-              <a class="nav-link" style="color: aliceblue" href="/inventario"
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                style="color: aliceblue"
                 >Inventario</a
               >
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="/inventario">Inventario</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/inventario/movimientos">Movimientos</a>
+                </li>
+              </ul>
             </li>
 
             <li class="nav-item">

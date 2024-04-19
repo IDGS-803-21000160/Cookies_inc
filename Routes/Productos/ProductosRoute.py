@@ -76,13 +76,28 @@ def inventariosGuardarProducto():
         return render_template('Inventarios/Producto/agregarProducto.html', form=productoF, tabladatos=tabladatos, costoProduccion = costoProduccion)  # Mantén al usuario en la misma página
 
     elif request.form['action'] == 'guardar_producto':
+
+        consulta = text("SELECT nombre_producto FROM producto WHERE UPPER(nombre_producto) = :nombre_producto AND estatus = 1")
+        producto = db.session.execute(consulta, {'nombre_producto': productoF.nombreProducto.data.upper()}).fetchone()
+
         # Lógica para guardar el producto completo
         if tabladatos == []:
             redirect(url_for('modulo_producto.inventariosAddProducto', alerta = 'No has ingresado ingredientes para el producto!'))  # Mantén al usuario en la misma página
-        else: 
-
+        else:
             if productoF.nombreProducto.data == '' or productoF.alias.data == '' or productoF.costoProducto.data == '' or productoF.diasCaducidad.data == '':
-                return redirect(url_for('modulo_producto.inventariosAddProducto', alerta = 'No has ingresado todos los campos requeridos!'))
+                return redirect(url_for('modulo_producto.inventariosAddProducto', alerta = 'No has ingresado todos los campos requeridos!', success = False))  # Mantén al usuario en la misma página
+            
+            elif productoF.costoProducto.data <= 0:
+                return redirect(url_for('modulo_producto.inventariosAddProducto', alerta = 'El costo del producto debe ser mayor a 0!', success = False))
+            
+            elif productoF.diasCaducidad.data <= 0:
+                return redirect(url_for('modulo_producto.inventariosAddProducto', alerta = 'Los días de caducidad deben ser mayores a 0!', success = False))
+            
+            elif productoF.diasCaducidad.data > 365:
+                return redirect(url_for('modulo_producto.inventariosAddProducto', alerta = 'Los días de caducidad no deben ser mayores a 365!', success = False))
+            
+            elif producto:
+                return redirect(url_for('modulo_producto.inventariosAddProducto', alerta = 'El producto ya existe!', success = False))
 
             nuevo_producto = Producto(
                 nombre_producto=productoF.nombreProducto.data,
@@ -243,10 +258,30 @@ def actualizarProducto():
     
     elif request.form['action'] == 'guardar_producto':
 
+        consulta = text("SELECT nombre_producto FROM producto WHERE UPPER(nombre_producto) = :nombre_producto AND estatus = 1")
+        producto = db.session.execute(consulta, {'nombre_producto': productoF.nombreProducto.data.upper()}).fetchone()
+
         if tabladatos == []:
             return redirect(url_for('modulo_producto.editarProducto', id_producto=id_producto, alerta = 'No has ingresado ingredientes para el producto!'))
+        
+        
         elif productoF.nombreProducto.data == '' or productoF.alias.data == '' or productoF.costoProducto.data == '' or productoF.diasCaducidad.data == '':
             return redirect(url_for('modulo_producto.editarProducto', id_producto=id_producto, alerta = 'No has ingresado todos los campos requeridos!'))
+        
+        elif productoF.nombreProducto.data == '' or productoF.alias.data == '' or productoF.costoProducto.data == '' or productoF.diasCaducidad.data == '':
+                return redirect(url_for('modulo_producto.editarProducto', alerta = 'No has ingresado todos los campos requeridos!', success = False, id_producto=id_producto))  # Mantén al usuario en la misma página
+            
+        elif productoF.costoProducto.data <= 0:
+            return redirect(url_for('modulo_producto.editarProducto', alerta = 'El costo del producto debe ser mayor a 0!', success = False, id_producto=id_producto))
+        
+        elif productoF.diasCaducidad.data <= 0:
+            return redirect(url_for('modulo_producto.editarProducto', alerta = 'Los días de caducidad deben ser mayores a 0!', success = False, id_producto=id_producto))
+        
+        elif productoF.diasCaducidad.data > 365:
+            return redirect(url_for('modulo_producto.editarProducto', alerta = 'Los días de caducidad no deben ser mayores a 365!', success = False, id_producto=id_producto))
+        
+        elif producto:
+            return redirect(url_for('modulo_producto.editarProducto', alerta = 'El producto ya existe!', success = False, id_producto=id_producto))
 
         # Lógica para guardar el producto completo
         producto = Producto.query.get(id_producto)

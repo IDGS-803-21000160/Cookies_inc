@@ -24,7 +24,7 @@
   <br />
   {%for message in messages %}
   <div class="alert alert-success alert-dismissible" role="alert">
-    <strong>{{message}}</strong>
+    <strong>{{message}}</strong> 
     <button
       type="button"
       class="btn-close"
@@ -40,9 +40,9 @@
   <input type="hidden" name="action" id="form-action" value="" />
 
   <div class="container">
-    <h2>Módulo de gestión de Proveedores.</h2>
-    <hr />
+    <div class="titleModule">Módulo de gestión de Proveedores.</div>
     <br />
+    <div class="containerProv">
     <div class="row">
       <div class="col-md-6">
         {{ render_field(form.nombre,
@@ -72,7 +72,9 @@
         {% endfor %} {% endif %}
       </div>
     </div>
-    <br />
+    <br><br>
+    <div class="row">
+      <br />
     <button
       id="registrar"
       class="btn btn-dark"
@@ -102,11 +104,16 @@
     >
       Limpiar Formulario
     </button>
+    </div>
+  </div>
+    
   </div>
   <br /><br />
   <div class="tableContainer">
-  <table class="table table-striped">
-    <thead class="thead-dark">
+    <div class="titleTable">Proveedores:</div>
+    <br>
+  <table class="table">
+    <thead class="table-dark">
       <tr>
         <th scope="col"></th>
         <th scope="col">Proveedor</th>
