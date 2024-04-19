@@ -204,3 +204,59 @@ def loadComprasRealizadas():
         })
         
     return compras
+
+@modulo_compras.route('/detalleCompra', methods=["POST"])
+def verDetalleCompra():
+    if request.method == "POST":
+        idCompra = int(request.form["idcompra"])
+        query = """
+            SELECT 
+                c.id_compra,
+                p.nombre,
+                p.telefono,
+                u.tipousuario,
+                u.nombrecompleto,
+                c.fecha_comp,
+                c.cantidad,
+                COUNT(1) AS cantProducto,
+                GROUP_CONCAT(m.nombre_mat SEPARATOR ' | ') AS nomProducto
+            FROM compra c
+            LEFT JOIN compraitem ct ON c.id_compra = ct.compra_itm
+            LEFT JOIN material m ON ct.materialid_itm = m.id_material
+            LEFT JOIN proveedor p ON p.id_proveedor = c.proveedorid_comp
+            LEFT JOIN usuario u ON u.id_usuario = c.usuario_comp
+            WHERE c.id_compra = :idCompra
+            GROUP BY c.id_compra;
+        """
+
+        data = db.session.execute(text(query), {"idCompra": idCompra})
+        
+        for row in data:
+            id_compra = row.id_compra
+            nombre_proveedor = row.nombre
+            telefono_proveedor = row.telefono
+            tipo_usuario = row.tipousuario
+            nombre_usuario = row.nombrecompleto
+            fecha_compra = row.fecha_comp
+            cantidad = row.cantidad
+            nombres_productos = row.nomProducto
+
+            datelleVenta = {
+                'id_compra': id_compra,
+                'nombre_proveedor': nombre_proveedor,
+                'telefono_proveedor': telefono_proveedor,
+                'tipo_usuario': tipo_usuario,
+                'nombre_usuario': nombre_usuario,
+                'fecha_compra': fecha_compra,
+                'cantidad': cantidad,
+                'nombres_productos': nombres_productos
+            }
+            # print(f"ID Compra: {id_compra}")
+            # print(f"Proveedor: {nombre_proveedor} - Teléfono: {telefono_proveedor}")
+            # print(f"Tipo de usuario: {tipo_usuario} - Nombre: {nombre_usuario}")
+            # print(f"Fecha de compra: {fecha_compra}")
+            # print(f"Cantidad de productos: {cantidad} - Total productos: {cantidad_productos}")
+            # print(f"Productos comprados: {nombres_productos}")
+            # print("=" * 20)  # Separador entre cada fila
+    
+    return render_template("Compra/detalleCompra.html", compradetalle = datelleVenta)
