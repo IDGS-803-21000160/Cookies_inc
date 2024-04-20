@@ -37,6 +37,17 @@
   padding: 50px;
 }
 
+.box-form4 {
+  width: 60%;
+  height: auto;
+  margin: auto;
+  background-color: #fff;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+  justify-content: space-between;
+}
+
 .custom-buttongreensm {
   width: 30%;
   height: 35px;
@@ -63,21 +74,25 @@
   background-color: #fff;
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  overflow-x: auto; /* Agregar desplazamiento horizontal */
+  overflow-x: auto;
+  /* Agregar desplazamiento horizontal */
   margin-top: 50px;
 }
 
 .custom-table table {
-  width: auto; /* La tabla ocupa todo el ancho del contenedor */
+  width: auto;
+  /* La tabla ocupa todo el ancho del contenedor */
   border-collapse: collapse;
-  table-layout: fixed; /* Fijar el ancho de las celdas */
+  table-layout: fixed;
+  /* Fijar el ancho de las celdas */
 }
 
 .custom-table th,
 .custom-table td {
   padding: 10px;
   text-align: center;
-  white-space: nowrap; /* Evitar saltos de línea en las celdas */
+  white-space: nowrap;
+  /* Evitar saltos de línea en las celdas */
 }
 
 .custom-table th {
@@ -129,21 +144,25 @@
   background-color: #fff;
   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  overflow-x: auto; /* Agregar desplazamiento horizontal */
+  overflow-x: auto;
+  /* Agregar desplazamiento horizontal */
   margin-top: 50px;
 }
 
 .custom-table3 table {
-  width: auto; /* La tabla ocupa todo el ancho del contenedor */
+  width: auto;
+  /* La tabla ocupa todo el ancho del contenedor */
   border-collapse: collapse;
-  table-layout: fixed; /* Fijar el ancho de las celdas */
+  table-layout: fixed;
+  /* Fijar el ancho de las celdas */
 }
 
 .custom-table3 th,
 .custom-table3 td {
   padding-right: 30px;
   text-align: center;
-  white-space: nowrap; /* Evitar saltos de línea en las celdas */
+  white-space: nowrap;
+  /* Evitar saltos de línea en las celdas */
 }
 
 .custom-table3 th {
@@ -205,10 +224,14 @@
 
 /* Estilo para el botón deshabilitado */
 .custom-buttongreen:disabled {
-  background-color: #ccc; /* Color de fondo gris */
-  color: #666; /* Color del texto gris */
-  cursor: not-allowed; /* Cursor no permitido */
-  pointer-events: none; /* No responder a eventos de puntero */
+  background-color: #ccc;
+  /* Color de fondo gris */
+  color: #666;
+  /* Color del texto gris */
+  cursor: not-allowed;
+  /* Cursor no permitido */
+  pointer-events: none;
+  /* No responder a eventos de puntero */
 }
 
 .seccion-con-scroll {

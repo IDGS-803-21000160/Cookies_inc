@@ -63,16 +63,45 @@
 </fieldset>
 {% endmacro %}
 
-<!-- ******************* VENTAS ******************* -->
+<!-- ******* COMPRA ******* -->
 
-{% macro input_customVenta(field) %}
+{% macro input_customCompra(field) %}
 <div class="mb-5">
   <div class="row">
-    <div class="col-4">
+    <label style="text-align: center">{{field.label}}</label>
+    <td style="margin: 10px">{{ field(**kwargs) | safe }}</td>
+  </div>
+</div>
+{%if field.errors%}
+<ul>
+  {%for error in field.errors%}
+  <li style="color: red">{{error}}</li>
+  {%endfor%}
+</ul>
+{%endif%} {% endmacro %} {% macro render_select_field_compra(field) %}
+<select name="{{ field.name }}" onchange="">
+  {% for choice in field.choices %}
+  <option value="{{ choice[0] }}">{{ choice[1] }}</option>
+  {% endfor %}
+</select>
+{% endmacro %}
+
+<!-- ******* VENTA ******* -->
+
+{% macro render_select_field_venta(field) %}
+<select name="{{ field.name }}" onchange="submitForm()">
+  {% for choice in field.choices %}
+  <option value="{{ choice[0] }}">{{ choice[1] }}</option>
+  {% endfor %}
+</select>
+{% endmacro %} {% macro input_customVenta(field) %}
+<div class="mb-5">
+  <div class="row">
+    <div class="col">
       <label style="text-align: center">{{field.label}}</label>
     </div>
-    <div class="col-8">
-      <td>{{ field(**kwargs) | safe }}</td>
+    <div class="col">
+      <td style="margin: 10px">{{ field(**kwargs) | safe }}</td>
     </div>
   </div>
 </div>
@@ -82,10 +111,4 @@
   <li style="color: red">{{error}}</li>
   {%endfor%}
 </ul>
-{%endif%} {% endmacro %} {% macro render_select_field_venta(field) %}
-<select name="{{ field.name }}" onchange="submitForm()">
-  {% for choice in field.choices %}
-  <option value="{{ choice[0] }}">{{ choice[1] }}</option>
-  {% endfor %}
-</select>
-{% endmacro %}
+{%endif%} {% endmacro %}
