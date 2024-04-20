@@ -80,6 +80,37 @@
   width: auto;
   padding: 20px;
 }
+.containerRegMeterial {
+  background-color: #ffffff;
+  border-radius: 18px;
+  box-shadow: 12px 12px 12px 12px #0f0e0e14;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
+  white-space: normal;
+  width: 80rem;
+  padding: 20px;
+}
+
+.containerRegProducto {
+  background-color: #ffffff;
+  border-radius: 18px;
+  box-shadow: 12px 12px 12px 12px #0f0e0e14;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0, 0, 0.5, 1);
+  white-space: normal;
+  width: 85rem;
+  padding: 20px;
+  margin-left: 40px;
+  margin-top: 40px;
+}
 .cardBox {
   position: relative;
   width: 100%;

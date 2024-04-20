@@ -1,55 +1,45 @@
-{% extends 'ContenedorMain/contenedorMain.html' %}
-{% block content %}
-    {% from "Macros/inputComponent.html" import search_input, input_custom %}
-    {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttonsave%}
+{% extends 'ContenedorMain/contenedorMain.html' %} {% block content %} {% from
+"Macros/inputComponent.html" import search_input, input_custom %} {% from
+"Macros/botonComponent.html" import custom_button, custom_buttongreen,
+custom_buttonsave%}
+<link rel="stylesheet" href="../../../static/css/buttons.css" />
 
-    <div class="row" style="justify-content: space-evenly;">
-        <div class="col-md-7">
-            <h1>AGREGAR MATERIAL</h1>
-        </div>
-        <div class="col-md-3">
-            <form action="/inventario/materiales" method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {{ custom_buttongreen("Volver a Materiales") }}
-            </form>
-            
-        </div>
+<div class="row" style="justify-content: space-evenly">
+  <div class="col-md-8">
+    <div style="margin-left: 60px">
+      <div class="titleModule">Registro de material.</div>
     </div>
+  </div>
+  <div class="col-md-3">
+    <form action="/inventario/materiales" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      {{ custom_buttongreen("Volver a Materiales") }}
+    </form>
+  </div>
+</div>
 
-    <div class="row justify-content-center">
-        <div class="col-md-10 mb-4 mt-3" style="height: 2px; background-color: rgba(0, 0, 0, 0.603);"></div>
-    </div>
+<div class="row" style="margin-left: 60px; margin-top: 60px">
+  <div class="col-md-12 containerRegMeterial">
+    <form action="/inventario/guardarMaterial" method="post" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <div class="row mb-3">
+        <div class="col-md-9">{{ input_custom(form.nombreMaterial) }}</div>
+        <div class="col-md-3">{{ input_custom(form.diasCaducidad) }}</div>
+      </div>
 
-    <div class="row">
-        <div class="col-md-12 box-form">
-            <form action="/inventario/guardarMaterial" method="post" novalidate>
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <div class="row mb-3">
-                    <div class="col-md-9">
-                        {{ input_custom(form.nombreMaterial) }}
-                    </div>
-                    <div class="col-md-3">
-                        {{ input_custom(form.diasCaducidad) }}
-                    </div>
-                </div>
+      <div class="row mb-3">
+        <div class="col-md-6">{{ input_custom(form.unidadMedidaAgregar) }}</div>
+        <div class="col-md-6">{{ input_custom(form.costoMaterial) }}</div>
+      </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        {{ input_custom(form.unidadMedidaAgregar) }}
-                    </div>
-                    <div class="col-md-6">
-                        {{ input_custom(form.costoMaterial) }}
-                    </div>
-                </div>
-
-                <div class="row justify-content-center">
-                    <div class="col-md-12 text-center"> <!-- Aquí puedes ajustar el ancho de la columna según sea necesario -->
-                        {{ custom_button("Guardar Material") }}
-                    </div>
-                </div>
-
-            </form>
+      <div class="row justify-content-center">
+        <div class="col-md-12 text-center">
+          <!-- Aquí puedes ajustar el ancho de la columna según sea necesario -->
+          {{ custom_button("Guardar Material") }}
         </div>
-    </div>
+      </div>
+    </form>
+  </div>
+</div>
 
 {% endblock %}

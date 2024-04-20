@@ -1,93 +1,91 @@
 {% macro search_input(placeholder_text, evento, id) %}
 <div class="search-container">
-    <input type="text" placeholder="Buscar {{placeholder_text}}", id="{{id}}">
-    <i class="fas fa-search fa-icon"></i>
+  <input type="text" placeholder="Buscar {{placeholder_text}}" , id="{{id}}" />
+  <i class="fas fa-search fa-icon"></i>
 </div>
-{% endmacro %}
-
-{% macro input_custom(field) %}
+{% endmacro %} {% macro input_custom(field) %}
 <div class="input-container mb-5">
-    <div class="row">
-        <div class="col md-12">
-            <td> {{ field(**kwargs) | safe }}</td>
-        </div>
+  <div class="row">
+    <div class="col md-12">
+      <td>{{ field(**kwargs) | safe }}</td>
     </div>
-    <div class="row mt-4">
-        <div class="col md-12" style="align-items: center;">
-            <label style="text-align: center;">{{field.label}}</label>
-        </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col md-12" style="align-items: center">
+      <label style="text-align: center">{{field.label}}</label>
     </div>
+  </div>
 </div>
 {%if field.errors%}
 <ul>
-        {%for error in field.errors%}
-        <li style="color: red;">{{error}}</li>
-        {%endfor%}
+  {%for error in field.errors%}
+  <li style="color: red">{{error}}</li>
+  {%endfor%}
 </ul>
-{%endif%}
-{% endmacro %}
-
-{% macro input_customWithPlaceholder(field) %}
+{%endif%} {% endmacro %} {% macro input_customWithPlaceholder(field) %}
 <div class="input-container mb-5">
-    <div class="row">
-        <div class="col-md-12" style="justify-content: center;">
-            <!-- Usa field() y pasa el atributo placeholder manualmente. Asegúrate de no incluir <td> a menos que esté dentro de una tabla. -->
-            {{ field(placeholder=field.label.text) }}
-        </div>
+  <div class="row">
+    <div class="col-md-12" style="justify-content: center">
+      <!-- Usa field() y pasa el atributo placeholder manualmente. Asegúrate de no incluir <td> a menos que esté dentro de una tabla. -->
+      {{ field(placeholder=field.label.text) }}
     </div>
+  </div>
 </div>
 {% if field.errors %}
 <ul>
-    {% for error in field.errors %}
-    <li style="color: red;">{{ error }}</li>
-    {% endfor %}
+  {% for error in field.errors %}
+  <li style="color: red">{{ error }}</li>
+  {% endfor %}
 </ul>
-{% endif %}
+{% endif %} {% endmacro %} {% macro input_select(field) %}
+<fieldset>
+  <div class="select-container">
+    {% for value, label, checked, _ in field.iter_choices() %}
+    <div class="select-item">
+      <input
+        style="white-space: pre"
+        type="checkbox"
+        id="{{ field.id }}_{{ value }}"
+        name="{{ field.name }}"
+        value="{{ value }}"
+        {%
+        if
+        checked
+        %}checked{%
+        endif
+        %}
+      />
+      <label for="{{ field.id }}_{{ value }}">{{ label }}</label>
+    </div>
+    {% endfor %}
+  </div>
+  <label>{{ field.label }}</label>
+</fieldset>
 {% endmacro %}
-
-
-
-{% macro input_select(field) %}
-    <fieldset>
-        <div class="select-container">
-            {% for value, label, checked, _ in field.iter_choices() %}
-                <div class="select-item">
-                    <input style="white-space: pre;" type="checkbox" id="{{ field.id }}_{{ value }}" name="{{ field.name }}" value="{{ value }}" {% if checked %}checked{% endif %}>
-                    <label for="{{ field.id }}_{{ value }}">{{ label }}</label>
-                </div>
-            {% endfor %}
-        </div>
-        <label>{{ field.label }}</label>
-    </fieldset>
-{% endmacro %}
-
 
 <!-- ******************* VENTAS ******************* -->
 
 {% macro input_customVenta(field) %}
 <div class="mb-5">
-    <div class="row">
-        <div class="col-4">
-            <label style="text-align: center;">{{field.label}}</label>
-        </div>
-        <div class="col-8">
-            <td> {{ field(**kwargs) | safe }}</td>
-        </div>
+  <div class="row">
+    <div class="col-4">
+      <label style="text-align: center">{{field.label}}</label>
     </div>
+    <div class="col-8">
+      <td>{{ field(**kwargs) | safe }}</td>
+    </div>
+  </div>
 </div>
 {%if field.errors%}
 <ul>
-    {%for error in field.errors%}
-    <li style="color: red;">{{error}}</li>
-    {%endfor%}
+  {%for error in field.errors%}
+  <li style="color: red">{{error}}</li>
+  {%endfor%}
 </ul>
-{%endif%}
-{% endmacro %}
-
-{% macro render_select_field_venta(field) %}
-    <select name="{{ field.name }}" onchange="submitForm()">
-        {% for choice in field.choices %}
-            <option value="{{ choice[0] }}">{{ choice[1] }}</option>
-        {% endfor %}
-    </select>
+{%endif%} {% endmacro %} {% macro render_select_field_venta(field) %}
+<select name="{{ field.name }}" onchange="submitForm()">
+  {% for choice in field.choices %}
+  <option value="{{ choice[0] }}">{{ choice[1] }}</option>
+  {% endfor %}
+</select>
 {% endmacro %}
