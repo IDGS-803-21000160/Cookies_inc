@@ -1,6 +1,8 @@
 {%extends 'ContenedorMain/contenedorMain.html' %} {%block content %} {% from
 "Macros/inputComponent.html" import input_customCompra %} {% from
 "Macros/inputComponent.html" import render_select_field_compra %}
+<link rel="stylesheet" href="../../static/css/buttons.css" />
+
 <div>
   {%with messages = get_flashed_messages(with_categories=true)%} {%if messages%}
   <br />
@@ -24,27 +26,22 @@
   </div>
   {%endfor%} {%endif%} {%endwith%}
   <form id="myForm" action="/compra" method="post" novalidate>
-    <div class="row">
-      <div class="col-4">
-        <h1 class="text-center">Compras</h1>
+    <div class="row" style="margin-left: 30px; margin-right: 30px;">
+      <div class="col-6" >
+        <div class="titleModule">Compras.</div>
       </div>
-      <div class="col-8">
-        <div class="row">
-          <div class="col-6">
-            {{ render_select_field_compra(form.tipo_prov) }}
-          </div>
-          <div class="col-6">
-            <button type="submit" name="cargar">Cargar</button>
-          </div>
+        <div class="col-3">
+          {{ render_select_field_compra(form.tipo_prov) }}
         </div>
-      </div>
+        <div class="col-3" style="padding-top: 17px;">
+          <button type="submit" name="cargar">Cargar</button>
+        </div>
+        <hr />
     </div>
-    <div class="row justify-content-center">
-      <div
-        class="col-md-10 mb-4 mt-3"
-        style="height: 2px; background-color: rgba(0, 0, 0, 0.603)"
-      ></div>
     </div>
+    
+    <br />
+    
     <div class="row">
       <div class="col"></div>
       <div class="col-4 pb-3">

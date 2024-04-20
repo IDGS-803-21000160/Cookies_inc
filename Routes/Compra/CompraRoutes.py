@@ -34,7 +34,7 @@ def compra():
         compras = loadComprasRealizadas()
     
         
-    proveedores = Proveedor.query.all()
+    proveedores = Proveedor.query.filter_by(estatus='1').all()
 
     opcionesMateriales = [(prov.id_proveedor, prov.nombre) for prov in proveedores]
     ventaForm.tipo_prov.choices = opcionesMateriales
