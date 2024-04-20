@@ -5,6 +5,8 @@
 
 <script src="../../static/sweetalert2/sweetalert2.min.js"></script>
 <link rel="stylesheet" href="../../static/sweetalert2/sweetalert2.min.css" />
+<link rel="stylesheet" href="../../../static/css/buttons.css" />
+
 
 {% if alerta %}
     {% if success == 'False' %}
@@ -28,31 +30,57 @@
     {% endif %}  
 {% endif %}
 
+<div style="margin-left: 60px">
+    <div class="titleModule">Inventario de mermas.</div>
+  </div>
 
 <div class="ms-5 me-5"> <!-- Agregar un contenedor para centrar todo el contenido -->
 
     <div class="row">
-        <div class="col-md-6">
-            <h1>INVENTARIO DE MERMAS</h1>
-        </div>
-        <div class="col-md-2">
-            <form action="/inventario/agregarMaterial" method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {{ custom_buttongreen("Agregar Material") }}
-            </form>
-        </div>
-        <div class="col-md-2">
-            <form action="/inventario/agregarProducto" method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {{ custom_buttongreen("Agregar Producto") }}
-            </form>
-        </div>
-        <div class="col-md-2">
-            <form action="/inventario/seleccionarTipoEntrada" method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {{ custom_buttongreen("Entrada a Inventario") }}
-            </form>
-        </div>
+        <div class="row">
+            <div class="cardBox">
+              <form action="/inventario/agregarMaterial" method="post" class="formInv">
+                <button class="card" type="submit">
+                  <div>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <div class="numbers">Agregar Material</div>
+                    <div class="cardName">Registro de nuevo material. </div>
+                  </div>
+                  <div class="iconBx">
+                    <ion-icon name="cash-outline"></ion-icon>
+                  </div>
+                </button>
+              </form>
+              <form action="/inventario/agregarProducto" method="post" class="formInv">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button class="card" type="submit">
+                  <div>
+                    <div class="numbers">Agregar Producto</div>
+                    <div class="cardName">Registro de nuevos productos. </div>
+                  </div>
+                  <div class="iconBx">
+                    <ion-icon name="cart-outline"></ion-icon>
+                  </div>
+                </button>
+              </form>
+              <form action="/inventario/seleccionarTipoEntrada" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        
+              <button class="card" type="submit">
+                <div>
+                  <div class="numbers">Entrada a Inventario</div>
+                  <div class="cardName">
+                    Entrada de inventario (material y producto).
+                  </div>
+                </div>
+                <div class="iconBx">
+                  <ion-icon name="analytics-outline"></ion-icon>
+                </div>
+              </div>
+            </button>
+        </form>
+          </div>
+        <br><br>
     </div>
 
     <div class="row justify-content-center">
