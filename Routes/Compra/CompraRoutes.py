@@ -206,6 +206,8 @@ def loadComprasRealizadas():
     return compras
 
 @modulo_compras.route('/detalleCompra', methods=["POST"])
+@inventario_required
+@login_required
 def verDetalleCompra():
     if request.method == "POST":
         idCompra = int(request.form["idcompra"])

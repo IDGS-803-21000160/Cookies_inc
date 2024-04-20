@@ -1,6 +1,6 @@
 {% macro search_input(placeholder_text, evento, id) %}
 <div class="search-container">
-    <input type="text" placeholder="Buscar {{placeholder_text}}", id="{{id}}">
+    <input type="text" placeholder="Buscar {{placeholder_text}}" , id="{{id}}">
     <i class="fas fa-search fa-icon"></i>
 </div>
 {% endmacro %}
@@ -20,9 +20,9 @@
 </div>
 {%if field.errors%}
 <ul>
-        {%for error in field.errors%}
-        <li style="color: red;">{{error}}</li>
-        {%endfor%}
+    {%for error in field.errors%}
+    <li style="color: red;">{{error}}</li>
+    {%endfor%}
 </ul>
 {%endif%}
 {% endmacro %}
@@ -48,31 +48,28 @@
 
 
 {% macro input_select(field) %}
-    <fieldset>
-        <div class="select-container">
-            {% for value, label, checked, _ in field.iter_choices() %}
-                <div class="select-item">
-                    <input style="white-space: pre;" type="checkbox" id="{{ field.id }}_{{ value }}" name="{{ field.name }}" value="{{ value }}" {% if checked %}checked{% endif %}>
-                    <label for="{{ field.id }}_{{ value }}">{{ label }}</label>
-                </div>
-            {% endfor %}
+<fieldset>
+    <div class="select-container">
+        {% for value, label, checked, _ in field.iter_choices() %}
+        <div class="select-item">
+            <input style="white-space: pre;" type="checkbox" id="{{ field.id }}_{{ value }}" name="{{ field.name }}"
+                value="{{ value }}" {% if checked %}checked{% endif %}>
+            <label for="{{ field.id }}_{{ value }}">{{ label }}</label>
         </div>
-        <label>{{ field.label }}</label>
-    </fieldset>
+        {% endfor %}
+    </div>
+    <label>{{ field.label }}</label>
+</fieldset>
 {% endmacro %}
 
 
-<!-- ******************* VENTAS ******************* -->
+<!-- ******************* COMPRA ******************* -->
 
-{% macro input_customVenta(field) %}
+{% macro input_customCompra(field) %}
 <div class="mb-5">
     <div class="row">
-        <div class="col-4">
-            <label style="text-align: center;">{{field.label}}</label>
-        </div>
-        <div class="col-8">
-            <td> {{ field(**kwargs) | safe }}</td>
-        </div>
+        <label style="text-align: center;">{{field.label}}</label>
+        <td style="margin: 10px;"> {{ field(**kwargs) | safe }}</td>
     </div>
 </div>
 {%if field.errors%}
@@ -84,10 +81,12 @@
 {%endif%}
 {% endmacro %}
 
+<!-- ******************* VENTA ******************* -->
+
 {% macro render_select_field_venta(field) %}
-    <select name="{{ field.name }}" onchange="submitForm()">
-        {% for choice in field.choices %}
-            <option value="{{ choice[0] }}">{{ choice[1] }}</option>
-        {% endfor %}
-    </select>
+<select name="{{ field.name }}" onchange="submitForm()">
+    {% for choice in field.choices %}
+    <option value="{{ choice[0] }}">{{ choice[1] }}</option>
+    {% endfor %}
+</select>
 {% endmacro %}
