@@ -13,25 +13,21 @@ csrf=CSRFProtect()
 
 
 listaCompra_insertar = []
-productos_a_comprar = 0
 subtotal = 0
-total = 0
+productos = []
 @modulo_compras.route('/compra', methods=["GET","POST"])
 @inventario_required
 @login_required
 def compra():
-    
-    global productos_a_comprar
     global subtotal
-    global total
     global listaCompra_insertar
+    global productos
     
-    productos = []
+    total = 0
     compras = []
     listaProveedor = []
     ventaForm = CompraForm()
         
-    productos = cargarProducto()
     compras = loadComprasRealizadas()
     
     if request.method == "GET":
@@ -52,17 +48,20 @@ def compra():
 
     
     if request.method == "POST":   
+        # print(request.form)
         id_proveedor = request.form['tipo_prov']
-        index = 0
-        if 'Agregar' in request.form :
+        if 'cargar' in request.form:
+            productos = cargarProducto(id_proveedor) 
+        elif 'Agregar' in request.form :
             print('Boton Agregar')
-            #print(request.form)
+            print(request.form)
             listaCompra = []
+            index = 0
             for i in productos :
                 index = index + 1
                 valor = int(request.form[f'cantidad_producto_{index}'])
+                
                 if valor > 0 :                    
-                    
                     if request.form[f'unidad_medida_{index}'] == 'pieza':
                         subtotal = float(valor) * float(i['costo'])
                         listaCompra.append({
@@ -81,15 +80,16 @@ def compra():
                             'cantidad_producto': valor*1000,
                             'subtotal': round(subtotal, 2)
                         })
-                    productos_a_comprar = productos_a_comprar + 1
                 elif valor < 0:
-                    flash("ingresa nuemero valor valido", "danger")
+                    flash("ingresa un valor valido", "danger")
             
-            for i in listaCompra:
-                total = total + float(i['subtotal'])
-            #print(listaCompra)
+                
             total = round(total, 2)
             listaCompra_insertar.extend(listaCompra)
+            
+            for i in listaCompra_insertar:
+                total = total + float(i['subtotal'])
+                
             listaCompra = []
             
             return render_template('Compra/compra.html', prodct = productos, form = ventaForm, listaCompra = listaCompra_insertar, total = total, compra = compras)
@@ -99,6 +99,8 @@ def compra():
             index_eliminar = int(request.form['Eliminar'])
             listaCompra_insertar.pop(index_eliminar)
                 #print('Elemento eliminado:', elemento_eliminado)
+            for i in listaCompra_insertar:
+                total = total + float(i['subtotal'])
             
             return render_template('Compra/compra.html', prodct = productos, form = ventaForm, listaCompra = listaCompra_insertar, total = total, compra = compras)
             
@@ -111,6 +113,8 @@ def compra():
             segundo_actual = str(fecha_hora_actual.second)
 
             folio = f"{id_proveedor}-{segundo_actual}{minuto_actual}{ano_actual}"
+            for i in listaCompra_insertar:
+                total = total + float(i['subtotal'])
             print(total)
             
             try:
@@ -119,7 +123,7 @@ def compra():
                     usuario_comp = current_user.id_usuario,  
                     folio_comp = folio,  
                     fecha_comp = datetime.now(),  
-                    cantidad = productos_a_comprar,  
+                    cantidad = len(listaCompra_insertar),  
                     total = total, 
                     estatus = 1,  
                     fecha_registro=datetime.now()
@@ -134,7 +138,7 @@ def compra():
 
                 # Imprimir el último ID insertado para verificar
                 print("Último ID insertado:", ultimo_id_insertado)
-                
+                print(listaCompra_insertar)
                 for prod in listaCompra_insertar:
                     nuevo_product = CompraItem(
                         compra_itm = ultimo_id_insertado,
@@ -142,13 +146,13 @@ def compra():
                         cantidad = prod['cantidad_producto'],
                         subtotal = prod['subtotal'],
                         estatus = 1,
-                        usuario_registro = 1,
+                        usuario_registro = current_user.id_usuario,
                         fecha_registro = datetime.now()
                     )
                     
                     db.session.add(nuevo_product)
 
-                    db.session.commit()
+                    db.session.commit()   
                     
                 consulta = text('CALL descuentoInventarioPorCompra(:parametro1)')
                 db.session.execute(consulta, {'parametro1': ultimo_id_insertado})
@@ -166,17 +170,22 @@ def compra():
             productos_a_comprar = 0
             subtotal = 0
             total = 0
+            index = 0
             listaCompra_insertar = []
             
     return render_template('Compra/compra.html', prodct = productos, form = ventaForm, listaCompra = listaCompra_insertar, total = total, compra = compras)
 
 
-def cargarProducto():
+def cargarProducto(proveedor_id_deseado):
     productos = []
 
-    materiales = db.session.query(Material).all()
+    query = """
+            SELECT*FROM material WHERE proveedorid_itm = :idProveedor;
+        """
 
-    for material in materiales:
+    data = db.session.execute(text(query), {"idProveedor": proveedor_id_deseado})
+
+    for material in data:
         #print(material.id_material, material.nombre_mat, material.costo_mat)
         productos.append({
             'id_material': material.id_material,
@@ -184,6 +193,7 @@ def cargarProducto():
             'costo': material.costo_mat,
             'unidad_medida': material.unidad_medida
         })
+    print(productos)
     return productos
 
 def loadComprasRealizadas():

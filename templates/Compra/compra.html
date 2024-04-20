@@ -2,6 +2,7 @@
 
 {%block content %}
 {% from "Macros/inputComponent.html" import input_customCompra %}
+{% from "Macros/inputComponent.html" import render_select_field_compra %}
 <div>
   {%with messages = get_flashed_messages(with_categories=true)%}
   {%if messages%}
@@ -22,7 +23,7 @@
   {%endfor%}
   {%endif%}
   {%endwith%}
-  <form action="/compra" method="post" novalidate>
+  <form id="myForm" action="/compra" method="post" novalidate>
     <div class="row">
       <div class="col-4 ">
         <h1 class="text-center">Compras</h1>
@@ -30,7 +31,10 @@
       <div class="col-8">
         <div class="row">
           <div class="col-6">
-            {{ input_customCompra(form.tipo_prov) }}
+            {{ render_select_field_compra(form.tipo_prov) }}
+          </div>
+          <div class="col-6">
+            <button type="submit" name="cargar">Cargar</button>
           </div>
         </div>
       </div>
@@ -60,7 +64,7 @@
                   {% else %}
                   {% set costos = (producto.costo | float * 1000) | round(2) %}
                   <h3 class="card-title pricing-card-title text-center">${{ costos }} <small class="text-muted">/
-                      kg-ml</small></h3>
+                      kg-L</small></h3>
                   {%endif%}
                   <!-- *** se puede eliminar *** -->
                   {% set campo_nombre = 'nombre_producto_' + loop.index|string %}
