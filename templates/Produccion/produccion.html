@@ -1,14 +1,16 @@
 {%extends 'ContenedorMain/contenedorMain.html' %} {%block content %}
+<link rel="stylesheet" href="../../static/css/buttons.css" />
+
 <form id="produccionForm" action="/produccion" method="post">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
   <input type="hidden" id="idProHidden" name="idPro" value="" />
   <input type="hidden" id="counter" name="counter" value="" />
   <div class="row">
-    <div class="col-md-8">
-      <h1>PRODUCTO TERMINADO</h1>
+    <div class="col-6" style="padding-left: 42px">
+      <div class="titleModule">Producto terminado.</div>
     </div>
   </div>
-  <div class="row">
+  <div class="row" style="margin-left: 20px; margin-right: 20px">
     <table class="table table-bordered table-striped custom-table">
       <thead class="text-dark">
         <tr>
@@ -35,11 +37,17 @@
               name="cuantas_{{ counter.value }}" min="0" max="{{pro.cuantas}}"/>
           </td> -->
           <td>
-            <select name="cuantas_{{ counter.value }}" id="cuantas_{{ counter.value }}" class="form-control cantidad"  min="0" max="{{pro.cuantas}}">
-                <option value="" disabled selected>cantidad</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="150">150</option>
+            <select
+              name="cuantas_{{ counter.value }}"
+              id="cuantas_{{ counter.value }}"
+              class="form-control cantidad"
+              min="0"
+              max="{{pro.cuantas}}"
+            >
+              <option value="" disabled selected>cantidad</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="150">150</option>
             </select>
           </td>
           <td>
@@ -97,11 +105,11 @@
     if (selectedValue === "") {
       // Si no se ha seleccionado ningún valor, mostrar una alerta y no enviar el formulario
       Swal.fire({
-          title: "Error",
-          text: "Selecciona una cantidad",
-          icon: "error",
-          button: "Aceptar",
-        });
+        title: "Error",
+        text: "Selecciona una cantidad",
+        icon: "error",
+        button: "Aceptar",
+      });
     } else {
       //Desactivar el boton
       document.getElementById(idButton).disabled = true;

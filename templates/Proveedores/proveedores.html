@@ -36,7 +36,7 @@
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
   <input type="hidden" name="idUser" value="{{current_user.id_us}}" />
   <input type="hidden" name="idProvEdit" id="form-id" value="" />
-  <input type="hidden" name="idUserDelete" id="form-iddelete" value="" />
+  <input type="hidden" name="idProvDelete" id="form-iddelete" value="" />
   <input type="hidden" name="action" id="form-action" value="" />
 
   <div class="container">
@@ -126,6 +126,7 @@
     </thead>
     <tbody>
       {% for prove in proveedores %} 
+      {% if prove.estatus =='1'%}
         <td>
           <input
             type="hidden"
@@ -145,7 +146,7 @@
             name="eliminar"
             value="Eliminar"
             type="submit"
-            onclick="eliminarUsuari('{{prove.id_proveedor}}',event)"
+            onclick="eliminarProv('{{prove.id_proveedor}}',event)"
           >
             Eliminar
           </button>
@@ -163,6 +164,7 @@
           </button>
         </td>
       </tr>
+      {% endif %}
        {% endfor %}
     </tbody>
   </table>

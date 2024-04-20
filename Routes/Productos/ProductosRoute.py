@@ -258,8 +258,8 @@ def actualizarProducto():
     
     elif request.form['action'] == 'guardar_producto':
 
-        consulta = text("SELECT nombre_producto FROM producto WHERE UPPER(nombre_producto) = :nombre_producto AND estatus = 1")
-        producto = db.session.execute(consulta, {'nombre_producto': productoF.nombreProducto.data.upper()}).fetchone()
+        consulta = text("SELECT nombre_producto FROM producto WHERE UPPER(nombre_producto) = :nombre_producto AND estatus = 1 and id_producto != :id_producto")
+        existeproducto = db.session.execute(consulta, {'nombre_producto': productoF.nombreProducto.data.upper(), 'id_producto' : id_producto}).fetchone()
 
         if tabladatos == []:
             return redirect(url_for('modulo_producto.editarProducto', id_producto=id_producto, alerta = 'No has ingresado ingredientes para el producto!'))
@@ -280,7 +280,7 @@ def actualizarProducto():
         elif productoF.diasCaducidad.data > 365:
             return redirect(url_for('modulo_producto.editarProducto', alerta = 'Los días de caducidad no deben ser mayores a 365!', success = False, id_producto=id_producto))
         
-        elif producto:
+        elif existeproducto:
             return redirect(url_for('modulo_producto.editarProducto', alerta = 'El producto ya existe!', success = False, id_producto=id_producto))
 
         # Lógica para guardar el producto completo

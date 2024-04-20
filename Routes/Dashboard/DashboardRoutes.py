@@ -29,6 +29,7 @@ def dashboard():
         cantidadUtilidad = item['cantidadUtilidad']
         cantidadMerma = item['cantidadMerma']
         cantidadVenta = item['cantidadVenta']
+        costo = item['costo']
         
     profe = getProveedoresResponsables()
     costoProduccion = getCostoProduccion()
@@ -38,7 +39,7 @@ def dashboard():
     ventasPr = get_ventasPr()
     print(ventasPr)
 
-    return render_template("Dashboard/dashboard.html",cantidadVenta=cantidadVenta,cantidadMerma=cantidadMerma,cantidadUtilidad=cantidadUtilidad,profe=profe,costoProduccion=costoProduccion,galletaVendido=galletaVendido,galletaMerma=galletaMerma,utilidadGalleta=utilidadGalleta, ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
+    return render_template("Dashboard/dashboard.html",cantidadVenta=cantidadVenta,cantidadMerma=cantidadMerma,cantidadUtilidad=cantidadUtilidad,profe=profe,costoProduccion=costoProduccion,galletaVendido=galletaVendido,galletaMerma=galletaMerma,utilidadGalleta=utilidadGalleta, ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas, costo=costo)
 
 def get_ventasPr():
     # Prepare the SQL query to filter by week and sum quantities
@@ -107,14 +108,14 @@ def getVentasAnio2():
 
 def getVentasAnio():
     query = text("""
-        SELECT c.nombre_cliente AS Cliente_NOM,
+        SELECT nombre_cliente AS Cliente_ID,
             folio_venta AS Folio_Venta,
             fecha_venta AS Fecha_Venta,
             id_venta AS Id_Venta,
             total_ventas AS Total_Venta
-        FROM venta v
-        join cliente c on v.cliente_venta = c.id_cliente
-        ORDER BY v.fecha_registro DESC
+        FROM venta
+        INNER JOIN cliente on id_cliente = cliente_venta
+        ORDER BY venta.fecha_registro DESC
         LIMIT 6;
     """)
     # Ejecutar la consulta
@@ -205,6 +206,7 @@ def getProfeCards():
         inner join material on materialid_itm = id_material
     WHERE p.estatus = 1 and recetaitem.estatus = 1
     GROUP BY id_producto, nombre_producto, alias, dias_caducidadpd, costoproducto, costoventa) as c ORDER BY utilidad desc limit 1;""")
+    
     utilidadGalleta = db.session.execute(query).fetchone()
 
     query = """ select p.nombre_producto as nombre, c.productoID as productoID, c.cantidad as cantidad
@@ -220,17 +222,14 @@ def getProfeCards():
     GROUP BY pi.productoid_itm) as ventas group by productoID order by cantidad desc limit 1) c on c.productoID = p.id_producto;"""
     GalletaVendida = db.session.execute(text(query)).fetchone()
 
-    # query = """ select p.nombre_producto as nombre, p.alias, round(sum(ri.cantidad_merma),2) as merma
-    # from producto p 
-    # join recetaitem ri on p.id_producto = ri.productoid_itm
-    # group by ri.productoid_itm
-    # order by merma desc; """
-    query = """ select min(p.nombre_producto) as nombre, sum(inv.cantidad_inv) as merma
-    from inventario inv
-    join producto p on inv.producto_inv = p.id_producto
-    where inv.tipostock_inv in (2,3,4) and inv.producto_inv is not null and inv.estatus = 1
-    group by producto_inv order by 2 desc;"""
-    
+    query = """ SELECT 
+    nombre_producto nombre, cantidad_inv merma, (SUM( cantidad_inv ) * SUM(costoproducto)) costo
+    FROM inventario 
+        INNER JOIN producto on id_producto = producto_inv
+    WHERE tipo_inv = 2 and tipostock_inv in ( 2, 4 )
+    GROUP BY nombre_producto, cantidad_inv
+    ORDER BY 3 DESC LIMIT 1;
+    """
     galletaMerma = db.session.execute(text(query)).fetchone()
 
     # Append the results to the data list
@@ -241,7 +240,7 @@ def getProfeCards():
         "galletaMerma": galletaMerma.nombre,
         "cantidadMerma": galletaMerma.merma,
         "cantidadVenta": GalletaVendida.cantidad,
-
+        "costo" : galletaMerma.costo
     })
 
     return data

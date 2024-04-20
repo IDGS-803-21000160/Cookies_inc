@@ -32,6 +32,9 @@ def ventas():
     cliente_form=ClienteFormReg(request.form)
     productos=VistaDetalleProducto.query.all()
     paquete=VistaDetallePaquete.query.all()
+    total_general = 0.0
+    costo_total_galletas =0.0
+
     alert=''
     if request.method == 'POST':
         if request.form.get('registrar'):
@@ -41,14 +44,33 @@ def ventas():
             cantidad_galletas = int(request.form[f'numero_{producto_id}'])
             costo_total = cantidad_galletas * float(precio_galleta)
             
-            galletas.append((nombre_galleta,cantidad_galletas,costo_total) )
-            for paq in paquete:
-                print(paq.productos)
+            total_general += costo_total
             
-            # Definir la lista de diccionarios
-            product = {"producto_id": int(producto_id), "cantidad": cantidad_galletas, "descuento":0.00}
-                
-            idGalletas.append(product)
+            # Verificar si el producto ya existe en la lista idGalletas
+            producto_existente = next((item for item in idGalletas if item['producto_id'] == int(producto_id)), None)
+            
+            if producto_existente:
+                # Si el producto ya existe, solo aumentamos la cantidad
+                producto_existente['cantidad'] += cantidad_galletas
+                # Encontrar y actualizar también en la lista de galletas si es necesario
+                for i, (nombre, cantidad, costo) in enumerate(galletas):
+                    if nombre == nombre_galleta:
+                        nuevas_cantidad = cantidad + cantidad_galletas
+                        nuevo_costo = nuevas_cantidad * float(precio_galleta)
+                        galletas[i] = (nombre_galleta, nuevas_cantidad, nuevo_costo)
+                        break
+            else:
+                # Si no existe, lo agregamos como un nuevo elemento
+                galletas.append((nombre_galleta, cantidad_galletas, costo_total))
+                product = {"producto_id": int(producto_id), "cantidad": cantidad_galletas, "descuento": 0.00}
+                idGalletas.append(product)
+            
+            for nombre_galleta, cantidad_galletas, costo_total in galletas:
+                costo_total_galletas += costo_total
+            
+            print(galletas)
+            print(idGalletas)
+            print(costo_total_galletas)
             
         elif 'quitarProducto' in request.form:
             index_to_remove = int(request.form['quitarProducto'])
@@ -58,6 +80,9 @@ def ventas():
                 print('Producto eliminado', galletas)
                 print(galletas)
                 print(idGalletas)
+                
+                for nombre_galleta, cantidad_galletas, costo_total in galletas:
+                    costo_total_galletas += costo_total
                 
         elif 'ingresar' in request.form and cliente_form.validate_on_submit():
             productos_ids = [producto['producto_id'] for producto in idGalletas]
@@ -76,12 +101,12 @@ def ventas():
                     break
 
             if not todo_disponible:
-                return render_template('Ventas/Ventas/ventaGalletas.html', productos=productos, galletas=galletas, form=cliente_form,alert=alert)
+                return render_template('Ventas/Ventas/ventaGalletas.html', productos=productos, galletas=galletas, form=cliente_form,alert=alert,total=costo_total_galletas)
             
             if not galletas or not idGalletas:
                 alert='alert-danger'
                 flash("No hay productos seleccionados para la venta.", "error")
-                return render_template('Ventas/Ventas/ventaGalletas.html', productos=productos, galletas=galletas, form=cliente_form,alert=alert)
+                return render_template('Ventas/Ventas/ventaGalletas.html', productos=productos, galletas=galletas, form=cliente_form,alert=alert,total=costo_total_galletas)
             
             # Si todo está disponible, proceder con la venta
             try:
@@ -166,7 +191,7 @@ def ventas():
                 print(f"Error al agregar el usuario: {e}")
         
     
-    return render_template('Ventas/Ventas/ventaGalletas.html',productos=productos,galletas=galletas,form=cliente_form,alert=alert)
+    return render_template('Ventas/Ventas/ventaGalletas.html',productos=productos,galletas=galletas,form=cliente_form,alert=alert,total=costo_total_galletas)
 
 
 paquetes=[]

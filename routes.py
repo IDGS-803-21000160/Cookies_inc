@@ -32,7 +32,7 @@ mysql = MySQL(app)
 login_manager_app=LoginManager(app)
 
 # DESBLOQUEAR CIERTOS ORIGENES
-CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5000"]}})
+#CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5000"]}})
 #CORS(app, resources={r"/*": {"origins": ["http://192.168.111.246.*", "http://192.168.111.86:8080","http://192.168.111.127.*"]}})
 
 

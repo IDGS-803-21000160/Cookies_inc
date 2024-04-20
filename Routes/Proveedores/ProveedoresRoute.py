@@ -59,8 +59,20 @@ def proveedor():
             else:
                 print('Fallo la edición')
         
-        elif request.form.get('eliminar'):
+        elif action == 'eliminar':
+            id=request.form.get('idProvDelete')
+            print(id)
+            prov_to_delete=Proveedor.query.get(id)
+            
+            if prov_to_delete:
+                prov_to_delete.estatus=False
+                print(prov_to_delete.estatus)
+                db.session.commit()
+            else:
+                print('Error')
+            print(prov_to_delete)
             print('Yo soy quien elimina')
+            
     
     
     return render_template('Proveedores/proveedores.html',form=provee_formreg,proveedores=allProveedores)

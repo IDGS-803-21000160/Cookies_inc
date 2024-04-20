@@ -16,11 +16,14 @@
 <script src="../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../../../static/sweetalert2/sweetalert2.min.js"></script>
 <link rel="stylesheet" href="../../../static/sweetalert2/sweetalert2.min.css" />
+<link rel="stylesheet" href="../../../static/css/buttons.css" />
 
 <div class="contenidoVentaUn">
-  <h2>Módulo gestión venta de paques galletas.</h2>
-  <hr />
-  <br /><br />
+  <div class="titleModule" style="padding-left: 20px">
+    Módulo gestión venta de paques galletas.
+    <hr />
+  </div>
+  <br />
   <form name="" action="" id="venta" method="post" novalidate>
     {%with messages = get_flashed_messages()%} {%if messages%} {%for message in
     messages %}
@@ -40,7 +43,9 @@
         <div class="contenedor">
           <div>
             <div>
-              <h5 class="unidades">{{product.cantidadproductos_paq}}</h5>
+              <h6 class="unidades">
+                {{product.cantidadproductos_paq}} - Tipos de galletas
+              </h6>
             </div>
             <h4 class="nameProduct">{{product.nombre_paq}}</h4>
             <h4 class="precio">$ {{product.costopaquete_paq}}</h4>
@@ -78,13 +83,18 @@
         <h3>Detalle de la Venta</h3>
         <div class="summary">
           <table class="table table-striped">
-            <thead>
+            <thead class="table-dark">
               <tr>
                 <th>Nombre de la Galleta</th>
                 <th>Cantidad</th>
                 <th>Costo Total</th>
                 <th>
-                  <button type="submit" name="quitarProducto" value="">
+                  <button
+                    class="btn btn-secondary"
+                    type="submit"
+                    name="quitarProducto"
+                    value=""
+                  >
                     Limpiar
                   </button>
                 </th>

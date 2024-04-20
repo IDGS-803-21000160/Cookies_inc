@@ -31,15 +31,14 @@ def getProductos():
 			floor(sum(inv.cantidad_inv)/min(ri.cantidad)) as cuantas
 			from recetaitem ri 
 			join material m on m.id_material = ri.materialid_itm
-			join inventario inv on inv.material_inv = m.id_material
+			join (select * from inventario where tipostock_inv = 1) inv on inv.material_inv = m.id_material
 			join producto p on ri.productoid_itm = p.id_producto
-			where inv.tipostock_inv = 1
 			group by inv.material_inv, p.id_producto) agrupacion
 			group by idProducto) sum on sum.idProducto = p.id_producto
-    where p.id_producto not in 
-        (select pi.productoid_itm from produccionitem pi join produccion p ON p.id_produccionitem = pi.id_produccionitem where p.fecha_fin is null)
-        and inv.tipostock_inv = 1
-	group by 2;
+    where p.id_producto 
+		not in (select pi.productoid_itm from produccionitem pi join produccion p ON p.id_produccionitem = pi.id_produccionitem where p.fecha_fin is null) 
+    and inv.tipostock_inv = 1 
+    group by 2;
     """
     # Ejecutar la consulta
     data = db.session.execute(text(query))

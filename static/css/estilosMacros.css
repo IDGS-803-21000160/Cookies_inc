@@ -126,6 +126,7 @@ select {
   background: white;
   box-shadow: 0px 20px 40px whitesmoke;
   border-radius: 5px;
+  border-color: transparent;
   border: 1px solid black;
   display: flex;
   justify-content: center;
@@ -137,12 +138,12 @@ select {
 }
 
 .custom-buttonBig {
+  border-color: transparent;
   width: 50%;
   height: 500px;
   background: white;
   box-shadow: 0px 20px 40px whitesmoke;
   border-radius: 5px;
-  border: 1px solid black;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -153,6 +154,7 @@ select {
 }
 
 .custom-buttonBig:hover {
+  border-color: transparent;
   background-color: #4d2d18;
   color: white;
   .img-button-v {
@@ -170,12 +172,12 @@ select {
 }
 
 .custom-buttonBigGreen {
+  border-color: transparent;
   width: 50%;
   height: 500px;
   background: white;
   box-shadow: 0px 20px 40px whitesmoke;
   border-radius: 5px;
-  border: 1px solid black;
   display: flex;
   justify-content: center;
   align-items: center;

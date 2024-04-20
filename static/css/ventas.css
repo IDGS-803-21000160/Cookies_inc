@@ -31,7 +31,7 @@
   background-color: #738064;
   color: #ffffff;
   border-radius: 10px;
-  width: 50px;
+  width: 200px;
   padding: 8px;
   display: flex;
   margin-left: auto;
@@ -74,5 +74,5 @@
 }
 
 .contenidoVentaUn {
-  padding-left: 100px;
+  padding-left: 10px;
 }

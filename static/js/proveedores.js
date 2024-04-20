@@ -100,3 +100,37 @@ function limpiarFormulario() {
   let buttonAdd = document.getElementById("registrar");
   buttonAdd.removeAttribute("disabled", "");
 }
+
+function eliminarProv(id, event) {
+  console.log(id);
+  // Previene el envío automático del formulario
+  event.preventDefault();
+
+  const form = document.getElementById("prov-form");
+  document.getElementById("form-iddelete").value = id;
+  // Asegúrate de que exista un campo para 'eliminar' en tu formulario
+  // Por ejemplo, podría ser algo así
+  // <input type="hidden" name="action" id="form-action" value="" />
+
+  Swal.fire({
+    title: "¿Estás seguro de eliminar este usuario?",
+    text: "",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Si, Eliminar!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: "Eliminado!",
+        text: "Usuario Eliminado correctamente",
+        icon: "success",
+      }).then(() => {
+        document.getElementById("form-action").value = "eliminar";
+        form.submit();
+        document.getElementById("form-action").value = "";
+      });
+    }
+  });
+}

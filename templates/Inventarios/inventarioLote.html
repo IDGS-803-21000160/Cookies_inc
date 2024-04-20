@@ -2,32 +2,57 @@
 
 {% block content %}
 {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttondelete %}
+<link rel="stylesheet" href="../../static/css/buttons.css" />
+
+<div style="margin-left: 60px">
+    <div class="titleModule">Inventario por lotes.</div>
+  </div>
 
 <div class="ms-5 me-5"> <!-- Agregar un contenedor para centrar todo el contenido -->
 
     <div class="row">
-        <div class="col-md-6">
-            <h1>INVENTARIO POR LOTES</h1>
-        </div>
-        <div class="col-md-2">
-            <form action="/inventario/agregarMaterial" method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {{ custom_buttongreen("Agregar Material") }}
-            </form>
-        </div>
-        <div class="col-md-2">
-            <form action="/inventario/agregarProducto" method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {{ custom_buttongreen("Agregar Producto") }}
-            </form>
-        </div>
-        <div class="col-md-2">
-            <form action="/inventario/seleccionarTipoEntrada" method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {{ custom_buttongreen("Entrada a Inventario") }}
-            </form>
-        </div>
-    </div>
+        <div class="cardBox">
+          <form action="/inventario/agregarMaterial" method="post" class="formInv">
+            <button class="card" type="submit">
+              <div>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <div class="numbers">Agregar Material</div>
+                <div class="cardName">Registro de nuevo material. </div>
+              </div>
+              <div class="iconBx">
+                <ion-icon name="cash-outline"></ion-icon>
+              </div>
+            </button>
+          </form>
+          <form action="/inventario/agregarProducto" method="post" class="formInv">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <button class="card" type="submit">
+              <div>
+                <div class="numbers">Agregar Producto</div>
+                <div class="cardName">Registro de nuevos productos. </div>
+              </div>
+              <div class="iconBx">
+                <ion-icon name="cart-outline"></ion-icon>
+              </div>
+            </button>
+          </form>
+          <form action="/inventario/seleccionarTipoEntrada" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    
+          <button class="card" type="submit">
+            <div>
+              <div class="numbers">Entrada a Inventario</div>
+              <div class="cardName">
+                Entrada de inventario (material y producto).
+              </div>
+            </div>
+            <div class="iconBx">
+              <ion-icon name="analytics-outline"></ion-icon>
+            </div>
+          </div>
+        </button>
+    </form>
+      </div>
 
     <div class="row justify-content-center">
         <div class="col-md-10 mb-4 mt-3" style="height: 0.2px; width: 85%; background-color: rgba(0, 0, 0, 0.603);"></div>

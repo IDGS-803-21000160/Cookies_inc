@@ -1,90 +1,78 @@
+{% extends 'ContenedorMain/contenedorMain.html' %} {% block content %} {% from
+"Macros/inputComponent.html" import search_input, input_custom %} {% from
+"Macros/botonComponent.html" import custom_button, custom_buttongreen,
+custom_buttonsave%}
 
-{% extends 'ContenedorMain/contenedorMain.html' %}
-{% block content %}
-    {% from "Macros/inputComponent.html" import search_input, input_custom %}
-    {% from "Macros/botonComponent.html" import custom_button, custom_buttongreen, custom_buttonsave%}
+<script src="../../static/sweetalert2/sweetalert2.min.js"></script>
+<link rel="stylesheet" href="../../static/sweetalert2/sweetalert2.min.css" />
+<link rel="stylesheet" href="../../static/css/buttons.css" />
 
-    <script src="../../static/sweetalert2/sweetalert2.min.js"></script>
-    <link rel="stylesheet" href="../../static/sweetalert2/sweetalert2.min.css" />
+{% if alerta %}
+<script>
+  Swal.fire({ icon: "error", title: "¡Error!", text: "{{ alerta }}" }).then(
+    function () {
+      let url = new URL(window.location.href);
+      url.searchParams.delete("alerta");
+      url.searchParams.delete("tipo");
+      history.pushState({}, "", url.toString());
+    }
+  );
+</script>
+{% endif %}
 
-    {% if alerta %}
-        <script>
-            Swal.fire({ icon: 'error', title: '¡Error!', text: '{{ alerta }}' }).then(function() {
-                let url = new URL(window.location.href);
-                url.searchParams.delete('alerta');
-                url.searchParams.delete('tipo');
-                history.pushState({}, '', url.toString());
-            });
-        </script>
-    {% endif %}
+<div class="row" style="justify-content: space-evenly">
+  <div class="col-6" style="padding-left: 60px">
+    <div class="titleModule">Entrada a material.</div>
+  </div>
+  <div class="col-6" style="padding-top: 20px; padding-right: 60px">
+    <form action="/inventario/seleccionarTipoEntrada" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      {{ custom_buttongreen("Seleccionar Otra Entrada") }}
+    </form>
+  </div>
+</div>
+<hr />
+<br />
 
-    <div class="row" style="justify-content: space-evenly;">
-        <div class="col-md-7">
-            <h1>ENTRADA A MATERIAL</h1>
+<div
+  class="container d-flex justify-content-center align-items-center"
+  style="min-height: 60vh"
+>
+  <!-- Añade altura mínima del 100% de la altura de la ventana -->
+  <div class="row w-100">
+    <!-- Puedes ajustar el ancho al 100% si quieres que ocupe todo el ancho del contenedor padre -->
+    <div class="col-md-12 box-form">
+      <h4 class="mb-5">Selecciona la entrada e ingresa una cantidad</h4>
+      <form action="/inventario/guardarEntrada" method="post" novalidate>
+        <input type="hidden" name="tipo" value="{{ tipo }}" />
+        {% if tipo == '1' %}
+        <div class="row justify-content-center">
+          <div class="col-md-9">{{ input_custom(form.material) }}</div>
+
+          <div class="col-md-3">{{ input_custom(form.cantidad) }}</div>
         </div>
-        <div class="col-md-3">
-            <form action="/inventario/seleccionarTipoEntrada" method="post">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {{ custom_buttongreen("Seleccionar Otra Entrada") }}
-            </form>
-            
+        <div class="row">
+          <div class="col-md-12">{{ input_custom(form.descripcion) }}</div>
         </div>
-    </div>
-
-    <div class="row justify-content-center">
-        <div class="col-md-10 mb-4 mt-3" style="height: 2px; background-color: rgba(0, 0, 0, 0.603);"></div>
-    </div>
-
-    <div class="container d-flex justify-content-center align-items-center" style="min-height: 60vh;"> <!-- Añade altura mínima del 100% de la altura de la ventana -->
-        <div class="row w-100"> <!-- Puedes ajustar el ancho al 100% si quieres que ocupe todo el ancho del contenedor padre -->
-            <div class="col-md-12 box-form">
-
-                <h4 class="mb-5">Selecciona la entrada e ingresa una cantidad</h4>
-                <form action="/inventario/guardarEntrada" method="post" novalidate>
-                    <input type="hidden" name="tipo" value="{{ tipo }}">
-                    {% if tipo == '1' %}
-                    <div class="row justify-content-center">
-                        <div class="col-md-9">
-                            {{ input_custom(form.material) }}
-                        </div>
-
-                        <div class="col-md-3">
-                            {{ input_custom(form.cantidad) }}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            {{ input_custom(form.descripcion) }}
-                        </div>
-                    </div>
-                    {% else %}
-                    <div class="row">
-                        <div class="col-md-8">
-                            {{ input_custom(form.producto) }}
-                        </div>
-                        <div class="col-md-4">
-                            {{ input_custom(form.cantidad) }}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            {{ input_custom(form.descripcion) }}
-                        </div>
-                    </div>
-                    {% endif %}            
-    
-                    <div class="row justify-content-center">
-                        <div class="col-md-12 text-center">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            {{ custom_button("Guardar Cambios") }}
-                        </div>
-                    </div>
-    
-                </form>
-            </div>
+        {% else %}
+        <div class="row">
+          <div class="col-md-8">{{ input_custom(form.producto) }}</div>
+          <div class="col-md-4">{{ input_custom(form.cantidad) }}</div>
         </div>
+        <div class="row">
+          <div class="col-md-12">{{ input_custom(form.descripcion) }}</div>
+        </div>
+        {% endif %}
+
+        <div class="row justify-content-center">
+          <div class="col-md-12 text-center">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            {{ custom_button("Guardar Cambios") }}
+          </div>
+        </div>
+      </form>
     </div>
-    
-    
+  </div>
+</div>
 
 {% endblock %}

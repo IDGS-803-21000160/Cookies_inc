@@ -155,8 +155,8 @@
   <div class="cardBox center">
     <div class="card">
       <div>
-        <div class="numbers">${{utilidadGalleta}} </div>
-        <div class="cardName">Galleta Con Mas utilidad: ${{cantidadUtilidad}} Por Galleta</div>
+        <div class="numbers">{{utilidadGalleta}} </div>
+        <div class="cardName">Galleta Con Mas utilidad: ${{cantidadUtilidad}} MXN. Por Galleta</div>
       </div>
       <div class="iconBx">
         <ion-icon name="cash-outline"></ion-icon>
@@ -173,8 +173,15 @@
     </div>
     <div class="card">
       <div>
-        <div class="numbers">{{galletaMerma}}</div>
-        <div class="cardName">Galleta Con Mas Merma: {{cantidadMerma}} Galletas En Merma</div>
+        <div class="numbers col-md-12">
+          <div class="col-md-12">
+            {{galletaMerma}}
+          </div>
+        </div>
+        <div class="cardName" style="color: black;">PRODUCTO CON MÁS PERDIDAS UNITARIAS POR MERMA</div>
+        <br>
+        <div class="cardName">Perdidas Unitarias: {{cantidadMerma}} Galletas</div>
+        <div class="cardName">Perdidas Monetarias: $ {{costo}} MXN.</div>
       </div>
       <div class="iconBx">
         <ion-icon name="trending-down-outline"></ion-icon>

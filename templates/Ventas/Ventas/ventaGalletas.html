@@ -16,10 +16,32 @@
 <script src="../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../../../static/sweetalert2/sweetalert2.min.js"></script>
 <link rel="stylesheet" href="../../../static/sweetalert2/sweetalert2.min.css" />
+<link rel="stylesheet" href="../../../static/css/buttons.css" />
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var inputElements = document.querySelectorAll('input[type="number"]');
+
+    inputElements.forEach(function (input) {
+      input.addEventListener("input", function () {
+        if (input.value <= 0) {
+          input.value = ""; // Limpiar el campo si el valor es menor o igual a 0
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Por favor, ingrese un número mayor que cero.",
+          });
+        }
+      });
+    });
+  });
+</script>
 
 <div class="contenidoVentaUn">
-  <h2>Módulo gestión venta de galletas.</h2>
-  <hr />
+  <div class="titleModule" style="padding-left: 20px">
+    Módulo gestión venta de galletas.
+    <hr />
+  </div>
+
   <br /><br />
   <form name="" action="" id="venta" method="post" novalidate>
     {%with messages = get_flashed_messages()%} {%if messages%} {%for message in
@@ -36,10 +58,14 @@
     {%endfor%} {%endif%} {%endwith%}
     <div class="contenedorPrincipal">
       <div class="contenedor-con-scroll">
-        {%for product in productos%}
+        {%for product in productos%} {% if product.cantidad|int >= 1 %}
         <div class="contenedor">
           <div>
-            <div><h5 class="unidades">{{product.cantidad}}</h5></div>
+            <div>
+              <h6 class="unidades">
+                {{ product.cantidad|int }} ⦁⦁ Piezas disponibles
+              </h6>
+            </div>
             <h4 class="nameProduct">{{product.nombre_producto}}</h4>
             <h4 class="precio">$ {{product.costo}}</h4>
           </div>
@@ -50,6 +76,8 @@
             id="numero_{{ product.idProducto }}"
             name="numero_{{ product.idProducto }}"
             class="form-label"
+            min="1"
+            required
           />
           <button
             id="registrar_{{product.nombre_producto}}"
@@ -67,19 +95,18 @@
           name="nombreGalleta_{{product.nombre_producto}}"
           value="{{product.nombre_producto}}"
         />
-
-        {%endfor%}
+        {% endif %} {%endfor%}
       </div>
       <div class="orden">
         <h3>Detalle de la Venta</h3>
         <div class="summary">
           <table class="table table-striped">
-            <thead>
+            <thead class="table-dark">
               <tr>
                 <th>Nombre de la Galleta</th>
                 <th>Cantidad</th>
-                <th>Costo Total</th>
-                <th></th>
+                <th>Costo Total:</th>
+                <th>{{total}}</th>
               </tr>
             </thead>
             <tbody>
@@ -92,6 +119,7 @@
                 <td>
                   <button
                     type="submit"
+                    class="btn btn-outline-danger"
                     name="quitarProducto"
                     value="{{ loop.index0 }}"
                   >
