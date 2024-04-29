@@ -53,6 +53,7 @@ def agregarProduccion(idProducto,cantidad):
     return {'response':'success'}
 
 @modulo_produccion.route('/produccionGalleta', methods=['GET','POST'])
+@login_required
 def produccionGalleta():
     if request.method == 'POST':
         acceptacion = request.form.get('idPro')
@@ -66,6 +67,7 @@ def produccionGalleta():
 
         # print('idp: ', idProducto,'counter: ',counter,'cant: ',cantidad, 'idpi: ', idProduccionitem)
         if acceptacion == '1':
+            print("entro")
             descontarProduccion(idProducto,cantidad,idProduccionitem,usuario_registro)
         else:
             rechazarProduccion(idProducto,cantidad,idProduccionitem,usuario_registro)
@@ -95,6 +97,7 @@ def descontarProduccion(idProducto,cantidad,idProduccionitem,usuario_registro):
         text("CALL descontarProduccion(:idProducto, :cantidad, :idProduccionitem, :usuario_registro)"),
         {"idProducto": idProducto, "cantidad":cantidad, "idProduccionitem":idProduccionitem,"usuario_registro":usuario_registro}
     )
+    print(" ",idProducto," ",cantidad," ",idProduccionitem," ",usuario_registro)
     db.session.commit()
     #print("idProduccionitem: ",idProduccionitem)
     return {'response':'success'}

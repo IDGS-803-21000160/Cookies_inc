@@ -129,8 +129,8 @@ def inventariosGuardarProducto():
                 
                 usuariop = current_user.id_usuario
                 db.session.execute(
-                        text("CALL entradaInventario(:tipo, :id_materia_producto, :cantidad, :usuariop)"),
-                        {"tipo": 2, "id_materia_producto": id_producto, "cantidad": 0, "usuariop": usuariop}
+                        text("CALL entradaInventario(:tipo, :id_materia_producto, :cantidad, :usuariop, :descripcionp)"),
+                        {"tipo": 2, "id_materia_producto": id_producto, "cantidad": 0, "usuariop": usuariop, "descripcionp" : 'Registro de Productos'}
                     )
                 db.session.commit()
 

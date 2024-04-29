@@ -1,0 +1,87 @@
+{%extends 'ContenedorMain/contenedorMain.html' %} {% from
+"Macros/inputComponent.html" import input_customVenta %} {% from
+"Macros/botonComponent.html" import custom_buttongreen %} {%block content %}
+
+<div class="row">
+  <div class="col-4">
+    <h1 class="text-center">Detalle Venta</h1>
+  </div>
+  <div class="col-3"></div>
+  <div class="col-4">
+    <a
+      href="/pagePrincipal/venta/corte"
+      class="custom-buttongreen btn btn-success"
+      >Volver a Ventas</a
+    >
+  </div>
+  <div class="col-1"></div>
+</div>
+<div class="row justify-content-center">
+  <div
+    class="col-md-10 mb-4 mt-3"
+    style="height: 2px; background-color: rgba(0, 0, 0, 0.603)"
+  ></div>
+</div>
+<div class="row m-3">
+  <div class="my-3 p-3 bg-white rounded box-form4">
+    <div class="row">
+      <h6 class="border-bottom border-grey pb-2 mb-0 m-3 display-6">
+        <strong>N° Venta: {{ compradetalle.id_venta }}</strong>
+      </h6>
+      <div class="row mt-1">
+        <div class="media text-muted pb-2 mb-0">
+          <div class="media-body pb-3 mb-0 border-bottom border-grey">
+            <strong>Usuario</strong><br />
+            <div class="row">
+              <div class="col">
+                Tipo usuario: {{ compradetalle.tipo_usuario }}
+              </div>
+              <div class="col">Nombre: {{ compradetalle.nombre_us }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-1">
+        <div class="media text-muted pb-2 mb-0">
+          <div class="media-body pb-3 mb-0 border-bottom border-grey">
+            <strong>Fecha venta:</strong> {{ compradetalle.fecha_venta }}
+          </div>
+        </div>
+      </div>
+      <div class="row mt-1">
+        <div class="media text-muted pb-2 mb-0">
+          <div class="media-body pb-3 mb-0 border-bottom border-grey">
+            <strong>Cantidad Productos:</strong> {{ compradetalle.cantidad }}
+          </div>
+        </div>
+      </div>
+      <div class="row mt-1">
+        <div class="media text-muted pb-2 mb-0">
+          <div class="media-body pb-3 mb-0 border-bottom border-grey">
+            <strong>Productos comprados:</strong>
+            <div class="row">
+              <div class="col">
+                <p class="overflow-auto">
+                  {{ compradetalle.nombres_productos }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-1">
+        <div class="media text-muted pb-2 mb-0">
+          <div class="media-body pb-3 mb-0 border-bottom border-grey">
+            <strong>Total:</strong>
+            <div class="row">
+              <div class="col">
+                <p class="overflow-auto">{{ compradetalle.total }} MXN</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{%endblock%}

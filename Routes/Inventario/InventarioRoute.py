@@ -47,7 +47,7 @@ def inventarios():
         LEFT JOIN producto ON id_producto = producto_inv
         LEFT JOIN material ON id_material = material_inv
         INNER JOIN tipoinventario ON id_tipoInventario = tipo_inv
-    WHERE cantidad_inv > 0 and tipostock_inv not in (2, 4)
+    WHERE cantidad_inv > 0 and tipostock_inv not in (2, 4, 3)
     GROUP BY id_inv, nombre, tipo_inv, id_tipoInv
     ORDER BY lotes desc;
     """)

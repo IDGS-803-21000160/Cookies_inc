@@ -202,6 +202,7 @@ galletasVent=[]
 def ventasPaq():
     cliente_form=ClienteFormReg(request.form)
     paquete=VistaDetallePaquete.query.all()
+    alert=''
     if request.method == 'POST':
         if request.form.get('registrar'):
             datos_producto = request.form['registrar']
@@ -271,12 +272,16 @@ def ventasPaq():
                 
                 db.session.commit()
                 print('Venta Realizada con Exito')
+                
+                alert='alert-success'
+                flash("Venta realizada con Éxito...")
+                galletasVent.clear()
             except Exception as e:
                 db.session.rollback()
                 print(f"Error al agregar el usuario: {e}")
         
     
-    return render_template('Ventas/Ventaspaq/ventasPaquetes.html',productos=paquete,galletas=paquetes,form=cliente_form)
+    return render_template('Ventas/Ventaspaq/ventasPaquetes.html',productos=paquete,galletas=paquetes,form=cliente_form,alert=alert)
 
 
 #******************************************************************************************
@@ -292,7 +297,9 @@ def ventaCorte():
     if request.method == "POST":
         print(request.form)
         tipo_corte = request.form['tipo_corte']
-        fecha_actual = datetime.now()
+        fecha_actual2 = datetime.now()
+        # Convertir a solo fecha sin tiempo (hora, minutos, segundos)
+        fecha_actual = fecha_actual2.date()
         if tipo_corte == 'dia_actual':
             fecha_limite = fecha_actual
             if fecha_limite:
@@ -334,3 +341,58 @@ def ventaCorte():
         return render_template('Ventas/VentaCorte/ventaCorte.html', form = ventaForm, registros = registros, total = total)
         
     return render_template('Ventas/VentaCorte/ventaCorte.html', form = ventaForm)
+
+@modulo_ventas.route('/venta/corte/detalleCorte', methods=["POST"])
+@login_required
+@pos_required
+def verDetalleVenta():
+    if request.method == "POST":
+        idVenta = int(request.form["idventa"])
+        print(idVenta)
+        query = """
+            SELECT 
+                vi.ventaid_itm as id_venta,
+                GROUP_CONCAT( 'Nombre: ', IFNULL(nombre_producto, nombre_paq), ' - ', 'Cantidad: ' , cantidad, ' - ' ,'Precio: ', total separator ' | ' ) producto , 
+                nombrecompleto, 
+                tipousuario, 
+                cast(vi.fecha_registro as date) fecha, 
+                concat('$ ', sum( total )) totalneto,
+                sum(cantidad) as cantGalletas
+            FROM ventaitem vi
+                LEFT JOIN producto on id_producto = vi.productoid_itm
+                LEFT JOIN paquete on id_paquete = vi.paqueteid_itm
+                INNER JOIN usuario on id_usuario = vi.usuario_registro
+            WHERE ventaid_itm = :idVenta
+            GROUP BY id_venta, nombrecompleto, tipousuario, vi.fecha_registro;
+        """
+
+        data = db.session.execute(text(query), {"idVenta": idVenta})
+        
+        print(data)
+        for row in data:
+            id_venta = row.id_venta
+            nombre_us = row.nombrecompleto
+            tipo_usuario = row.tipousuario
+            fecha_venta = row.fecha
+            cantidad = row.cantGalletas
+            nombres_productos = row.producto
+            total = row.totalneto
+
+            datelleCompra = {
+                'id_venta': id_venta,
+                'nombre_us': nombre_us,
+                'tipo_usuario': tipo_usuario,
+                'fecha_venta': fecha_venta,
+                'cantidad': cantidad,
+                'nombres_productos': nombres_productos,
+                'total': total
+            }
+            # print(f"ID Compra: {id_compra}")
+            # print(f"Proveedor: {nombre_proveedor} - Teléfono: {telefono_proveedor}")
+            # print(f"Tipo de usuario: {tipo_usuario} - Nombre: {nombre_usuario}")
+            # print(f"Fecha de compra: {fecha_compra}")
+            # print(f"Cantidad de productos: {cantidad} - Total productos: {cantidad_productos}")
+            # print(f"Productos comprados: {nombres_productos}")
+            # print("=" * 20)  # Separador entre cada fila
+    
+    return render_template("Ventas/VentaCorte/detalleVentaCorte.html", compradetalle = datelleCompra)

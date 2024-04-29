@@ -16,3 +16,5 @@ class InventarioMaterialForm (Form):
     
     costoMaterial = DecimalField("Costo del Material", [validators.DataRequired(message= 'Debes ingresar el costo del material'),
                                         validators.number_range(min=0.0001, message='El material debe tener un costo mayor a 0')]) 
+    
+    proveedores = SelectField("Proveedor", coerce=int)

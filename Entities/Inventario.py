@@ -32,6 +32,7 @@ class Material(db.Model):
     estatus = db.Column(Boolean, default=1)
     usuario_registro = db.Column(db.Integer)
     fecha_registro = db.Column(db.DateTime, default=datetime.now)
+    proveedorid_itm = db.Column(db.Integer, db.ForeignKey('proveedor.id_proveedor'))
 
 class Producto(db.Model):
     __tablename__ = 'producto'

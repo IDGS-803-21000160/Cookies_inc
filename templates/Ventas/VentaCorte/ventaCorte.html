@@ -1,19 +1,21 @@
+
 {%extends 'ContenedorMain/contenedorMain.html' %}
 {% from "Macros/inputComponent.html" import input_customVenta %}
 {% from "Macros/botonComponent.html" import custom_buttongreen %}
 {%block content %}
+<link rel="stylesheet" href="../../../static/css/buttons.css" />
+
 
 <div class="row">
     <form action="/pagePrincipal/venta/corte" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <div class="row">
-            <div class="col-3">
-                <h1 class="text-center">CORTE</h1>
-            </div>
-            <div class="col-4">
+        <div class="col-6" style="padding-left: 100px">
+            <div class="titleModule">Corte. </div>
+          </div>
+            <div class="col-6">
                 {{ input_customVenta(form.tipo_corte) }}
             </div>
-            <div class="col-4">
+            <div class="col-6">
                 <button type="submit" class="custom-buttongreen btn btn-success" name="action" value="">Cargar</button>
             </div>
         </div>
@@ -42,6 +44,13 @@
                     <td>{{ registro[4] }}</td>
                     <td>{{ registro[6] }}</td>
                     <td>{{ subtotal_float }}</td>
+                    <td>
+                        <form action="/venta/corte/detalleCorte" method="post" novalidate>
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="idventa" value="{{ registro[0] }}">
+                            <button type="submit" class="btn btn-success">Ver Detalle</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -82,7 +82,7 @@ def compra():
                         })
                 elif valor < 0:
                     flash("ingresa un valor valido", "danger")
-            
+                
                 
             total = round(total, 2)
             listaCompra_insertar.extend(listaCompra)

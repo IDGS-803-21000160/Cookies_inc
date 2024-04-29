@@ -25,20 +25,51 @@
         name="material_id"
         value="{{ material.id_material }}"
       />
-      <div class="row mb-3">
-        <div class="col-md-9">
-          {{ input_custom(form.nombreMaterial, value=material.nombre_mat) }}
-        </div>
-        <div class="col-md-3">
-          {{ input_custom(form.diasCaducidad, value = material.dias_caducidad)
-          }}
-        </div>
-      </div>
 
-      <div class="row mb-3">
-        <div class="col-md-6">
-          {{ input_custom(form.unidadMedidaAgregar, value =
-          material.unidad_medida) }}
+      <div class="row">
+        <div class="col-md-12 box-form">
+          <form
+            action="/inventario/actualizarMaterial"
+            method="post"
+            novalidate
+          >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <input
+              type="hidden"
+              name="material_id"
+              value="{{ material.id_material }}"
+            />
+            <div class="row mb-3">
+              <div class="col-md-9">
+                {{ input_custom(form.nombreMaterial, value=material.nombre_mat)
+                }}
+              </div>
+              <div class="col-md-3">
+                {{ input_custom(form.diasCaducidad, value =
+                material.dias_caducidad) }}
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-4">
+                {{ input_custom(form.unidadMedidaAgregar, value =
+                material.unidad_medida) }}
+              </div>
+              <div class="col-md-4">
+                {{ input_custom(form.costoMaterial, value = material.costo_mat)
+                }}
+              </div>
+              <div class="col-md-4">
+                {{ input_custom(form.proveedores, value = material.nombre) }}
+              </div>
+            </div>
+
+            <div class="row justify-content-center">
+              <div class="col-md-12 text-center">
+                {{ custom_button("Modificar Material") }}
+              </div>
+            </div>
+          </form>
         </div>
         <div class="col-md-6">
           {{ input_custom(form.costoMaterial, value = material.costo_mat) }}

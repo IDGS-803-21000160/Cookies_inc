@@ -27,7 +27,7 @@
   <form name="" action="" id="venta" method="post" novalidate>
     {%with messages = get_flashed_messages()%} {%if messages%} {%for message in
     messages %}
-    <div class="alert alert-danger alert-dismissible" role="alert">
+    <div class="alert {{alert}} alert-dismissible" role="alert">
       <strong>{{message}}</strong>
       <button
         type="button"
