@@ -31,6 +31,7 @@ mysql = MySQL(app)
 
 login_manager_app=LoginManager(app)
 
+#Configuración del CORS 
 # DESBLOQUEAR CIERTOS ORIGENES
 #CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5000"]}})
 #CORS(app, resources={r"/*": {"origins": ["http://192.168.111.246.*", "http://192.168.111.86:8080","http://192.168.111.127.*"]}})
@@ -50,6 +51,7 @@ app.register_blueprint(modulo_paquetes)
 app.register_blueprint(modulo_materiales)
 app.register_blueprint(modulo_producto)
 
+#Paginas de error
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('ErrorPage/404.html'),404
