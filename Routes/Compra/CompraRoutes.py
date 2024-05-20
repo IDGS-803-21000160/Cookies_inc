@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from permissions import inventario_required
 from flask_login import login_required,current_user
 
+
 modulo_compras = Blueprint('modulo_compras', __name__)
 csrf=CSRFProtect()
 
