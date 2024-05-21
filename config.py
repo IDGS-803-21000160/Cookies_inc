@@ -20,7 +20,8 @@ class Config(object):
     SESSION_COOKIE_SECURE = True
 
 class DevelopmentConfig(Config):
-
+    
+    #Configuracion de encriptado
     # print(decrypted_DB_USER)
     # print(decrypted_DB_PASS)
     # print(decrypted_DB_HOST)
