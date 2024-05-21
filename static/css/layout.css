@@ -1,0 +1,21 @@
+nav {
+    background-color: #738064;
+  }
+  
+  li {
+    display: flex;
+    padding: 8px;
+  }
+  
+  span {
+    padding-top: 8px;
+    color: aliceblue;
+  }
+  
+  .logout {
+    padding-left: 100px;
+  }
+  
+  .container {
+    margin: auto;
+  }

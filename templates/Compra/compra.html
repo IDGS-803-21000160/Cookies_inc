@@ -1,0 +1,227 @@
+{%extends 'ContenedorMain/contenedorMain.html' %} {%block content %} {% from
+"Macros/inputComponent.html" import input_customCompra %} {% from
+"Macros/inputComponent.html" import render_select_field_compra %}
+<link rel="stylesheet" href="../../static/css/buttons.css" />
+
+<div>
+  {%with messages = get_flashed_messages(with_categories=true)%} {%if messages%}
+  <br />
+  {%for category, message in messages %}
+  <div class="alert alert-{{ category }}" role="alert">
+    <div class="row">
+      <div class="col">
+        <strong>{{message}}</strong>
+      </div>
+      <div class="col-1">
+        <div class="justify-content-end">
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {%endfor%} {%endif%} {%endwith%}
+  <form id="myForm" action="/compra" method="post" novalidate>
+    <div class="row" style="margin-left: 30px; margin-right: 30px;">
+      <div class="col-6" >
+        <div class="titleModule">Compras.</div>
+      </div>
+        <div class="col-3">
+          {{ render_select_field_compra(form.tipo_prov) }}
+        </div>
+        <div class="col-3" style="padding-top: 17px;">
+          <button type="submit" name="cargar" class="btn btn-secondary" style="width: 200px;">Cargar</button>
+        </div>
+        <hr />
+    </div>
+    </div>
+    
+    <br />
+    
+    <div class="row">
+      <div class="col"></div>
+      <div class="col-4 pb-3">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <h4 class="text-center">Productos</h4>
+        <div class="seccion-con-scroll">
+          {% for producto in prodct %}
+          <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8 mb-3">
+              <div class="card">
+                <div class="card-header h-50">
+                  <h5 class="my-0 font-weight-normal text-center">
+                    {{ producto.nombre }}
+                  </h5>
+                </div>
+                <div class="card-body">
+                  {% set unidad_med = producto.unidad_medida %} {% if unidad_med
+                  == 'pieza' %}
+                  <h1 class="card-title pricing-card-title text-center">
+                    ${{ producto.costo }}
+                    <small class="text-muted">/ pieza</small>
+                  </h1>
+                  {% else %} {% set costos = (producto.costo | float * 1000) |
+                  round(2) %}
+                  <h3 class="card-title pricing-card-title text-center">
+                    ${{ costos }} <small class="text-muted">/ kg-L</small>
+                  </h3>
+                  {%endif%}
+                  <!-- * se puede eliminar * -->
+                  {% set campo_nombre = 'nombre_producto_' + loop.index|string
+                  %}
+                  <input
+                    type="hidden"
+                    name="{{ campo_nombre }}"
+                    value="{{ producto.nombre }}"
+                  />
+                  {% set campo_descripcion = 'unidad_medida_' +
+                  loop.index|string %}
+                  <input
+                    type="hidden"
+                    name="{{ campo_descripcion }}"
+                    value="{{ producto.unidad_medida }}"
+                  />
+                  <!-- ********* -->
+                  <div>
+                    {{ input_customCompra(form['cantidad_producto_' +
+                    loop.index|string]) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-2"></div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="row m-2">
+          <div class="seccion-con-scroll">
+            <table class="table table-bordered table-striped custom-table">
+              <thead class="text-dark">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Producto</th>
+                  <th scope="col">Cantidad kg/L/pz</th>
+                  <th scope="col">subtotal</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for compra in listaCompra %}
+                <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ compra['nombre_producto'] }}</td>
+                  <td>{{ compra['cantidad_producto'] }}</td>
+                  <td>{{ compra['subtotal'] }}</td>
+                  <td>
+                    <button
+                      class="btn btn-danger"
+                      name="Eliminar"
+                      value="{{ loop.index0 }}"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="2">Total</td>
+                  <td colspan="3">{{ total }}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col"></div>
+    </div>
+    <div class="row">
+      <div class="col-6">
+        <div class="row justify-content-center">
+          <div class="col-3">
+            <button
+              type="submit"
+              class="mt-3 custom-buttongreen"
+              name="Agregar"
+            >
+              Agregar
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="row justify-content-center">
+          <div class="col-3">
+            <button
+              type="submit"
+              class="mt-3 custom-buttongreen"
+              name="Terminar"
+            >
+              Terminar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <div class="row p-5">
+    <h2>Compras Realizadas</h2>
+    <div class="col">
+      <table class="table table-bordered table-striped custom-table">
+        <thead class="text-dark">
+          <tr>
+            <th scope="col">idCompra</th>
+            <th scope="col">idProveedor</th>
+            <th scope="col">idUsuario</th>
+            <th scope="col">Folio</th>
+            <th scope="col">Fecha compra</th>
+            <th scope="col">Cantidad productos</th>
+            <th scope="col">Total gastado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for compra in compra %}
+          <tr>
+            <td>{{ compra['id_compra'] }}</td>
+            <td>{{ compra['proveedorid_comp'] }}</td>
+            <td>{{ compra['usuario_comp'] }}</td>
+            <td>{{ compra['folio_comp'] }}</td>
+            <td>{{ compra['fecha_comp'] }}</td>
+            <td>{{ compra['cantidad_productos'] }}</td>
+            <td>{{ compra['total_compra'] }}</td>
+            <td>
+              <form action="/detalleCompra" method="post">
+                <input
+                  type="hidden"
+                  name="csrf_token"
+                  value="{{ csrf_token() }}"
+                />
+                <input
+                  type="hidden"
+                  name="idcompra"
+                  value="{{ compra['id_compra'] }}"
+                />
+                <button type="submit" class="btn btn-success">
+                  Ver Detalle
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{%endblock%}

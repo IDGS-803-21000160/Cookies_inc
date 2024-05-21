@@ -1,0 +1,198 @@
+{% extends 'ContenedorMain/contenedorMain.html' %} {% block content %} {% from
+"Macros/botonComponent.html" import custom_button, custom_buttongreen,
+custom_buttondelete %}
+<script src="../../static/sweetalert2/sweetalert2.min.js"></script>
+<link rel="stylesheet" href="../../static/css/buttons.css" />
+
+<link rel="stylesheet" href="../../static/sweetalert2/sweetalert2.min.css" />
+
+{% if alerta %} {% if success == 'False' %}
+<script>
+  Swal.fire({ icon: "error", title: "¡Error!", text: "{{ alerta }}" }).then(
+    function () {
+      let url = new URL(window.location.href);
+      url.searchParams.delete("success");
+      url.searchParams.delete("alerta");
+      window.location.href = url.toString();
+    }
+  );
+</script>
+{% else %}
+<script>
+  Swal.fire({ icon: "success", title: "¡Éxito!", text: "{{ alerta }}" }).then(
+    function () {
+      let url = new URL(window.location.href);
+      url.searchParams.delete("success");
+      url.searchParams.delete("alerta");
+      window.location.href = url.toString();
+    }
+  );
+</script>
+{% endif %} {% endif %}
+<div style="margin-left: 60px">
+  <div class="titleModule">Módulo de gestión de inventario.</div>
+</div>
+<br />
+<div class="ms-5 me-5">
+  <!-- Agregar un contenedor para centrar todo el contenido -->
+  <div class="row">
+    <div class="cardBox">
+      <form action="/inventario/agregarMaterial" method="post" class="formInv">
+        <button class="card" type="submit">
+          <div>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <div class="numbers">Agregar Material</div>
+            <div class="cardName">Registro de nuevo material. </div>
+          </div>
+          <div class="iconBx">
+            <ion-icon name="cash-outline"></ion-icon>
+          </div>
+        </button>
+      </form>
+      <form action="/inventario/agregarProducto" method="post" class="formInv">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <button class="card" type="submit">
+          <div>
+            <div class="numbers">Agregar Producto</div>
+            <div class="cardName">Registro de nuevos productos. </div>
+          </div>
+          <div class="iconBx">
+            <ion-icon name="cart-outline"></ion-icon>
+          </div>
+        </button>
+      </form>
+      <form action="/inventario/seleccionarTipoEntrada" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+      <button class="card" type="submit">
+        <div>
+          <div class="numbers">Entrada a Inventario</div>
+          <div class="cardName">
+            Entrada de inventario (material y producto).
+          </div>
+        </div>
+        <div class="iconBx">
+          <ion-icon name="analytics-outline"></ion-icon>
+        </div>
+      </div>
+    </button>
+</form>
+  </div>
+<br><br>
+
+  {% from "Macros/inputComponent.html" import search_input, input_custom %} {%
+  from "Macros/tableComponent.html" import custom_table %}
+
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <div class="search-container">
+        <input
+          type="text"
+          placeholder="Buscar Inventario"
+          ,
+          id="searchInventario"
+          ,
+          oninput="filtrarTabla()"
+        />
+        <i class="fas fa-search fa-icon"></i>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <form action="/inventario/mermas" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        {{ custom_button("Mermas") }}
+      </form>
+    </div>
+    <div class="col-md-2">
+      <form action="/inventario/productos" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        {{ custom_button("Productos") }}
+      </form>
+    </div>
+    <div class="col-md-2">
+      <form action="/inventario/materiales" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        {{ custom_button("Materiales") }}
+      </form>
+    </div>
+  </div>
+
+  <div class="row mt-5">
+    <div class="col-md-12 text-center">
+      <div class="custom-table2">
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th>Nombre</th>
+              <th>Tipo de Inventario</th>
+              <th>Costo</th>
+              <th>Numero de Lotes</th>
+              <th>Cantidad</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for inv in inventario %}
+            <tr>
+              <td style="text-align: start; font-weight: bold">
+                {{ inv.nombre }}
+              </td>
+              <td>{{ inv.tipo_inv }}</td>
+              <td>{{ inv.costo }}</td>
+              <td>{{ inv.lotes }}</td>
+              <td>{{ inv.cantidad_inv }}</td>
+              <td>
+                <form
+                  action="/inventario/lotes"
+                  method="get"
+                  style="display: inline"
+                >
+                  <input type="hidden" name="id_inv" value="{{ inv.id_inv }}" />
+                  <input
+                    type="hidden"
+                    name="id_tipoinv"
+                    value="{{ inv.id_tipoInv }}"
+                  />
+                  <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                  />
+                  {{ custom_button("Ver Lotes") }}
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function filtrarTabla() {
+    // Obtener el valor del campo de búsqueda
+    var textoBusqueda = document
+      .getElementById("searchInventario")
+      .value.toUpperCase();
+    // Obtener todas las filas de la tabla
+    var filas = document.querySelectorAll(".custom-table2 tbody tr");
+
+    // Iterar sobre todas las filas de la tabla
+    for (var i = 0; i < filas.length; i++) {
+      var fila = filas[i];
+      // Obtener el contenido de la fila y convertirlo a mayúsculas para hacer la comparación sin distinción entre mayúsculas y minúsculas
+      var contenidoFila = fila.innerText.toUpperCase();
+      // Si el contenido de la fila contiene el texto de búsqueda, mostrar la fila; de lo contrario, ocultarla
+      if (contenidoFila.includes(textoBusqueda)) {
+        fila.classList.remove("d-none"); // Mostrar la fila
+      } else {
+        fila.classList.add("d-none"); // Ocultar la fila
+      }
+    }
+  }
+</script>
+
+{% endblock %}
