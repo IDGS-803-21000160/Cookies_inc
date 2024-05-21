@@ -1,0 +1,93 @@
+{% extends 'ContenedorMain/contenedorMain.html' %} {% block content %} {% from
+"Macros/botonComponent.html" import custom_button, custom_buttongreen,
+custom_buttondelete %}
+
+<link rel="stylesheet" href="../../../static/css/buttons.css" />
+
+<div class="ms-5 me-5">
+  <div class="row" style="justify-content: space-evenly">
+    <div class="col-6" style="padding-left: 42px">
+      <div class="titleModule">{{producto.nombre_producto}}</div>
+    </div>
+    <div class="col-6" style="padding-top: 20px; padding-right: 60px">
+      <form action="/inventario/productos" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        {{ custom_buttongreen("Volver a Producto") }}
+      </form>
+    </div>
+  </div>
+  <hr />
+  <br /><br />
+  <!-- Agregar un contenedor para centrar todo el contenido -->
+
+  {% from "Macros/inputComponent.html" import search_input, input_custom %} {%
+  from "Macros/tableComponent.html" import custom_table %}
+
+  <div class="row mb-5">
+    <div class="col-md-12">
+      <div class="search-container">
+        <input
+          type="text"
+          placeholder="Buscar Ingrediente"
+          ,
+          id="searchproducto"
+          ,
+          oninput="filtrarTabla()"
+        />
+        <i class="fas fa-search fa-icon"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-5">
+    <div class="col-md-12 text-center">
+      <div class="custom-table2">
+        <table class="table">
+          <thead class="table-light">
+            <tr>
+              <th>Ingrediente</th>
+              <th>Cantidad</th>
+              <th>Merma</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for material in materiales %}
+            <tr>
+              <td>{{ material.nombre_mat }}</td>
+              <td>{{ material.cantidad }}</td>
+              <td>{{ material.cantidad_merma }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Cierre del contenedor -->
+
+<script>
+  function filtrarTabla() {
+    // Obtener el valor del campo de búsqueda
+    var textoBusqueda = document
+      .getElementById("searchproducto")
+      .value.toUpperCase();
+    // Obtener todas las filas de la tabla
+    var filas = document.querySelectorAll(".custom-table2 tbody tr");
+
+    // Iterar sobre todas las filas de la tabla
+    for (var i = 0; i < filas.length; i++) {
+      var fila = filas[i];
+      // Obtener el contenido de la fila y convertirlo a mayúsculas para hacer la comparación sin distinción entre mayúsculas y minúsculas
+      var contenidoFila = fila.innerText.toUpperCase();
+      // Si el contenido de la fila contiene el texto de búsqueda, mostrar la fila; de lo contrario, ocultarla
+      if (contenidoFila.includes(textoBusqueda)) {
+        fila.classList.remove("d-none"); // Mostrar la fila
+      } else {
+        fila.classList.add("d-none"); // Ocultar la fila
+      }
+    }
+  }
+</script>
+
+{% endblock %}

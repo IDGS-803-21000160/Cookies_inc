@@ -1,0 +1,101 @@
+{% extends 'ContenedorMain/contenedorMain.html' %} {% block content %} {% from
+"Macros/botonComponent.html" import custom_button, custom_buttongreen,
+custom_buttondelete %}
+
+<link rel="stylesheet" href="../../../static/css/buttons.css" />
+
+<div class="ms-5 me-5">
+  <!-- Agregar un contenedor para centrar todo el contenido -->
+
+  <div class="col-6" style="padding-left: 42px">
+    <div class="titleModule">Movimientos de inventario. </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div
+      class="col-md-10 mb-4 mt-3"
+      style="height: 0.2px; width: 85%; background-color: rgba(0, 0, 0, 0.603)"
+    ></div>
+  </div>
+
+  {% from "Macros/inputComponent.html" import search_input, input_custom %} {%
+  from "Macros/tableComponent.html" import custom_table %}
+
+  <div class="row mb-5" style="justify-content: center">
+    <div class="col-md-8">
+      <div class="search-container">
+        <input
+          type="text"
+          placeholder="Buscar Movimiento"
+          ,
+          id="searchmaterial"
+          ,
+          oninput="filtrarTabla()"
+        />
+        <i class="fas fa-search fa-icon"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-5">
+    <div class="col-md-12 text-center">
+      <div class="custom-table3">
+        <table class="table">
+          <thead class="table-light">
+            <tr>
+              <th>Responsable</th>
+              <th>Fecha</th>
+              <th>Producto o Material</th>
+              <th>Caducidad</th>
+              <th>N° Lote</th>
+              <th>Cantidad</th>
+              <th>Tipo de Movimiento</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for mov in movimientos %}
+            <tr>
+              <td>{{ mov.responsable}}</td>
+              <td>{{ mov.fecha }}</td>
+              <td>{{ mov.productomaterial }}</td>
+              <td>{{ mov.caducaLote }}</td>
+              <td>{{ mov.lote }}</td>
+              <td>{{ mov.cantidad }}</td>
+              <td>{{ mov.tipomovimiento_movinv }}</td>
+              <td>{{ mov.descripcion_movinv }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Cierre del contenedor -->
+
+<script>
+  function filtrarTabla() {
+    // Obtener el valor del campo de búsqueda
+    var textoBusqueda = document
+      .getElementById("searchmaterial")
+      .value.toUpperCase();
+    // Obtener todas las filas de la tabla
+    var filas = document.querySelectorAll(".custom-table3 tbody tr");
+
+    // Iterar sobre todas las filas de la tabla
+    for (var i = 0; i < filas.length; i++) {
+      var fila = filas[i];
+      // Obtener el contenido de la fila y convertirlo a mayúsculas para hacer la comparación sin distinción entre mayúsculas y minúsculas
+      var contenidoFila = fila.innerText.toUpperCase();
+      // Si el contenido de la fila contiene el texto de búsqueda, mostrar la fila; de lo contrario, ocultarla
+      if (contenidoFila.includes(textoBusqueda)) {
+        fila.classList.remove("d-none"); // Mostrar la fila
+      } else {
+        fila.classList.add("d-none"); // Ocultar la fila
+      }
+    }
+  }
+</script>
+
+{% endblock %}

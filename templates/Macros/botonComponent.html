@@ -1,0 +1,29 @@
+{% macro custom_button(text) %}
+<button type="submit" class="custom-button">{{ text }}</button>
+{% endmacro %}
+
+{% macro custom_buttongreen(text) %}
+<button type="submit" class="custom-buttongreen btn btn-success">{{ text }}</button>
+{% endmacro %}
+
+{% macro custom_buttonsave(text) %}
+<button type="submit" class="custom-buttonsave">{{ text }}</button>
+{% endmacro %}
+
+{% macro custom_buttondelete(text) %}
+    <button type="submit" class="custom-buttondelete">{{ text }}</button>
+{% endmacro %}
+
+{% macro custom_buttonBig(text) %}
+<button type="submit" class="custom-buttonBig">
+    <label class="text-button2-v">{{ text }}</label>
+    <img src="../../static/img/materiales.gif" alt="Materiales" height="150px" width="150px" class="img-button-v">
+</button>
+{% endmacro %}
+
+{% macro custom_buttonBigGreen(text) %}
+<button type="submit" class="custom-buttonBigGreen">
+    <label class="text-button-v">{{ text }}</label>
+    <img src="../../static/img/galleta.gif" alt="Galleta" height="150px" width="150px" class="img-button-v">
+</button>
+{% endmacro %}
